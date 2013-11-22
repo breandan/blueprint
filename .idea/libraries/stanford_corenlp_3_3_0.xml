@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="stanford-corenlp-3.3.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/artifacts-26/filestore/edu.stanford.nlp/stanford-corenlp/3.3.0/jar/6615eb2f1282c3ca30b12927b9032cdfeb6d518b/stanford-corenlp-3.3.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
