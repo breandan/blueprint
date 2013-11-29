@@ -87,7 +87,6 @@
     <orderEntry type="library" exported="" name="ejml-0.19" level="project" />
     <orderEntry type="library" exported="" name="lucene-queries-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="jakarta-regexp-1.4" level="project" />
-    <orderEntry type="library" exported="" name="stanford-parser" level="project" />
     <orderEntry type="library" exported="" name="lucene-queryparser-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="lucene-core-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="stanford-parser-3.2.0" level="project" />

@@ -1,0 +1,116 @@
+package com.google.common.base;
+
+import java.io.Serializable;
+import javax.annotation.Nullable;
+
+public final class Suppliers
+{
+  public static <T> Supplier<T> memoize(Supplier<T> paramSupplier)
+  {
+    if ((paramSupplier instanceof MemoizingSupplier)) {
+      return paramSupplier;
+    }
+    return new MemoizingSupplier((Supplier)Preconditions.checkNotNull(paramSupplier));
+  }
+  
+  public static <T> Supplier<T> ofInstance(@Nullable T paramT)
+  {
+    return new SupplierOfInstance(paramT);
+  }
+  
+  static class ExpiringMemoizingSupplier<T>
+    implements Supplier<T>, Serializable
+  {
+    private static final long serialVersionUID;
+    final Supplier<T> delegate;
+    final long durationNanos;
+    volatile transient long expirationNanos;
+    volatile transient T value;
+    
+    public T get()
+    {
+      long l1 = this.expirationNanos;
+      long l2 = Platform.systemNanoTime();
+      if ((l1 == 0L) || (l2 - l1 >= 0L)) {}
+      for (;;)
+      {
+        long l3;
+        try
+        {
+          if (l1 == this.expirationNanos)
+          {
+            Object localObject2 = this.delegate.get();
+            this.value = localObject2;
+            l3 = l2 + this.durationNanos;
+            if (l3 == 0L)
+            {
+              l4 = 1L;
+              this.expirationNanos = l4;
+              return localObject2;
+            }
+          }
+          else
+          {
+            return this.value;
+          }
+        }
+        finally {}
+        long l4 = l3;
+      }
+    }
+  }
+  
+  static class MemoizingSupplier<T>
+    implements Supplier<T>, Serializable
+  {
+    private static final long serialVersionUID;
+    final Supplier<T> delegate;
+    volatile transient boolean initialized;
+    transient T value;
+    
+    MemoizingSupplier(Supplier<T> paramSupplier)
+    {
+      this.delegate = paramSupplier;
+    }
+    
+    public T get()
+    {
+      if (!this.initialized) {}
+      try
+      {
+        if (!this.initialized)
+        {
+          Object localObject2 = this.delegate.get();
+          this.value = localObject2;
+          this.initialized = true;
+          return localObject2;
+        }
+        return this.value;
+      }
+      finally {}
+    }
+  }
+  
+  private static class SupplierOfInstance<T>
+    implements Supplier<T>, Serializable
+  {
+    private static final long serialVersionUID;
+    final T instance;
+    
+    SupplierOfInstance(@Nullable T paramT)
+    {
+      this.instance = paramT;
+    }
+    
+    public T get()
+    {
+      return this.instance;
+    }
+  }
+}
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+ * Qualified Name:     com.google.common.base.Suppliers
+ * JD-Core Version:    0.7.0.1
+ */
