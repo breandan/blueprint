@@ -20,7 +20,7 @@ public class Tee
   private final int[] mReadPositions;
   private final int mReadSize;
   private int mStartMark;
-  
+
   public Tee(InputStream paramInputStream, int paramInt1, int paramInt2, int paramInt3, int paramInt4)
   {
     if (paramInt2 < paramInt3) {}
@@ -41,7 +41,7 @@ public class Tee
       return;
     }
   }
-  
+
   private void doRead(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3)
   {
     byte[] arrayOfByte = this.mBuffer;
@@ -61,7 +61,7 @@ public class Tee
     System.arraycopy(arrayOfByte, paramInt1, paramArrayOfByte, paramInt2, j);
     System.arraycopy(arrayOfByte, 0, paramArrayOfByte, paramInt2 + j, k);
   }
-  
+
   private int findSlowestReaderLocked()
   {
     int i = 2147483647;
@@ -79,7 +79,7 @@ public class Tee
       return i;
     }
   }
-  
+
   /* Error */
   private int readFromDelegate(int paramInt)
     throws IOException
@@ -156,7 +156,7 @@ public class Tee
     //   69	81	84	finally
     //   86	88	84	finally
   }
-  
+
   private void rewindBuffersLocked()
     throws IOException
   {
@@ -199,7 +199,7 @@ public class Tee
     this.mException = new IOException("Buffer overflow, no available space.");
     throw this.mException;
   }
-  
+
   void close()
   {
     try
@@ -222,12 +222,12 @@ public class Tee
       }
     }
   }
-  
+
   public InputStream getLeader()
   {
     return this.mLeader;
   }
-  
+
   int readLeader(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
     throws IOException
   {
@@ -304,7 +304,7 @@ public class Tee
       m = -1;
     }
   }
-  
+
   int readSecondary(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3)
     throws IOException
   {
@@ -363,7 +363,7 @@ public class Tee
       }
     }
   }
-  
+
   void remove(int paramInt)
   {
     try
@@ -377,7 +377,7 @@ public class Tee
       throw localObject;
     }
   }
-  
+
   public void setStartAtDelegatePos(long paramLong)
   {
     for (;;)
@@ -398,7 +398,7 @@ public class Tee
       finally {}
     }
   }
-  
+
   public InputStream split()
     throws IOException
   {
@@ -417,28 +417,28 @@ public class Tee
     this.mReadPositions[i] = this.mStartMark;
     return localTeeSecondaryInputStream;
   }
-  
+
   private static class TeeLeaderInputStream
     extends InputStream
   {
     private final Tee mSharedStream;
-    
+
     TeeLeaderInputStream(Tee paramTee)
     {
       this.mSharedStream = paramTee;
     }
-    
+
     public void close()
     {
       this.mSharedStream.remove(0);
       this.mSharedStream.close();
     }
-    
+
     public int read()
     {
       throw new UnsupportedOperationException("Find some other app to be inefficient in.");
     }
-    
+
     public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
       throws IOException
     {
@@ -449,19 +449,19 @@ public class Tee
       return i;
     }
   }
-  
+
   private static class TeeSecondaryInputStream
     extends InputStream
   {
     private Tee mSharedStream;
     private final int mStreamId;
-    
+
     TeeSecondaryInputStream(Tee paramTee, int paramInt)
     {
       this.mSharedStream = paramTee;
       this.mStreamId = paramInt;
     }
-    
+
     public void close()
     {
       try
@@ -479,12 +479,12 @@ public class Tee
         throw localObject;
       }
     }
-    
+
     public int read()
     {
       throw new UnsupportedOperationException("Find some other app to be inefficient in.");
     }
-    
+
     public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
       throws IOException
     {
@@ -505,8 +505,12 @@ public class Tee
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.audio.Tee
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.audio.Tee
+
+ * JD-Core Version:    0.7.0.1
+
  */

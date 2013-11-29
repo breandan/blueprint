@@ -1,153 +1,217 @@
+// Protocol Buffers - Google's data interchange format
+// Copyright 2013 Google Inc.  All rights reserved.
+// http://code.google.com/p/protobuf/
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//     * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//     * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 package com.google.protobuf.nano;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
-public final class MessageNanoPrinter
-{
-  private static String deCamelCaseify(String paramString)
-  {
-    StringBuffer localStringBuffer = new StringBuffer();
-    int i = 0;
-    if (i < paramString.length())
-    {
-      char c = paramString.charAt(i);
-      if (i == 0) {
-        localStringBuffer.append(Character.toLowerCase(c));
-      }
-      for (;;)
-      {
-        i++;
-        break;
-        if (Character.isUpperCase(c)) {
-          localStringBuffer.append('_').append(Character.toLowerCase(c));
-        } else {
-          localStringBuffer.append(c);
-        }
-      }
-    }
-    return localStringBuffer.toString();
-  }
-  
-  private static String escapeString(String paramString)
-  {
-    int i = paramString.length();
-    StringBuilder localStringBuilder = new StringBuilder(i);
-    int j = 0;
-    if (j < i)
-    {
-      char c = paramString.charAt(j);
-      if ((c >= ' ') && (c <= '~') && (c != '"') && (c != '\'')) {
-        localStringBuilder.append(c);
-      }
-      for (;;)
-      {
-        j++;
-        break;
-        Object[] arrayOfObject = new Object[1];
-        arrayOfObject[0] = Integer.valueOf(c);
-        localStringBuilder.append(String.format("\\u%04x", arrayOfObject));
-      }
-    }
-    return localStringBuilder.toString();
-  }
-  
-  public static <T extends MessageNano> String print(T paramT)
-  {
-    if (paramT == null) {
-      return "null";
-    }
-    StringBuffer localStringBuffer = new StringBuffer();
-    try
-    {
-      print(paramT.getClass().getSimpleName(), paramT.getClass(), paramT, new StringBuffer(), localStringBuffer);
-      return localStringBuffer.toString();
-    }
-    catch (IllegalAccessException localIllegalAccessException)
-    {
-      return "Error printing proto: " + localIllegalAccessException.getMessage();
-    }
-  }
-  
-  private static void print(String paramString, Class<?> paramClass, Object paramObject, StringBuffer paramStringBuffer1, StringBuffer paramStringBuffer2)
-    throws IllegalAccessException
-  {
-    if (MessageNano.class.isAssignableFrom(paramClass))
-    {
-      paramStringBuffer2.append(paramStringBuffer1).append(paramString);
-      if (paramObject == null)
-      {
-        paramStringBuffer2.append(": ").append(paramObject).append("\n");
-        return;
-      }
-      paramStringBuffer1.append("  ");
-      paramStringBuffer2.append(" <\n");
-      Field[] arrayOfField = paramClass.getFields();
-      int i = arrayOfField.length;
-      int j = 0;
-      if (j < i)
-      {
-        Field localField = arrayOfField[j];
-        int k = localField.getModifiers();
-        String str3 = localField.getName();
-        if (((k & 0x1) != 1) || ((k & 0x8) == 8) || (str3.startsWith("_")) || (str3.endsWith("_"))) {}
-        for (;;)
-        {
-          j++;
-          break;
-          Class localClass1 = localField.getType();
-          Object localObject = localField.get(paramObject);
-          if (localClass1.isArray())
-          {
-            Class localClass2 = localClass1.getComponentType();
-            if (localClass2 == Byte.TYPE)
-            {
-              print(str3, localClass1, localObject, paramStringBuffer1, paramStringBuffer2);
-            }
-            else
-            {
-              int m = Array.getLength(localObject);
-              for (int n = 0; n < m; n++) {
-                print(str3, localClass2, Array.get(localObject, n), paramStringBuffer1, paramStringBuffer2);
-              }
-            }
-          }
-          else
-          {
-            print(str3, localClass1, localObject, paramStringBuffer1, paramStringBuffer2);
-          }
-        }
-      }
-      paramStringBuffer1.delete(paramStringBuffer1.length() - "  ".length(), paramStringBuffer1.length());
-      paramStringBuffer2.append(paramStringBuffer1).append(">\n");
-      return;
-    }
-    String str1 = deCamelCaseify(paramString);
-    paramStringBuffer2.append(paramStringBuffer1).append(str1).append(": ");
-    if ((paramObject instanceof String))
-    {
-      String str2 = sanitizeString((String)paramObject);
-      paramStringBuffer2.append("\"").append(str2).append("\"");
-    }
-    for (;;)
-    {
-      paramStringBuffer2.append("\n");
-      return;
-      paramStringBuffer2.append(paramObject);
-    }
-  }
-  
-  private static String sanitizeString(String paramString)
-  {
-    if ((!paramString.startsWith("http")) && (paramString.length() > 200)) {
-      paramString = paramString.substring(0, 200) + "[...]";
-    }
-    return escapeString(paramString);
-  }
-}
-
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.protobuf.nano.MessageNanoPrinter
- * JD-Core Version:    0.7.0.1
+/**
+ * Static helper methods for printing nano protos.
+ *
+ * @author flynn@google.com Andrew Flynn
  */
+public final class MessageNanoPrinter {
+    // Do not allow instantiation
+    private MessageNanoPrinter() {}
+
+    private static final String INDENT = "  ";
+    private static final int MAX_STRING_LEN = 200;
+
+    /**
+     * Returns an text representation of a MessageNano suitable for debugging. The returned string
+     * is mostly compatible with Protocol Buffer's TextFormat (as provided by non-nano protocol
+     * buffers) -- groups (which are deprecated) are output with an underscore name (e.g. foo_bar
+     * instead of FooBar) and will thus not parse.
+     *
+     * <p>Employs Java reflection on the given object and recursively prints primitive fields,
+     * groups, and messages.</p>
+     */
+    public static <T extends MessageNano> String print(T message) {
+        if (message == null) {
+            return "";
+        }
+
+        StringBuffer buf = new StringBuffer();
+        try {
+            print(null, message.getClass(), message, new StringBuffer(), buf);
+        } catch (IllegalAccessException e) {
+            return "Error printing proto: " + e.getMessage();
+        }
+        return buf.toString();
+    }
+
+    /**
+     * Function that will print the given message/class into the StringBuffer.
+     * Meant to be called recursively.
+     *
+     * @param identifier the identifier to use, or {@code null} if this is the root message to
+     *        print.
+     * @param clazz the class of {@code message}.
+     * @param message the value to print. May in fact be a primitive value or byte array and not a
+     *        message.
+     * @param indentBuf the indentation each line should begin with.
+     * @param buf the output buffer.
+     */
+    private static void print(String identifier, Class<?> clazz, Object message,
+                              StringBuffer indentBuf, StringBuffer buf) throws IllegalAccessException {
+        if (message == null) {
+            // This can happen if...
+            //   - we're about to print a message, String, or byte[], but it not present;
+            //   - we're about to print a primitive, but "reftype" optional style is enabled, and
+            //     the field is unset.
+            // In both cases the appropriate behavior is to output nothing.
+        } else if (MessageNano.class.isAssignableFrom(clazz)) {  // Nano proto message
+            int origIndentBufLength = indentBuf.length();
+            if (identifier != null) {
+                buf.append(indentBuf).append(deCamelCaseify(identifier)).append(" <\n");
+                indentBuf.append(INDENT);
+            }
+
+            for (Field field : clazz.getFields()) {
+                // Proto fields are public, non-static variables that do not begin or end with '_'
+                int modifiers = field.getModifiers();
+                String fieldName = field.getName();
+                if ((modifiers & Modifier.PUBLIC) != Modifier.PUBLIC
+                        || (modifiers & Modifier.STATIC) == Modifier.STATIC
+                        || fieldName.startsWith("_") || fieldName.endsWith("_")) {
+                    continue;
+                }
+
+                Class <?> fieldType = field.getType();
+                Object value = field.get(message);
+
+                if (fieldType.isArray()) {
+                    Class<?> arrayType = fieldType.getComponentType();
+
+                    // bytes is special since it's not repeated, but is represented by an array
+                    if (arrayType == byte.class) {
+                        print(fieldName, fieldType, value, indentBuf, buf);
+                    } else {
+                        int len = value == null ? 0 : Array.getLength(value);
+                        for (int i = 0; i < len; i++) {
+                            Object elem = Array.get(value, i);
+                            print(fieldName, arrayType, elem, indentBuf, buf);
+                        }
+                    }
+                } else {
+                    print(fieldName, fieldType, value, indentBuf, buf);
+                }
+            }
+            if (identifier != null) {
+                indentBuf.setLength(origIndentBufLength);
+                buf.append(indentBuf).append(">\n");
+            }
+        } else {
+            // Non-null primitive value
+            identifier = deCamelCaseify(identifier);
+            buf.append(indentBuf).append(identifier).append(": ");
+            if (message instanceof String) {
+                String stringMessage = sanitizeString((String) message);
+                buf.append("\"").append(stringMessage).append("\"");
+            } else if (message instanceof byte[]) {
+                appendQuotedBytes((byte[]) message, buf);
+            } else {
+                buf.append(message);
+            }
+            buf.append("\n");
+        }
+    }
+
+    /**
+     * Converts an identifier of the format "FieldName" into "field_name".
+     */
+    private static String deCamelCaseify(String identifier) {
+        StringBuffer out = new StringBuffer();
+        for (int i = 0; i < identifier.length(); i++) {
+            char currentChar = identifier.charAt(i);
+            if (i == 0) {
+                out.append(Character.toLowerCase(currentChar));
+            } else if (Character.isUpperCase(currentChar)) {
+                out.append('_').append(Character.toLowerCase(currentChar));
+            } else {
+                out.append(currentChar);
+            }
+        }
+        return out.toString();
+    }
+
+    /**
+     * Shortens and escapes the given string.
+     */
+    private static String sanitizeString(String str) {
+        if (!str.startsWith("http") && str.length() > MAX_STRING_LEN) {
+            // Trim non-URL strings.
+            str = str.substring(0, MAX_STRING_LEN) + "[...]";
+        }
+        return escapeString(str);
+    }
+
+    /**
+     * Escape everything except for low ASCII code points.
+     */
+    private static String escapeString(String str) {
+        int strLen = str.length();
+        StringBuilder b = new StringBuilder(strLen);
+        for (int i = 0; i < strLen; i++) {
+            char original = str.charAt(i);
+            if (original >= ' ' && original <= '~' && original != '"' && original != '\'') {
+                b.append(original);
+            } else {
+                b.append(String.format("\\u%04x", (int) original));
+            }
+        }
+        return b.toString();
+    }
+
+    /**
+     * Appends a quoted byte array to the provided {@code StringBuffer}.
+     */
+    private static void appendQuotedBytes(byte[] bytes, StringBuffer builder) {
+        if (bytes == null) {
+            builder.append("\"\"");
+            return;
+        }
+
+        builder.append('"');
+        for (int i = 0; i < bytes.length; ++i) {
+            int ch = bytes[i];
+            if (ch == '\\' || ch == '"') {
+                builder.append('\\').append((char) ch);
+            } else if (ch >= 32 && ch < 127) {
+                builder.append((char) ch);
+            } else {
+                builder.append(String.format("\\%03o", ch));
+            }
+        }
+        builder.append('"');
+    }
+}

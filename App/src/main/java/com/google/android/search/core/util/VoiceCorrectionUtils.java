@@ -5,6 +5,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import com.google.android.search.shared.api.Query;
 import com.google.android.search.shared.api.VoiceCorrectionSpan;
+import com.google.quality.genie.proto.QueryAlternativesProto;
 import com.google.quality.genie.proto.QueryAlternativesProto.QueryAlternatives;
 import com.google.quality.genie.proto.QueryAlternativesProto.QueryAlternatives.QuerySegment;
 import com.google.quality.genie.proto.QueryAlternativesProto.QueryAlternatives.QuerySegmentAlternatives;
@@ -35,42 +36,37 @@ public class VoiceCorrectionUtils
     return arrayOfInt;
   }
   
-  public static Spanned getSpannedString(Query paramQuery, QueryAlternativesProto.QueryAlternatives paramQueryAlternatives)
+  public static Spanned getSpannedString(Query query, QueryAlternativesProto.QueryAlternatives queryAlternatives)
   {
-    String str = paramQuery.getQueryString();
-    Object localObject;
-    if (TextUtils.isEmpty(str)) {
-      localObject = null;
-    }
-    for (;;)
-    {
-      return localObject;
-      if ((paramQueryAlternatives == null) || (paramQueryAlternatives.getQueryTokenCount() == 0)) {
-        return null;
+      String queryString = query.getQueryString();
+      if(TextUtils.isEmpty(queryString)) {
+          return null;
       }
-      if (paramQueryAlternatives.getQuerySegmentAlternativesCount() == 0) {
-        return null;
+      if((queryAlternatives == null) || (queryAlternatives.getQueryTokenCount() == 0)) {
+          return null;
       }
-      List localList1 = paramQueryAlternatives.getQueryTokenList();
-      String[] arrayOfString = tokenize(str);
-      if (!compareTokens(localList1, arrayOfString)) {
-        return null;
+      if(queryAlternatives.getQuerySegmentAlternativesCount() == 0) {
+          return null;
       }
-      localObject = new SpannableStringBuilder(paramQuery.getQueryChars());
-      int[] arrayOfInt = computeTokenOffsets(str, arrayOfString);
-      int i = paramQueryAlternatives.getQuerySegmentAlternativesCount();
-      for (int j = 0; j < i; j++)
-      {
-        QueryAlternativesProto.QueryAlternatives.QuerySegmentAlternatives localQuerySegmentAlternatives = paramQueryAlternatives.getQuerySegmentAlternatives(j);
-        QueryAlternativesProto.QueryAlternatives.QuerySegment localQuerySegment = localQuerySegmentAlternatives.getQuerySegment();
-        List localList2 = localQuerySegmentAlternatives.getAlternativeList();
-        int k = localQuerySegment.getStartToken();
-        int m = -1 + localQuerySegment.getEndToken();
-        int n = arrayOfInt[k];
-        int i1 = arrayOfInt[m] + arrayOfString[m].length();
-        ((SpannableStringBuilder)localObject).setSpan(new VoiceCorrectionSpan(localList2), n, i1, 17);
+      List<String> tokensSeenByServer = queryAlternatives.getQueryTokenList();
+      String[] tokensSeenByClient = tokenize(queryString);
+      if(!compareTokens(tokensSeenByServer, tokensSeenByClient)) {
+          return null;
       }
-    }
+      SpannableStringBuilder spanned = new SpannableStringBuilder(query.getQueryChars());
+      int[] tokenOffsets = computeTokenOffsets(queryString, tokensSeenByClient);
+      int segmentCount = queryAlternatives.getQuerySegmentAlternativesCount();
+      for(int i = 0x0; i < segmentCount; i = i + 0x1) {
+          QueryAlternativesProto.QueryAlternatives.QuerySegmentAlternatives alternatives = queryAlternatives.getQuerySegmentAlternatives(i);
+          QueryAlternativesProto.QueryAlternatives.QuerySegment segment = alternatives.getQuerySegment();
+          List<String> alternates = alternatives.getAlternativeList();
+          int tokenStart = segment.getStartToken();
+          int tokenEnd = segment.getEndToken() - 0x1;
+          int offsetStart = tokenOffsets[tokenStart];
+          int offsetEnd = tokenOffsets[tokenEnd] + tokensSeenByClient[tokenEnd].length();
+          spanned.setSpan(new VoiceCorrectionSpan(alternates), offsetStart, offsetEnd, 0x11);
+      }
+      return spanned;
   }
   
   static String[] tokenize(String paramString)
@@ -79,8 +75,12 @@ public class VoiceCorrectionUtils
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.search.core.util.VoiceCorrectionUtils
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.search.core.util.VoiceCorrectionUtils
+
+ * JD-Core Version:    0.7.0.1
+
  */
