@@ -10,6 +10,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack;
 import java.io.File;
 import java.io.FileFilter;
@@ -673,8 +674,12 @@ public class Greco3DataManager
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.embedded.Greco3DataManager
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.embedded.Greco3DataManager
+
+ * JD-Core Version:    0.7.0.1
+
  */

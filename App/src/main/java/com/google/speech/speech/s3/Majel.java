@@ -38,7 +38,7 @@ public final class Majel
     private boolean hasSystemTimeMs;
     private boolean hasTimeZone;
     private boolean hasUseCompressedResponse;
-    private ClientInfoProtos.PreviewParams previewParams_ = null;
+    private ClientInfProtos.PreviewParams previewParams_ = null;
     private int safesearchLevel_ = 1;
     private ClientInfoProtos.ScreenParams screenParams_ = null;
     private long systemTimeMs_ = 0L;
@@ -620,8 +620,12 @@ public final class Majel
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.speech.speech.s3.Majel
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.speech.speech.s3.Majel
+
+ * JD-Core Version:    0.7.0.1
+
  */

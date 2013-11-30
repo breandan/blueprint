@@ -4,14 +4,19 @@ import com.google.protobuf.micro.ByteStringMicro;
 import com.google.protobuf.micro.CodedInputStreamMicro;
 import com.google.protobuf.micro.CodedOutputStreamMicro;
 import com.google.protobuf.micro.MessageMicro;
+import com.google.speech.common.Alternates;
 import com.google.speech.common.Alternates.RecognitionClientAlternates;
+import com.google.speech.decoder.common.Alignment;
 import com.google.speech.decoder.common.Alignment.AlignmentProto;
-import com.google.speech.decoder.confidence.ConfFeature.WordConfFeature;
+import com.google.speech.decoder.confidence.ConfFeature;
+import com.google.speech.decoder.confidence.ConfFeature.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import speech.InterpretationProto;
 import speech.InterpretationProto.Interpretation;
 
 public final class RecognizerProtos
@@ -1689,12 +1694,12 @@ public final class RecognizerProtos
           if (parseUnknownField(paramCodedInputStreamMicro, i)) {
             continue;
           }
-        case 0: 
+            InterpretationProto.Interpretation localInterpretation = new InterpretationProto.Interpretation();
+            paramCodedInputStreamMicro.readMessage(localInterpretation);
+            addInterpretation(localInterpretation);
+        case 0:
           return this;
         }
-        InterpretationProto.Interpretation localInterpretation = new InterpretationProto.Interpretation();
-        paramCodedInputStreamMicro.readMessage(localInterpretation);
-        addInterpretation(localInterpretation);
       }
     }
     
@@ -1836,8 +1841,12 @@ public final class RecognizerProtos
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.speech.recognizer.api.RecognizerProtos
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.speech.recognizer.api.RecognizerProtos
+
+ * JD-Core Version:    0.7.0.1
+
  */

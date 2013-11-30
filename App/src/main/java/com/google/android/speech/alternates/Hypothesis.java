@@ -5,6 +5,7 @@ import com.google.common.base.Objects.ToStringHelper;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.speech.common.Alternates;
 import com.google.speech.common.Alternates.Alternate;
 import com.google.speech.common.Alternates.AlternateSpan;
 import java.io.UnsupportedEncodingException;
@@ -314,8 +315,12 @@ public abstract class Hypothesis
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.alternates.Hypothesis
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.alternates.Hypothesis
+
+ * JD-Core Version:    0.7.0.1
+
  */

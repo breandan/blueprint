@@ -2,6 +2,7 @@ package com.google.android.speech.embedded;
 
 import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.common.collect.Maps;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.Configuration;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack;
 import java.util.Collection;
@@ -120,8 +121,12 @@ public class LanguagePackUtils
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.embedded.LanguagePackUtils
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.embedded.LanguagePackUtils
+
+ * JD-Core Version:    0.7.0.1
+
  */

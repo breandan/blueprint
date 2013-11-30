@@ -48,7 +48,7 @@ public class Greco3GrammarCompiler
   
   public boolean init()
   {
-    this.mCompiler = new GrammarCompilerImpl(null);
+    this.mCompiler = new GrammarCompilerImpl();
     try
     {
       if (Greco3Mode.isAsciiConfiguration(new File(this.mConfigFile))) {
@@ -70,8 +70,12 @@ public class Greco3GrammarCompiler
   {}
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.embedded.Greco3GrammarCompiler
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.embedded.Greco3GrammarCompiler
+
+ * JD-Core Version:    0.7.0.1
+
  */

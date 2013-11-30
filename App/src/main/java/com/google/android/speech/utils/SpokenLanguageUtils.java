@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.android.shared.util.LocaleUtils;
 import com.google.android.speech.SpeechSettings;
 import com.google.common.base.Preconditions;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.Configuration;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.Dialect;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.Language;
@@ -365,8 +366,12 @@ public class SpokenLanguageUtils
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.utils.SpokenLanguageUtils
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.utils.SpokenLanguageUtils
+
+ * JD-Core Version:    0.7.0.1
+
  */

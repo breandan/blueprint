@@ -91,7 +91,7 @@ public class AudioInputParams
     
     public AudioInputParams build()
     {
-      return new AudioInputParams(this.mNoiseSuppressionEnabled, this.mPlayBeepEnabled, this.mReportSoundLevels, this.mEncoding, this.mSamplingRateHz, this.mStreamRewindTimeUsec, this.mRecordedAudioUri, this.mUsePreemptibleAudioSource, this.mRequestAudioFocus, null);
+      return new AudioInputParams(this.mNoiseSuppressionEnabled, this.mPlayBeepEnabled, this.mReportSoundLevels, this.mEncoding, this.mSamplingRateHz, this.mStreamRewindTimeUsec, this.mRecordedAudioUri, this.mUsePreemptibleAudioSource, this.mRequestAudioFocus);
     }
     
     public Builder setEncoding(int paramInt)
@@ -150,8 +150,12 @@ public class AudioInputParams
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.params.AudioInputParams
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.params.AudioInputParams
+
+ * JD-Core Version:    0.7.0.1
+
  */

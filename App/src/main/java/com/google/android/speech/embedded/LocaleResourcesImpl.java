@@ -2,6 +2,7 @@ package com.google.android.speech.embedded;
 
 import android.util.Log;
 import com.google.common.collect.Maps;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack;
 import java.io.File;
 import java.util.ArrayList;
@@ -378,8 +379,12 @@ class LocaleResourcesImpl
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.speech.embedded.LocaleResourcesImpl
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.speech.embedded.LocaleResourcesImpl
+
+ * JD-Core Version:    0.7.0.1
+
  */

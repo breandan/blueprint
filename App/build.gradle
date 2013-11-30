@@ -37,11 +37,20 @@ android {
         }
     }
 }
+task nativeLibsToJar(type: Zip, description: 'create a jar archive of the native libs') {
+    destinationDir file("$buildDir/native-libs")
+    baseName 'native-libs'
+    extension 'jar'
+    from fileTree(dir: 'libs', include: '**/*.so')
+    into 'lib/'
+}
+
+tasks.withType(Compile) {
+    compileTask -> compileTask.dependsOn(nativeLibsToJar)
+}
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile group: 'com.google.guava', name: 'guava', version: '15.0'
     compile "net.sf.trove4j:trove4j:3.0.3"
-    compile "org.apache.lucene:lucene-core:4.0.0"
-    compile "org.apache.lucene:lucene-queryparser:4.0.0"
-    compile "edu.stanford.nlp:stanford-parser:3.2.0"
+    compile fileTree(dir: "$buildDir/native-libs", include: 'native-libs.jar')
 }
