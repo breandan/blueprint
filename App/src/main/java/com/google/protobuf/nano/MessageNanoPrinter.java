@@ -41,7 +41,8 @@ import java.lang.reflect.Modifier;
  */
 public final class MessageNanoPrinter {
     // Do not allow instantiation
-    private MessageNanoPrinter() {}
+    private MessageNanoPrinter() {
+    }
 
     private static final String INDENT = "  ";
     private static final int MAX_STRING_LEN = 200;
@@ -51,7 +52,7 @@ public final class MessageNanoPrinter {
      * is mostly compatible with Protocol Buffer's TextFormat (as provided by non-nano protocol
      * buffers) -- groups (which are deprecated) are output with an underscore name (e.g. foo_bar
      * instead of FooBar) and will thus not parse.
-     *
+     * <p/>
      * <p>Employs Java reflection on the given object and recursively prints primitive fields,
      * groups, and messages.</p>
      */
@@ -74,12 +75,12 @@ public final class MessageNanoPrinter {
      * Meant to be called recursively.
      *
      * @param identifier the identifier to use, or {@code null} if this is the root message to
-     *        print.
-     * @param clazz the class of {@code message}.
-     * @param message the value to print. May in fact be a primitive value or byte array and not a
-     *        message.
-     * @param indentBuf the indentation each line should begin with.
-     * @param buf the output buffer.
+     *                   print.
+     * @param clazz      the class of {@code message}.
+     * @param message    the value to print. May in fact be a primitive value or byte array and not a
+     *                   message.
+     * @param indentBuf  the indentation each line should begin with.
+     * @param buf        the output buffer.
      */
     private static void print(String identifier, Class<?> clazz, Object message,
                               StringBuffer indentBuf, StringBuffer buf) throws IllegalAccessException {
@@ -106,7 +107,7 @@ public final class MessageNanoPrinter {
                     continue;
                 }
 
-                Class <?> fieldType = field.getType();
+                Class<?> fieldType = field.getType();
                 Object value = field.get(message);
 
                 if (fieldType.isArray()) {

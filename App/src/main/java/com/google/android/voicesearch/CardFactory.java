@@ -2,6 +2,7 @@ package com.google.android.voicesearch;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
+
 import com.google.android.search.core.SearchError;
 import com.google.android.speech.contacts.Person;
 import com.google.android.speech.contacts.PersonDisambiguation;
@@ -70,143 +71,124 @@ import com.google.android.voicesearch.fragments.action.VoiceAction;
 import com.google.android.voicesearch.fragments.action.VoiceActionVisitor;
 
 public class CardFactory
-  implements VoiceActionVisitor<AbstractCardView<?>>
-{
-  private final Context mContextWrapper;
-  
-  public CardFactory(Context paramContext)
-  {
-    this.mContextWrapper = new ContextThemeWrapper(paramContext, 2131624107);
-  }
-  
-  private static <T extends AbstractCardController<?, ?>> AbstractCardView<T> setController(AbstractCardView<T> paramAbstractCardView, T paramT)
-  {
-    paramAbstractCardView.setController(paramT);
-    return paramAbstractCardView;
-  }
-  
-  public <T extends VoiceAction, C extends AbstractCardController<T, ?>> AbstractCardView<C> createCard(C paramC)
-  {
-    return setController((AbstractCardView)paramC.getVoiceAction().accept(this), paramC);
-  }
-  
-  public AbstractCardView<ErrorController> visit(SearchError paramSearchError)
-  {
-    return new ErrorCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<CalendarEventController> visit(AddEventAction paramAddEventAction)
-  {
-    return new CalendarEventCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<AgendaController> visit(AgendaAction paramAgendaAction)
-  {
-    return new AgendaCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<CancelController> visit(CancelAction paramCancelAction)
-  {
-    if (paramCancelAction.isCancelButton()) {
-      return new CancelButtonCard(this.mContextWrapper);
+        implements VoiceActionVisitor<AbstractCardView<?>> {
+    private final Context mContextWrapper;
+
+    public CardFactory(Context paramContext) {
+        this.mContextWrapper = new ContextThemeWrapper(paramContext, 2131624107);
     }
-    return new CancelConfirmationCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<EmailController> visit(EmailAction paramEmailAction)
-  {
-    return new EmailCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<?> visit(HelpAction paramHelpAction)
-  {
-    return new HelpCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<LocalResultsController> visit(LocalResultsAction paramLocalResultsAction)
-  {
-    return new LocalResultsCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<OpenUrlController> visit(OpenUrlAction paramOpenUrlAction)
-  {
-    return new OpenUrlCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<PhoneCallController> visit(PhoneCallAction paramPhoneCallAction)
-  {
-    PersonDisambiguation localPersonDisambiguation = paramPhoneCallAction.getRecipient();
-    if ((localPersonDisambiguation != null) && (localPersonDisambiguation.isCompleted()) && (!((Person)localPersonDisambiguation.get()).hasName())) {
-      return new PhoneCallNumberCard(this.mContextWrapper);
+
+    private static <T extends AbstractCardController<?, ?>> AbstractCardView<T> setController(AbstractCardView<T> paramAbstractCardView, T paramT) {
+        paramAbstractCardView.setController(paramT);
+        return paramAbstractCardView;
     }
-    return new PhoneCallCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<?> visit(PlayMediaAction paramPlayMediaAction)
-  {
-    if (paramPlayMediaAction.isPlayMovieAction()) {
-      return new PlayMovieCard(this.mContextWrapper);
+
+    public <T extends VoiceAction, C extends AbstractCardController<T, ?>> AbstractCardView<C> createCard(C paramC) {
+        return setController((AbstractCardView) paramC.getVoiceAction().accept(this), paramC);
     }
-    if (paramPlayMediaAction.isOpenBookAction()) {
-      return new OpenBookCard(this.mContextWrapper);
+
+    public AbstractCardView<ErrorController> visit(SearchError paramSearchError) {
+        return new ErrorCard(this.mContextWrapper);
     }
-    if (paramPlayMediaAction.isPlayMusicAction()) {
-      return new PlayMusicCard(this.mContextWrapper);
+
+    public AbstractCardView<CalendarEventController> visit(AddEventAction paramAddEventAction) {
+        return new CalendarEventCard(this.mContextWrapper);
     }
-    if (paramPlayMediaAction.isOpenAppAction()) {
-      return new OpenAppPlayMediaCard(this.mContextWrapper);
+
+    public AbstractCardView<AgendaController> visit(AgendaAction paramAgendaAction) {
+        return new AgendaCard(this.mContextWrapper);
     }
-    throw new IllegalStateException();
-  }
-  
-  public AbstractCardView<PuntController> visit(PuntAction paramPuntAction)
-  {
-    return new PuntCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<ReadNotificationController> visit(ReadNotificationAction paramReadNotificationAction)
-  {
-    return new ReadNotificationCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<SelfNoteController> visit(SelfNoteAction paramSelfNoteAction)
-  {
-    return new SelfNoteCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<SetAlarmController> visit(SetAlarmAction paramSetAlarmAction)
-  {
-    return new SetAlarmCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<SetReminderController> visit(SetReminderAction paramSetReminderAction)
-  {
-    return new SetReminderCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<ShowContactInformationController> visit(ShowContactInformationAction paramShowContactInformationAction)
-  {
-    return new ShowContactInformationCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<MessageEditorController> visit(SmsAction paramSmsAction)
-  {
-    return new MessageEditorCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<SocialUpdateController> visit(SocialUpdateAction paramSocialUpdateAction)
-  {
-    return new SocialUpdateCard(this.mContextWrapper);
-  }
-  
-  public AbstractCardView<StopNavigationController> visit(StopNavigationAction paramStopNavigationAction)
-  {
-    return new StopNavigationCard(this.mContextWrapper);
-  }
+
+    public AbstractCardView<CancelController> visit(CancelAction paramCancelAction) {
+        if (paramCancelAction.isCancelButton()) {
+            return new CancelButtonCard(this.mContextWrapper);
+        }
+        return new CancelConfirmationCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<EmailController> visit(EmailAction paramEmailAction) {
+        return new EmailCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<?> visit(HelpAction paramHelpAction) {
+        return new HelpCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<LocalResultsController> visit(LocalResultsAction paramLocalResultsAction) {
+        return new LocalResultsCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<OpenUrlController> visit(OpenUrlAction paramOpenUrlAction) {
+        return new OpenUrlCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<PhoneCallController> visit(PhoneCallAction paramPhoneCallAction) {
+        PersonDisambiguation localPersonDisambiguation = paramPhoneCallAction.getRecipient();
+        if ((localPersonDisambiguation != null) && (localPersonDisambiguation.isCompleted()) && (!((Person) localPersonDisambiguation.get()).hasName())) {
+            return new PhoneCallNumberCard(this.mContextWrapper);
+        }
+        return new PhoneCallCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<?> visit(PlayMediaAction paramPlayMediaAction) {
+        if (paramPlayMediaAction.isPlayMovieAction()) {
+            return new PlayMovieCard(this.mContextWrapper);
+        }
+        if (paramPlayMediaAction.isOpenBookAction()) {
+            return new OpenBookCard(this.mContextWrapper);
+        }
+        if (paramPlayMediaAction.isPlayMusicAction()) {
+            return new PlayMusicCard(this.mContextWrapper);
+        }
+        if (paramPlayMediaAction.isOpenAppAction()) {
+            return new OpenAppPlayMediaCard(this.mContextWrapper);
+        }
+        throw new IllegalStateException();
+    }
+
+    public AbstractCardView<PuntController> visit(PuntAction paramPuntAction) {
+        return new PuntCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<ReadNotificationController> visit(ReadNotificationAction paramReadNotificationAction) {
+        return new ReadNotificationCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<SelfNoteController> visit(SelfNoteAction paramSelfNoteAction) {
+        return new SelfNoteCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<SetAlarmController> visit(SetAlarmAction paramSetAlarmAction) {
+        return new SetAlarmCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<SetReminderController> visit(SetReminderAction paramSetReminderAction) {
+        return new SetReminderCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<ShowContactInformationController> visit(ShowContactInformationAction paramShowContactInformationAction) {
+        return new ShowContactInformationCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<MessageEditorController> visit(SmsAction paramSmsAction) {
+        return new MessageEditorCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<SocialUpdateController> visit(SocialUpdateAction paramSocialUpdateAction) {
+        return new SocialUpdateCard(this.mContextWrapper);
+    }
+
+    public AbstractCardView<StopNavigationController> visit(StopNavigationAction paramStopNavigationAction) {
+        return new StopNavigationCard(this.mContextWrapper);
+    }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.voicesearch.CardFactory
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.voicesearch.CardFactory
+
+ * JD-Core Version:    0.7.0.1
+
  */

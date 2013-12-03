@@ -80,6 +80,7 @@ public abstract class MessageNano {
 
     /**
      * Serialize to a byte array.
+     *
      * @return byte array with the serialized data.
      */
     public static final byte[] toByteArray(MessageNano msg) {
@@ -95,9 +96,10 @@ public abstract class MessageNano {
      * write more than length bytes OutOfSpaceException will be thrown
      * and if length bytes are not written then IllegalStateException
      * is thrown.
+     *
      * @return byte array with the serialized data.
      */
-    public static final void toByteArray(MessageNano msg, byte [] data, int offset, int length) {
+    public static final void toByteArray(MessageNano msg, byte[] data, int offset, int length) {
         try {
             final CodedOutputByteBufferNano output =
                     CodedOutputByteBufferNano.newInstance(data, offset, length);
@@ -141,7 +143,7 @@ public abstract class MessageNano {
     /**
      * Returns a string that is (mostly) compatible with ProtoBuffer's TextFormat. Note that groups
      * (which are deprecated) are not serialized with the correct field name.
-     *
+     * <p/>
      * <p>This is implemented using reflection, so it is not especially fast.
      */
     @Override

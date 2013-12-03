@@ -30,7 +30,6 @@
 
 package com.google.protobuf.micro;
 
-import com.google.protobuf.micro.CodedOutputStreamMicro;
 import java.io.IOException;
 
 /**
@@ -69,6 +68,7 @@ public abstract class MessageMicro {
 
     /**
      * Serialize to a byte array.
+     *
      * @return byte array with the serialized data.
      */
     public byte[] toByteArray() {
@@ -84,9 +84,10 @@ public abstract class MessageMicro {
      * write more than length bytes OutOfSpaceException will be thrown
      * and if length bytes are not written then IllegalStateException
      * is thrown.
+     *
      * @return byte array with the serialized data.
      */
-    public void toByteArray(byte [] data, int offset, int length) {
+    public void toByteArray(byte[] data, int offset, int length) {
         try {
             final CodedOutputStreamMicro output = CodedOutputStreamMicro.newInstance(data, offset, length);
             writeTo(output);
@@ -126,11 +127,12 @@ public abstract class MessageMicro {
 
     /**
      * Called by subclasses to parse an unknown field.
+     *
      * @return {@code true} unless the tag is an end-group tag.
      */
     protected boolean parseUnknownField(
-        final CodedInputStreamMicro input,
-        final int tag) throws IOException {
-      return input.skipField(tag);
+            final CodedInputStreamMicro input,
+            final int tag) throws IOException {
+        return input.skipField(tag);
     }
 }

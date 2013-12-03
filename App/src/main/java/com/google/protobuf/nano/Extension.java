@@ -37,8 +37,8 @@ import java.util.List;
 /**
  * Represents an extension.
  *
- * @author bduff@google.com (Brian Duff)
  * @param <T> the type of the extension.
+ * @author bduff@google.com (Brian Duff)
  */
 public class Extension<T> {
     public final int fieldNumber;
@@ -73,7 +73,7 @@ public class Extension<T> {
      * Represents a generic type literal. We can't typesafely reference a
      * Class&lt;List&lt;Foo>>.class in Java, so we use this instead.
      * See: http://gafter.blogspot.com/2006/12/super-type-tokens.html
-     *
+     * <p/>
      * <p>Somewhat specialized because we only ever have a Foo or a List&lt;Foo>.
      */
     public static abstract class TypeLiteral<T> {

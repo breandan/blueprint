@@ -1,6 +1,5 @@
 package javax.annotation;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,8 +9,12 @@ import java.lang.annotation.RetentionPolicy;
 @Nonnull
 public @interface Nullable {}
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     javax.annotation.Nullable
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     javax.annotation.Nullable
+
+ * JD-Core Version:    0.7.0.1
+
  */

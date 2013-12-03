@@ -7,14 +7,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Greco3Mode {
-    DICTATION("DICTATION", 0),
-    ENDPOINTER_VOICESEARCH("ENGPOINTER_VOICESEARCH", 1),
-    ENDPOINTER_DICTATION("ENDPOINTER_DICTATION", 2),
-    HOTWORD("HOTWORD", 3),
-    COMPILER("COMPILER", 4),
-    GRAMMAR("GRAMMAR", 5);
+    DICTATION,
+    ENDPOINTER_VOICESEARCH,
+    ENDPOINTER_DICTATION,
+    HOTWORD,
+    COMPILER,
+    GRAMMAR;
     private static final Map<String, Greco3Mode> MODE_MAP;
-    Greco3Mode[] arrayOfGreco3Mode = new Greco3Mode[]{DICTATION, ENDPOINTER_VOICESEARCH, ENDPOINTER_DICTATION, HOTWORD, COMPILER, GRAMMAR};
 
     static {
         HashMap localHashMap = Maps.newHashMap();
@@ -28,8 +27,7 @@ public enum Greco3Mode {
         MODE_MAP = localHashMap;
     }
 
-
-    private Greco3Mode(String grammar, int i) {
+    private Greco3Mode() {
     }
 
     private static String getFileName(File paramFile) {

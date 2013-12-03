@@ -14,97 +14,87 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 public abstract class CommunicationActionController<T extends CommunicationAction, U extends CommunicationActionCard>
-  extends AbstractCardController<T, U>
-  implements Disambiguation.ProgressListener<Person>
-{
-  public CommunicationActionController(CardController paramCardController)
-  {
-    super(paramCardController);
-  }
-  
-  private void onDisambiguationProgress(Disambiguation<Person> paramDisambiguation, boolean paramBoolean)
-  {
-    if (paramBoolean) {
-      getCardController().updateCardDecision(getVoiceAction());
+        extends AbstractCardController<T, U>
+        implements Disambiguation.ProgressListener<Person> {
+    public CommunicationActionController(CardController paramCardController) {
+        super(paramCardController);
     }
-    if (paramDisambiguation.isOngoing())
-    {
-      showCard();
-      return;
+
+    private void onDisambiguationProgress(Disambiguation<Person> paramDisambiguation, boolean paramBoolean) {
+        if (paramBoolean) {
+            getCardController().updateCardDecision(getVoiceAction());
+        }
+        if (paramDisambiguation.isOngoing()) {
+            showCard();
+            return;
+        }
+        if (paramDisambiguation.isCompleted()) {
+            mentionEntity(paramDisambiguation.get());
+            onDisambiguationCompleted(paramDisambiguation);
+            return;
+        }
+        Preconditions.checkState(paramDisambiguation.hasNoResults());
+        showCard();
     }
-    if (paramDisambiguation.isCompleted())
-    {
-      mentionEntity(paramDisambiguation.get());
-      onDisambiguationCompleted(paramDisambiguation);
-      return;
+
+    protected void initUi() {
+        CommunicationActionCard localCommunicationActionCard = (CommunicationActionCard) getUi();
+        PersonDisambiguation localPersonDisambiguation = ((CommunicationAction) getVoiceAction()).getRecipient();
+        if ((localPersonDisambiguation == null) || (localPersonDisambiguation.hasNoResults())) {
+            localCommunicationActionCard.showContactNotFound();
+            return;
+        }
+        localCommunicationActionCard.setPeople(localPersonDisambiguation.getCandidates());
     }
-    Preconditions.checkState(paramDisambiguation.hasNoResults());
-    showCard();
-  }
-  
-  protected void initUi()
-  {
-    CommunicationActionCard localCommunicationActionCard = (CommunicationActionCard)getUi();
-    PersonDisambiguation localPersonDisambiguation = ((CommunicationAction)getVoiceAction()).getRecipient();
-    if ((localPersonDisambiguation == null) || (localPersonDisambiguation.hasNoResults()))
-    {
-      localCommunicationActionCard.showContactNotFound();
-      return;
+
+    public void onContactDetailSelected(Person paramPerson, Contact paramContact) {
+        EventLogger.recordClientEvent(44, Integer.valueOf(getActionTypeLog()));
+        PersonDisambiguation localPersonDisambiguation = ((CommunicationAction) getVoiceAction()).getRecipient();
+        paramPerson.setSelectedItem(paramContact);
+        if (localPersonDisambiguation.isOngoing()) {
+            localPersonDisambiguation.select(paramPerson);
+        }
+        onUserInteraction();
     }
-    localCommunicationActionCard.setPeople(localPersonDisambiguation.getCandidates());
-  }
-  
-  public void onContactDetailSelected(Person paramPerson, Contact paramContact)
-  {
-    EventLogger.recordClientEvent(44, Integer.valueOf(getActionTypeLog()));
-    PersonDisambiguation localPersonDisambiguation = ((CommunicationAction)getVoiceAction()).getRecipient();
-    paramPerson.setSelectedItem(paramContact);
-    if (localPersonDisambiguation.isOngoing()) {
-      localPersonDisambiguation.select(paramPerson);
+
+    protected abstract void onDisambiguationCompleted(Disambiguation<Person> paramDisambiguation);
+
+    public void onDisambiguationProgress(Disambiguation<Person> paramDisambiguation) {
+        onDisambiguationProgress(paramDisambiguation, true);
     }
-    onUserInteraction();
-  }
-  
-  protected abstract void onDisambiguationCompleted(Disambiguation<Person> paramDisambiguation);
-  
-  public void onDisambiguationProgress(Disambiguation<Person> paramDisambiguation)
-  {
-    onDisambiguationProgress(paramDisambiguation, true);
-  }
-  
-  public void onPersonSelected(Person paramPerson)
-  {
-    ((CommunicationAction)getVoiceAction()).getRecipient().refineCandidates(Lists.newArrayList(new Person[] { paramPerson }));
-    onUserInteraction();
-  }
-  
-  public void pickContact()
-  {
-    onUserInteraction();
-    ((CommunicationActionExecutor)getActionExecutor()).pickContact();
-  }
-  
-  public void setActionExecutor(ActionExecutor<T> paramActionExecutor)
-  {
-    Preconditions.checkArgument(paramActionExecutor instanceof CommunicationActionExecutor);
-    super.setActionExecutor(paramActionExecutor);
-  }
-  
-  public void start()
-  {
-    ((CommunicationAction)getVoiceAction()).setDisambiguationProgressListener(this);
-    PersonDisambiguation localPersonDisambiguation = ((CommunicationAction)getVoiceAction()).getRecipient();
-    if (localPersonDisambiguation != null)
-    {
-      onDisambiguationProgress(localPersonDisambiguation, false);
-      return;
+
+    public void onPersonSelected(Person paramPerson) {
+        ((CommunicationAction) getVoiceAction()).getRecipient().refineCandidates(Lists.newArrayList(new Person[]{paramPerson}));
+        onUserInteraction();
     }
-    showCard();
-  }
+
+    public void pickContact() {
+        onUserInteraction();
+        ((CommunicationActionExecutor) getActionExecutor()).pickContact();
+    }
+
+    public void setActionExecutor(ActionExecutor<T> paramActionExecutor) {
+        Preconditions.checkArgument(paramActionExecutor instanceof CommunicationActionExecutor);
+        super.setActionExecutor(paramActionExecutor);
+    }
+
+    public void start() {
+        ((CommunicationAction) getVoiceAction()).setDisambiguationProgressListener(this);
+        PersonDisambiguation localPersonDisambiguation = ((CommunicationAction) getVoiceAction()).getRecipient();
+        if (localPersonDisambiguation != null) {
+            onDisambiguationProgress(localPersonDisambiguation, false);
+            return;
+        }
+        showCard();
+    }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.voicesearch.fragments.CommunicationActionController
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.voicesearch.fragments.CommunicationActionController
+
+ * JD-Core Version:    0.7.0.1
+
  */

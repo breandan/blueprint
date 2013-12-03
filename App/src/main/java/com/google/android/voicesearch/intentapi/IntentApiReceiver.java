@@ -4,50 +4,52 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.android.velvet.VelvetServices;
-import com.google.android.voicesearch.VoiceSearchServices;
 import com.google.android.voicesearch.settings.Settings;
+
 import javax.annotation.Nullable;
 
 public class IntentApiReceiver
-  extends BroadcastReceiver
-{
-  @Nullable
-  Bundle getExtras(Context paramContext, Intent paramIntent)
-  {
-    Bundle localBundle;
-    if (!"android.speech.action.GET_LANGUAGE_DETAILS".equals(paramIntent.getAction())) {
-      localBundle = null;
+        extends BroadcastReceiver {
+    @Nullable
+    Bundle getExtras(Context paramContext, Intent paramIntent) {
+        Bundle localBundle;
+        if (!"android.speech.action.GET_LANGUAGE_DETAILS".equals(paramIntent.getAction())) {
+            localBundle = null;
+        }
+        Settings localSettings;
+        do {
+            return localBundle;
+            localBundle = new Bundle();
+            localSettings = VelvetServices.get().getVoiceSearchServices().getSettings();
+            localBundle.putString("android.speech.extra.LANGUAGE_PREFERENCE", localSettings.getSpokenLocaleBcp47());
+        }
+        while (paramIntent.getBooleanExtra("android.speech.extra.ONLY_RETURN_LANGUAGE_PREFERENCE", false));
+        localBundle.putStringArrayList("android.speech.extra.SUPPORTED_LANGUAGES", SpokenLanguageUtils.getSupportedBcp47Locales(localSettings.getConfiguration()));
+        localBundle.putStringArrayList("android.speech.extra.SUPPORTED_LANGUAGE_NAMES", SpokenLanguageUtils.getSupportedDisplayNames(localSettings.getConfiguration()));
+        return localBundle;
     }
-    Settings localSettings;
-    do
-    {
-      return localBundle;
-      localBundle = new Bundle();
-      localSettings = VelvetServices.get().getVoiceSearchServices().getSettings();
-      localBundle.putString("android.speech.extra.LANGUAGE_PREFERENCE", localSettings.getSpokenLocaleBcp47());
-    } while (paramIntent.getBooleanExtra("android.speech.extra.ONLY_RETURN_LANGUAGE_PREFERENCE", false));
-    localBundle.putStringArrayList("android.speech.extra.SUPPORTED_LANGUAGES", SpokenLanguageUtils.getSupportedBcp47Locales(localSettings.getConfiguration()));
-    localBundle.putStringArrayList("android.speech.extra.SUPPORTED_LANGUAGE_NAMES", SpokenLanguageUtils.getSupportedDisplayNames(localSettings.getConfiguration()));
-    return localBundle;
-  }
-  
-  public void onReceive(Context paramContext, Intent paramIntent)
-  {
-    if (!isOrderedBroadcast()) {}
-    Bundle localBundle;
-    do
-    {
-      return;
-      localBundle = getExtras(paramContext, paramIntent);
-    } while (localBundle == null);
-    setResultExtras(localBundle);
-  }
+
+    public void onReceive(Context paramContext, Intent paramIntent) {
+        if (!isOrderedBroadcast()) {
+        }
+        Bundle localBundle;
+        do {
+            return;
+            localBundle = getExtras(paramContext, paramIntent);
+        } while (localBundle == null);
+        setResultExtras(localBundle);
+    }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.android.voicesearch.intentapi.IntentApiReceiver
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.android.voicesearch.intentapi.IntentApiReceiver
+
+ * JD-Core Version:    0.7.0.1
+
  */

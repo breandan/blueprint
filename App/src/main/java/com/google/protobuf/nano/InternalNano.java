@@ -43,12 +43,13 @@ import java.util.Arrays;
  */
 public final class InternalNano {
 
-    private InternalNano() {}
+    private InternalNano() {
+    }
 
     /**
      * Helper called by generated code to construct default values for string
      * fields.
-     * <p>
+     * <p/>
      * The protocol compiler does not actually contain a UTF-8 decoder -- it
      * just pushes UTF-8-encoded text around without touching it.  The one place
      * where this presents a problem is when generating Java string literals.
@@ -56,9 +57,9 @@ public final class InternalNano {
      * using a Unicode escape sequence, which would require decoding them.
      * To get around this, protoc instead embeds the UTF-8 bytes into the
      * generated code and leaves it to the runtime library to decode them.
-     * <p>
+     * <p/>
      * It gets worse, though.  If protoc just generated a byte array, like:
-     *   new byte[] {0x12, 0x34, 0x56, 0x78}
+     * new byte[] {0x12, 0x34, 0x56, 0x78}
      * Java actually generates *code* which allocates an array and then fills
      * in each value.  This is much less efficient than just embedding the bytes
      * directly into the bytecode.  To get around this, we need another
@@ -67,7 +68,7 @@ public final class InternalNano {
      * to do this is to use the ISO-8859-1 character set, which corresponds to
      * the first 256 characters of the Unicode range.  Protoc can then use
      * good old CEscape to generate the string.
-     * <p>
+     * <p/>
      * So we have a string literal which represents a set of bytes which
      * represents another string.  This function -- stringDefaultValue --
      * converts from the generated string to the string we actually want.  The
@@ -87,7 +88,7 @@ public final class InternalNano {
     /**
      * Helper called by generated code to construct default values for bytes
      * fields.
-     * <p>
+     * <p/>
      * This is a lot like {@link #stringDefaultValue}, but for bytes fields.
      * In this case we only need the second of the two hacks -- allowing us to
      * embed raw bytes as a string literal with ISO-8859-1 encoding.

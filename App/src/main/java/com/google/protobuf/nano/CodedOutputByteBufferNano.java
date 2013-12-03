@@ -35,14 +35,14 @@ import java.io.UnsupportedEncodingException;
 
 /**
  * Encodes and writes protocol message fields.
- *
+ * <p/>
  * <p>This class contains two kinds of methods:  methods that write specific
  * protocol message constructs and field types (e.g. {@link #writeTag} and
  * {@link #writeInt32}) and methods that write low-level values (e.g.
  * {@link #writeRawVarint32} and {@link #writeRawBytes}).  If you are
  * writing encoded protocol messages, you should use the former methods, but if
  * you are writing some other format of your own design, use the latter.
- *
+ * <p/>
  * <p>This class is totally unsynchronized.
  *
  * @author kneton@google.com Kenton Varda
@@ -83,70 +83,90 @@ public final class CodedOutputByteBufferNano {
 
     // -----------------------------------------------------------------
 
-    /** Write a {@code double} field, including tag, to the stream. */
+    /**
+     * Write a {@code double} field, including tag, to the stream.
+     */
     public void writeDouble(final int fieldNumber, final double value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_FIXED64);
         writeDoubleNoTag(value);
     }
 
-    /** Write a {@code float} field, including tag, to the stream. */
+    /**
+     * Write a {@code float} field, including tag, to the stream.
+     */
     public void writeFloat(final int fieldNumber, final float value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_FIXED32);
         writeFloatNoTag(value);
     }
 
-    /** Write a {@code uint64} field, including tag, to the stream. */
+    /**
+     * Write a {@code uint64} field, including tag, to the stream.
+     */
     public void writeUInt64(final int fieldNumber, final long value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
         writeUInt64NoTag(value);
     }
 
-    /** Write an {@code int64} field, including tag, to the stream. */
+    /**
+     * Write an {@code int64} field, including tag, to the stream.
+     */
     public void writeInt64(final int fieldNumber, final long value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
         writeInt64NoTag(value);
     }
 
-    /** Write an {@code int32} field, including tag, to the stream. */
+    /**
+     * Write an {@code int32} field, including tag, to the stream.
+     */
     public void writeInt32(final int fieldNumber, final int value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
         writeInt32NoTag(value);
     }
 
-    /** Write a {@code fixed64} field, including tag, to the stream. */
+    /**
+     * Write a {@code fixed64} field, including tag, to the stream.
+     */
     public void writeFixed64(final int fieldNumber, final long value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_FIXED64);
         writeFixed64NoTag(value);
     }
 
-    /** Write a {@code fixed32} field, including tag, to the stream. */
+    /**
+     * Write a {@code fixed32} field, including tag, to the stream.
+     */
     public void writeFixed32(final int fieldNumber, final int value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_FIXED32);
         writeFixed32NoTag(value);
     }
 
-    /** Write a {@code bool} field, including tag, to the stream. */
+    /**
+     * Write a {@code bool} field, including tag, to the stream.
+     */
     public void writeBool(final int fieldNumber, final boolean value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
         writeBoolNoTag(value);
     }
 
-    /** Write a {@code string} field, including tag, to the stream. */
+    /**
+     * Write a {@code string} field, including tag, to the stream.
+     */
     public void writeString(final int fieldNumber, final String value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
         writeStringNoTag(value);
     }
 
-    /** Write a {@code group} field, including tag, to the stream. */
+    /**
+     * Write a {@code group} field, including tag, to the stream.
+     */
     public void writeGroup(final int fieldNumber, final MessageNano value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_START_GROUP);
@@ -154,21 +174,27 @@ public final class CodedOutputByteBufferNano {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_END_GROUP);
     }
 
-    /** Write an embedded message field, including tag, to the stream. */
+    /**
+     * Write an embedded message field, including tag, to the stream.
+     */
     public void writeMessage(final int fieldNumber, final MessageNano value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
         writeMessageNoTag(value);
     }
 
-    /** Write a {@code bytes} field, including tag, to the stream. */
+    /**
+     * Write a {@code bytes} field, including tag, to the stream.
+     */
     public void writeBytes(final int fieldNumber, final byte[] value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
         writeBytesNoTag(value);
     }
 
-    /** Write a {@code byte} field, including tag, to the stream. */
+    /**
+     * Write a {@code byte} field, including tag, to the stream.
+     */
     public void writeByteArray(final int fieldNumber, final byte[] value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_LENGTH_DELIMITED);
@@ -176,7 +202,9 @@ public final class CodedOutputByteBufferNano {
     }
 
 
-    /** Write a {@code uint32} field, including tag, to the stream. */
+    /**
+     * Write a {@code uint32} field, including tag, to the stream.
+     */
     public void writeUInt32(final int fieldNumber, final int value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
@@ -193,28 +221,36 @@ public final class CodedOutputByteBufferNano {
         writeEnumNoTag(value);
     }
 
-    /** Write an {@code sfixed32} field, including tag, to the stream. */
+    /**
+     * Write an {@code sfixed32} field, including tag, to the stream.
+     */
     public void writeSFixed32(final int fieldNumber, final int value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_FIXED32);
         writeSFixed32NoTag(value);
     }
 
-    /** Write an {@code sfixed64} field, including tag, to the stream. */
+    /**
+     * Write an {@code sfixed64} field, including tag, to the stream.
+     */
     public void writeSFixed64(final int fieldNumber, final long value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_FIXED64);
         writeSFixed64NoTag(value);
     }
 
-    /** Write an {@code sint32} field, including tag, to the stream. */
+    /**
+     * Write an {@code sint32} field, including tag, to the stream.
+     */
     public void writeSInt32(final int fieldNumber, final int value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
         writeSInt32NoTag(value);
     }
 
-    /** Write an {@code sint64} field, including tag, to the stream. */
+    /**
+     * Write an {@code sint64} field, including tag, to the stream.
+     */
     public void writeSInt64(final int fieldNumber, final long value)
             throws IOException {
         writeTag(fieldNumber, WireFormatNano.WIRETYPE_VARINT);
@@ -249,27 +285,37 @@ public final class CodedOutputByteBufferNano {
 
     // -----------------------------------------------------------------
 
-    /** Write a {@code double} field to the stream. */
+    /**
+     * Write a {@code double} field to the stream.
+     */
     public void writeDoubleNoTag(final double value) throws IOException {
         writeRawLittleEndian64(Double.doubleToLongBits(value));
     }
 
-    /** Write a {@code float} field to the stream. */
+    /**
+     * Write a {@code float} field to the stream.
+     */
     public void writeFloatNoTag(final float value) throws IOException {
         writeRawLittleEndian32(Float.floatToIntBits(value));
     }
 
-    /** Write a {@code uint64} field to the stream. */
+    /**
+     * Write a {@code uint64} field to the stream.
+     */
     public void writeUInt64NoTag(final long value) throws IOException {
         writeRawVarint64(value);
     }
 
-    /** Write an {@code int64} field to the stream. */
+    /**
+     * Write an {@code int64} field to the stream.
+     */
     public void writeInt64NoTag(final long value) throws IOException {
         writeRawVarint64(value);
     }
 
-    /** Write an {@code int32} field to the stream. */
+    /**
+     * Write an {@code int32} field to the stream.
+     */
     public void writeInt32NoTag(final int value) throws IOException {
         if (value >= 0) {
             writeRawVarint32(value);
@@ -279,22 +325,30 @@ public final class CodedOutputByteBufferNano {
         }
     }
 
-    /** Write a {@code fixed64} field to the stream. */
+    /**
+     * Write a {@code fixed64} field to the stream.
+     */
     public void writeFixed64NoTag(final long value) throws IOException {
         writeRawLittleEndian64(value);
     }
 
-    /** Write a {@code fixed32} field to the stream. */
+    /**
+     * Write a {@code fixed32} field to the stream.
+     */
     public void writeFixed32NoTag(final int value) throws IOException {
         writeRawLittleEndian32(value);
     }
 
-    /** Write a {@code bool} field to the stream. */
+    /**
+     * Write a {@code bool} field to the stream.
+     */
     public void writeBoolNoTag(final boolean value) throws IOException {
         writeRawByte(value ? 1 : 0);
     }
 
-    /** Write a {@code string} field to the stream. */
+    /**
+     * Write a {@code string} field to the stream.
+     */
     public void writeStringNoTag(final String value) throws IOException {
         // Unfortunately there does not appear to be any way to tell Java to encode
         // UTF-8 directly into our buffer, so we have to let it create its own byte
@@ -304,30 +358,40 @@ public final class CodedOutputByteBufferNano {
         writeRawBytes(bytes);
     }
 
-    /** Write a {@code group} field to the stream. */
+    /**
+     * Write a {@code group} field to the stream.
+     */
     public void writeGroupNoTag(final MessageNano value) throws IOException {
         value.writeTo(this);
     }
 
-    /** Write an embedded message field to the stream. */
+    /**
+     * Write an embedded message field to the stream.
+     */
     public void writeMessageNoTag(final MessageNano value) throws IOException {
         writeRawVarint32(value.getCachedSize());
         value.writeTo(this);
     }
 
-    /** Write a {@code bytes} field to the stream. */
+    /**
+     * Write a {@code bytes} field to the stream.
+     */
     public void writeBytesNoTag(final byte[] value) throws IOException {
         writeRawVarint32(value.length);
         writeRawBytes(value);
     }
 
-    /** Write a {@code byte[]} field to the stream. */
-    public void writeByteArrayNoTag(final byte [] value) throws IOException {
+    /**
+     * Write a {@code byte[]} field to the stream.
+     */
+    public void writeByteArrayNoTag(final byte[] value) throws IOException {
         writeRawVarint32(value.length);
         writeRawBytes(value);
     }
 
-    /** Write a {@code uint32} field to the stream. */
+    /**
+     * Write a {@code uint32} field to the stream.
+     */
     public void writeUInt32NoTag(final int value) throws IOException {
         writeRawVarint32(value);
     }
@@ -340,22 +404,30 @@ public final class CodedOutputByteBufferNano {
         writeRawVarint32(value);
     }
 
-    /** Write an {@code sfixed32} field to the stream. */
+    /**
+     * Write an {@code sfixed32} field to the stream.
+     */
     public void writeSFixed32NoTag(final int value) throws IOException {
         writeRawLittleEndian32(value);
     }
 
-    /** Write an {@code sfixed64} field to the stream. */
+    /**
+     * Write an {@code sfixed64} field to the stream.
+     */
     public void writeSFixed64NoTag(final long value) throws IOException {
         writeRawLittleEndian64(value);
     }
 
-    /** Write an {@code sint32} field to the stream. */
+    /**
+     * Write an {@code sint32} field to the stream.
+     */
     public void writeSInt32NoTag(final int value) throws IOException {
         writeRawVarint32(encodeZigZag32(value));
     }
 
-    /** Write an {@code sint64} field to the stream. */
+    /**
+     * Write an {@code sint64} field to the stream.
+     */
     public void writeSInt64NoTag(final long value) throws IOException {
         writeRawVarint64(encodeZigZag64(value));
     }
@@ -754,7 +826,9 @@ public final class CodedOutputByteBufferNano {
         }
     }
 
-    /** Write a single byte. */
+    /**
+     * Write a single byte.
+     */
     public void writeRawByte(final byte value) throws IOException {
         if (position == limit) {
             // We're writing to a single buffer.
@@ -764,17 +838,23 @@ public final class CodedOutputByteBufferNano {
         buffer[position++] = value;
     }
 
-    /** Write a single byte, represented by an integer value. */
+    /**
+     * Write a single byte, represented by an integer value.
+     */
     public void writeRawByte(final int value) throws IOException {
         writeRawByte((byte) value);
     }
 
-    /** Write an array of bytes. */
+    /**
+     * Write an array of bytes.
+     */
     public void writeRawBytes(final byte[] value) throws IOException {
         writeRawBytes(value, 0, value.length);
     }
 
-    /** Write part of an array of bytes. */
+    /**
+     * Write part of an array of bytes.
+     */
     public void writeRawBytes(final byte[] value, int offset, int length)
             throws IOException {
         if (limit - position >= length) {
@@ -787,13 +867,17 @@ public final class CodedOutputByteBufferNano {
         }
     }
 
-    /** Encode and write a tag. */
+    /**
+     * Encode and write a tag.
+     */
     public void writeTag(final int fieldNumber, final int wireType)
             throws IOException {
         writeRawVarint32(WireFormatNano.makeTag(fieldNumber, wireType));
     }
 
-    /** Compute the number of bytes that would be needed to encode a tag. */
+    /**
+     * Compute the number of bytes that would be needed to encode a tag.
+     */
     public static int computeTagSize(final int fieldNumber) {
         return computeRawVarint32Size(WireFormatNano.makeTag(fieldNumber, 0));
     }
@@ -820,29 +904,33 @@ public final class CodedOutputByteBufferNano {
      * negative.
      */
     public static int computeRawVarint32Size(final int value) {
-        if ((value & (0xffffffff <<  7)) == 0) return 1;
+        if ((value & (0xffffffff << 7)) == 0) return 1;
         if ((value & (0xffffffff << 14)) == 0) return 2;
         if ((value & (0xffffffff << 21)) == 0) return 3;
         if ((value & (0xffffffff << 28)) == 0) return 4;
         return 5;
     }
 
-    /** Encode and write a varint. */
+    /**
+     * Encode and write a varint.
+     */
     public void writeRawVarint64(long value) throws IOException {
         while (true) {
             if ((value & ~0x7FL) == 0) {
-                writeRawByte((int)value);
+                writeRawByte((int) value);
                 return;
             } else {
-                writeRawByte(((int)value & 0x7F) | 0x80);
+                writeRawByte(((int) value & 0x7F) | 0x80);
                 value >>>= 7;
             }
         }
     }
 
-    /** Compute the number of bytes that would be needed to encode a varint. */
+    /**
+     * Compute the number of bytes that would be needed to encode a varint.
+     */
     public static int computeRawVarint64Size(final long value) {
-        if ((value & (0xffffffffffffffffL <<  7)) == 0) return 1;
+        if ((value & (0xffffffffffffffffL << 7)) == 0) return 1;
         if ((value & (0xffffffffffffffffL << 14)) == 0) return 2;
         if ((value & (0xffffffffffffffffL << 21)) == 0) return 3;
         if ((value & (0xffffffffffffffffL << 28)) == 0) return 4;
@@ -854,26 +942,30 @@ public final class CodedOutputByteBufferNano {
         return 10;
     }
 
-    /** Write a little-endian 32-bit integer. */
+    /**
+     * Write a little-endian 32-bit integer.
+     */
     public void writeRawLittleEndian32(final int value) throws IOException {
-        writeRawByte((value      ) & 0xFF);
-        writeRawByte((value >>  8) & 0xFF);
+        writeRawByte((value) & 0xFF);
+        writeRawByte((value >> 8) & 0xFF);
         writeRawByte((value >> 16) & 0xFF);
         writeRawByte((value >> 24) & 0xFF);
     }
 
     public static final int LITTLE_ENDIAN_32_SIZE = 4;
 
-    /** Write a little-endian 64-bit integer. */
+    /**
+     * Write a little-endian 64-bit integer.
+     */
     public void writeRawLittleEndian64(final long value) throws IOException {
-        writeRawByte((int)(value      ) & 0xFF);
-        writeRawByte((int)(value >>  8) & 0xFF);
-        writeRawByte((int)(value >> 16) & 0xFF);
-        writeRawByte((int)(value >> 24) & 0xFF);
-        writeRawByte((int)(value >> 32) & 0xFF);
-        writeRawByte((int)(value >> 40) & 0xFF);
-        writeRawByte((int)(value >> 48) & 0xFF);
-        writeRawByte((int)(value >> 56) & 0xFF);
+        writeRawByte((int) (value) & 0xFF);
+        writeRawByte((int) (value >> 8) & 0xFF);
+        writeRawByte((int) (value >> 16) & 0xFF);
+        writeRawByte((int) (value >> 24) & 0xFF);
+        writeRawByte((int) (value >> 32) & 0xFF);
+        writeRawByte((int) (value >> 40) & 0xFF);
+        writeRawByte((int) (value >> 48) & 0xFF);
+        writeRawByte((int) (value >> 56) & 0xFF);
     }
 
     public static final int LITTLE_ENDIAN_64_SIZE = 8;
@@ -886,7 +978,7 @@ public final class CodedOutputByteBufferNano {
      *
      * @param n A signed 32-bit integer.
      * @return An unsigned 32-bit integer, stored in a signed int because
-     *         Java has no explicit unsigned support.
+     * Java has no explicit unsigned support.
      */
     public static int encodeZigZag32(final int n) {
         // Note:  the right-shift must be arithmetic
@@ -901,7 +993,7 @@ public final class CodedOutputByteBufferNano {
      *
      * @param n A signed 64-bit integer.
      * @return An unsigned 64-bit integer, stored in a signed int because
-     *         Java has no explicit unsigned support.
+     * Java has no explicit unsigned support.
      */
     public static long encodeZigZag64(final long n) {
         // Note:  the right-shift must be arithmetic

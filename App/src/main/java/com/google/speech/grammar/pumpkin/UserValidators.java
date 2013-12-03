@@ -3,148 +3,124 @@ package com.google.speech.grammar.pumpkin;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-public class UserValidators
-{
-  private Map<String, Validator> javaValidators = new HashMap();
-  private long nativeUserValidators = nativeCreate(paramArrayOfByte);
-  
-  public UserValidators(PumpkinConfigProto.PumpkinConfig paramPumpkinConfig)
-  {
-    this(paramPumpkinConfig.toByteArray());
-  }
-  
-  public UserValidators(byte[] paramArrayOfByte)
-  {
-    if (this.nativeUserValidators == 0L) {
-      throw new NullPointerException("Couldn't create UserValidator native object from the provided config");
+public class UserValidators {
+    private Map<String, Validator> javaValidators = new HashMap();
+    private long nativeUserValidators = nativeCreate(paramArrayOfByte);
+
+    public UserValidators(PumpkinConfigProto.PumpkinConfig paramPumpkinConfig) {
+        this(paramPumpkinConfig.toByteArray());
     }
-  }
-  
-  private void delete()
-  {
-    try
-    {
-      nativeDelete(this.nativeUserValidators);
-      return;
+
+    public UserValidators(byte[] paramArrayOfByte) {
+        if (this.nativeUserValidators == 0L) {
+            throw new NullPointerException("Couldn't create UserValidator native object from the provided config");
+        }
     }
-    finally
-    {
-      localObject = finally;
-      throw localObject;
+
+    private void delete() {
+        try {
+            nativeDelete(this.nativeUserValidators);
+            return;
+        } finally {
+            localObject =finally;
+            throw localObject;
+        }
     }
-  }
-  
-  private native void nativeAddJavaValidator(long paramLong, String paramString);
-  
-  private native void nativeAddMapBasedValidator(long paramLong, String paramString, String[] paramArrayOfString1, String[] paramArrayOfString2);
-  
-  private native void nativeAddUserValidator(long paramLong, String paramString, String[] paramArrayOfString);
-  
-  private native long nativeCreate(byte[] paramArrayOfByte);
-  
-  private native void nativeDelete(long paramLong);
-  
-  private native void nativeSetContacts(long paramLong, String[] paramArrayOfString);
-  
-  public void addUserValidator(String paramString, String[] paramArrayOfString)
-  {
-    try
-    {
-      nativeAddUserValidator(this.nativeUserValidators, paramString, paramArrayOfString);
-      return;
+
+    private native void nativeAddJavaValidator(long paramLong, String paramString);
+
+    private native void nativeAddMapBasedValidator(long paramLong, String paramString, String[] paramArrayOfString1, String[] paramArrayOfString2);
+
+    private native void nativeAddUserValidator(long paramLong, String paramString, String[] paramArrayOfString);
+
+    private native long nativeCreate(byte[] paramArrayOfByte);
+
+    private native void nativeDelete(long paramLong);
+
+    private native void nativeSetContacts(long paramLong, String[] paramArrayOfString);
+
+    public void addUserValidator(String paramString, String[] paramArrayOfString) {
+        try {
+            nativeAddUserValidator(this.nativeUserValidators, paramString, paramArrayOfString);
+            return;
+        } finally {
+            localObject =finally;
+            throw localObject;
+        }
     }
-    finally
-    {
-      localObject = finally;
-      throw localObject;
+
+    public void addUserValidatorFromMap(String paramString, Map<String, String> paramMap) {
+        try {
+            String[] arrayOfString1 = new String[paramMap.size()];
+            String[] arrayOfString2 = new String[paramMap.size()];
+            int i = 0;
+            Iterator localIterator = paramMap.entrySet().iterator();
+            while (localIterator.hasNext()) {
+                Map.Entry localEntry = (Map.Entry) localIterator.next();
+                arrayOfString1[i] = ((String) localEntry.getKey());
+                arrayOfString2[i] = ((String) localEntry.getValue());
+                i++;
+            }
+            nativeAddMapBasedValidator(this.nativeUserValidators, paramString, arrayOfString1, arrayOfString2);
+            return;
+        } finally {
+        }
     }
-  }
-  
-  public void addUserValidatorFromMap(String paramString, Map<String, String> paramMap)
-  {
-    try
-    {
-      String[] arrayOfString1 = new String[paramMap.size()];
-      String[] arrayOfString2 = new String[paramMap.size()];
-      int i = 0;
-      Iterator localIterator = paramMap.entrySet().iterator();
-      while (localIterator.hasNext())
-      {
-        Map.Entry localEntry = (Map.Entry)localIterator.next();
-        arrayOfString1[i] = ((String)localEntry.getKey());
-        arrayOfString2[i] = ((String)localEntry.getValue());
-        i++;
-      }
-      nativeAddMapBasedValidator(this.nativeUserValidators, paramString, arrayOfString1, arrayOfString2);
-      return;
+
+    public void addValidator(String paramString, Validator paramValidator) {
+        try {
+            paramValidator.init();
+            nativeAddJavaValidator(this.nativeUserValidators, paramString);
+            this.javaValidators.put(paramString, paramValidator);
+            return;
+        } finally {
+            localObject =finally;
+            throw localObject;
+        }
     }
-    finally {}
-  }
-  
-  public void addValidator(String paramString, Validator paramValidator)
-  {
-    try
-    {
-      paramValidator.init();
-      nativeAddJavaValidator(this.nativeUserValidators, paramString);
-      this.javaValidators.put(paramString, paramValidator);
-      return;
+
+    public String canonicalize(String paramString1, String paramString2) {
+        Validator localValidator = (Validator) this.javaValidators.get(paramString1);
+        if (localValidator == null) {
+            throw new NullPointerException("Java validator should exist at this point.");
+        }
+        return localValidator.canonicalizeArgument(paramString2);
     }
-    finally
-    {
-      localObject = finally;
-      throw localObject;
+
+    protected void finalize() {
+        delete();
     }
-  }
-  
-  public String canonicalize(String paramString1, String paramString2)
-  {
-    Validator localValidator = (Validator)this.javaValidators.get(paramString1);
-    if (localValidator == null) {
-      throw new NullPointerException("Java validator should exist at this point.");
+
+    public long getNativeUserValidators() {
+        return this.nativeUserValidators;
     }
-    return localValidator.canonicalizeArgument(paramString2);
-  }
-  
-  protected void finalize()
-  {
-    delete();
-  }
-  
-  public long getNativeUserValidators()
-  {
-    return this.nativeUserValidators;
-  }
-  
-  public float getPosterior(String paramString1, String paramString2)
-  {
-    Validator localValidator = (Validator)this.javaValidators.get(paramString1);
-    if (localValidator == null) {
-      throw new NullPointerException("Java validator should exist at this point.");
+
+    public float getPosterior(String paramString1, String paramString2) {
+        Validator localValidator = (Validator) this.javaValidators.get(paramString1);
+        if (localValidator == null) {
+            throw new NullPointerException("Java validator should exist at this point.");
+        }
+        return localValidator.getPosterior(paramString2);
     }
-    return localValidator.getPosterior(paramString2);
-  }
-  
-  public void setContacts(String[] paramArrayOfString)
-  {
-    try
-    {
-      nativeSetContacts(this.nativeUserValidators, paramArrayOfString);
-      return;
+
+    public void setContacts(String[] paramArrayOfString) {
+        try {
+            nativeSetContacts(this.nativeUserValidators, paramArrayOfString);
+            return;
+        } finally {
+            localObject =finally;
+            throw localObject;
+        }
     }
-    finally
-    {
-      localObject = finally;
-      throw localObject;
-    }
-  }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     com.google.speech.grammar.pumpkin.UserValidators
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     com.google.speech.grammar.pumpkin.UserValidators
+
+ * JD-Core Version:    0.7.0.1
+
  */

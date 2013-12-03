@@ -40,7 +40,7 @@ import java.util.List;
  * message implementations.  It is public only because those generated messages
  * do not reside in the {@code protobuf} package.  Others should not use this
  * class directly.
- *
+ * <p/>
  * This class contains constants and helper functions useful for dealing with
  * the Protocol Buffer wire format.
  *
@@ -48,35 +48,42 @@ import java.util.List;
  */
 public final class WireFormatNano {
     // Do not allow instantiation.
-    private WireFormatNano() {}
+    private WireFormatNano() {
+    }
 
-    static final int WIRETYPE_VARINT           = 0;
-    static final int WIRETYPE_FIXED64          = 1;
+    static final int WIRETYPE_VARINT = 0;
+    static final int WIRETYPE_FIXED64 = 1;
     static final int WIRETYPE_LENGTH_DELIMITED = 2;
-    static final int WIRETYPE_START_GROUP      = 3;
-    static final int WIRETYPE_END_GROUP        = 4;
-    static final int WIRETYPE_FIXED32          = 5;
+    static final int WIRETYPE_START_GROUP = 3;
+    static final int WIRETYPE_END_GROUP = 4;
+    static final int WIRETYPE_FIXED32 = 5;
 
     static final int TAG_TYPE_BITS = 3;
     static final int TAG_TYPE_MASK = (1 << TAG_TYPE_BITS) - 1;
 
-    /** Given a tag value, determines the wire type (the lower 3 bits). */
+    /**
+     * Given a tag value, determines the wire type (the lower 3 bits).
+     */
     static int getTagWireType(final int tag) {
         return tag & TAG_TYPE_MASK;
     }
 
-    /** Given a tag value, determines the field number (the upper 29 bits). */
+    /**
+     * Given a tag value, determines the field number (the upper 29 bits).
+     */
     public static int getTagFieldNumber(final int tag) {
         return tag >>> TAG_TYPE_BITS;
     }
 
-    /** Makes a tag value given a field number and wire type. */
+    /**
+     * Makes a tag value given a field number and wire type.
+     */
     static int makeTag(final int fieldNumber, final int wireType) {
         return (fieldNumber << TAG_TYPE_BITS) | wireType;
     }
 
     // Field numbers for feilds in MessageSet wire format.
-    static final int MESSAGE_SET_ITEM    = 1;
+    static final int MESSAGE_SET_ITEM = 1;
     static final int MESSAGE_SET_TYPE_ID = 2;
     static final int MESSAGE_SET_MESSAGE = 3;
 
@@ -101,7 +108,7 @@ public final class WireFormatNano {
 
     /**
      * Parses an unknown field. This implementation skips the field.
-     *
+     * <p/>
      * <p>Generated messages will call this for unknown fields if the store_unknown_fields
      * option is off.
      *
@@ -115,17 +122,16 @@ public final class WireFormatNano {
 
     /**
      * Stores the binary data of an unknown field.
-     *
+     * <p/>
      * <p>Generated messages will call this for unknown fields if the store_unknown_fields
      * option is on.
-     *
+     * <p/>
      * <p>Note that the tag might be a end-group tag (rather than the start of an unknown field) in
      * which case we do not want to add an unknown field entry.
      *
-     * @param data a Collection in which to store the data.
+     * @param data  a Collection in which to store the data.
      * @param input the input buffer.
-     * @param tag the tag of the field.
-
+     * @param tag   the tag of the field.
      * @return {@literal true} unless the tag is an end-group tag.
      */
     public static boolean storeUnknownField(
@@ -146,11 +152,11 @@ public final class WireFormatNano {
      * Computes the array length of a repeated field. We assume that in the common case repeated
      * fields are contiguously serialized but we still correctly handle interspersed values of a
      * repeated field (but with extra allocations).
-     *
+     * <p/>
      * Rewinds to current input position before returning.
      *
      * @param input stream input, pointing to the byte after the first tag
-     * @param tag repeated field tag just read
+     * @param tag   repeated field tag just read
      * @return length of array
      * @throws IOException
      */
@@ -249,7 +255,7 @@ public final class WireFormatNano {
     public static <T> void setExtension(Extension<T> extension, T value,
                                         List<UnknownFieldData> unknownFields) {
         // First, remove all unknown fields with this tag.
-        for (Iterator<UnknownFieldData> i = unknownFields.iterator(); i.hasNext();) {
+        for (Iterator<UnknownFieldData> i = unknownFields.iterator(); i.hasNext(); ) {
             UnknownFieldData data = i.next();
             if (extension.fieldNumber == getTagFieldNumber(data.tag)) {
                 i.remove();
