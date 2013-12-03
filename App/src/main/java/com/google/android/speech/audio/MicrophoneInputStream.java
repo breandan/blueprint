@@ -16,19 +16,19 @@ import javax.annotation.Nullable;
 public class MicrophoneInputStream
         extends InputStream {
     @Nullable
-    protected AudioRecord mAudioRecord;
-    private boolean mAudioRecordCreated = false;
-    @Nullable
-    private final AudioRouter mAudioRouter;
-    @Nullable
     protected final SpeakNowSoundPlayer mBeepPlayer;
-    private final int mBufferSize;
-    private boolean mClosed;
     protected final Object mLock = new Object();
     protected final boolean mNoiseSuppressionEnabled;
+    protected final SpeechLibLogger mSpeechLibLogger;
+    @Nullable
+    private final AudioRouter mAudioRouter;
+    private final int mBufferSize;
     private final boolean mPreemptible;
     private final int mSampleRate;
-    protected final SpeechLibLogger mSpeechLibLogger;
+    @Nullable
+    protected AudioRecord mAudioRecord;
+    private boolean mAudioRecordCreated = false;
+    private boolean mClosed;
     private boolean mStarted = false;
 
     public MicrophoneInputStream(int paramInt1, int paramInt2, boolean paramBoolean1, @Nullable SpeakNowSoundPlayer paramSpeakNowSoundPlayer, @Nullable AudioRouter paramAudioRouter, SpeechLibLogger paramSpeechLibLogger, boolean paramBoolean2) {
@@ -117,15 +117,14 @@ public class MicrophoneInputStream
         return read(paramArrayOfByte, 0, paramArrayOfByte.length);
     }
 
-    public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
-            throws IOException {
+    public int read(byte[] b, int offset, int length) throws IOException {
         int i;
         synchronized (this.mLock) {
             if (this.mClosed) {
                 return -1;
             }
             AudioRecord localAudioRecord = ensureStartedLocked();
-            i = localAudioRecord.read(paramArrayOfByte, paramInt1, paramInt2);
+            i = localAudioRecord.read(b, offset, length);
         }
         synchronized (this.mLock) {
             if (this.mClosed) {

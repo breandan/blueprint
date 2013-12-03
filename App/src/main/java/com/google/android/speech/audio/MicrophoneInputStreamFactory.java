@@ -1,5 +1,6 @@
 package com.google.android.speech.audio;
 
+import android.os.Build;
 import android.util.Log;
 
 import com.google.android.speech.logger.SpeechLibLogger;
