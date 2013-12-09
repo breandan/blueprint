@@ -1,6 +1,9 @@
 package com.google.speech.recognizer;
 
 import com.google.protobuf.micro.InvalidProtocolBufferMicroException;
+import com.google.speech.recognizer.api.NativeRecognizer;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.recognizer.api.RecognizerSessionParamsProto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,15 +51,9 @@ public abstract class AbstractRecognizer {
     }
 
     public void delete() {
-        try {
-            if (this.nativeObj != 0L) {
-                nativeDelete(this.nativeObj);
-                this.nativeObj = 0L;
-            }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
+        if(nativeObj != 0) {
+            nativeDelete(nativeObj);
+            nativeObj = 0;
         }
     }
 

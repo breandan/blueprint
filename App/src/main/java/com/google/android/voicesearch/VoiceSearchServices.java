@@ -64,6 +64,7 @@ import com.google.android.voicesearch.speechservice.s3.VelvetSpeechLocationHelpe
 import com.google.android.voicesearch.util.AppSelectionHelper;
 import com.google.android.voicesearch.util.LocalTtsManager;
 import com.google.common.base.Supplier;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.PrintWriter;
 import java.util.concurrent.Executor;

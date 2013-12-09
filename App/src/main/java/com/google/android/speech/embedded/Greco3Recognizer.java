@@ -7,6 +7,7 @@ import com.google.android.speech.exception.RecognizeException;
 import com.google.common.io.Files;
 import com.google.speech.recognizer.AbstractRecognizer;
 import com.google.speech.recognizer.RecognizerCallback;
+import com.google.speech.recognizer.api.RecognizerProtos;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class Greco3Recognizer
         extends AbstractRecognizer {
     private static boolean sSharedLibraryLoaded = false;
     private final int mBytesPerSample;
-    private final RecognizerCallbackWrapper mCallback = new RecognizerCallbackWrapper(null);
+    private final RecognizerCallbackWrapper mCallback = new RecognizerCallbackWrapper();
     private long mProgressMs;
     private int mSamplingRate;
 
@@ -26,20 +27,26 @@ public class Greco3Recognizer
     }
 
     public static Greco3Recognizer create(Greco3EngineManager.Resources paramResources, int paramInt1, int paramInt2) {
-        Greco3Recognizer localGreco3Recognizer = new Greco3Recognizer(paramInt1, paramInt2);
-        File localFile = new File(paramResources.configFile);
-        if (Greco3Mode.isAsciiConfiguration(localFile)) {
-        }
-        byte[] arrayOfByte;
-        for (int i = localGreco3Recognizer.initFromFile(paramResources.configFile, paramResources.resources); i == 0; i = localGreco3Recognizer.initFromProto(arrayOfByte, paramResources.resources)) {
-            return localGreco3Recognizer;
-            arrayOfByte = getFileBytes(localFile);
-            if ((arrayOfByte == null) || (arrayOfByte.length == 0)) {
-                Log.e("Vs.G3Recognizer", "Error reading g3 config file: " + paramResources.configFile);
+        Greco3Recognizer g3Recognizer = new Greco3Recognizer(paramInt1, paramInt2);
+        File configFile = new File(paramResources.configFile);
+        byte[] fileBytes = getFileBytes(configFile);
+        int status = 0;
+
+        if (Greco3Mode.isAsciiConfiguration(configFile)) {
+            status = g3Recognizer.initFromFile(paramResources.configFile,paramResources.resources);
+        } else {
+            if((fileBytes == null) || (fileBytes.length == 0)) {
+                Log.e("Vs.G3Recognizer", "Error reading g3 config file: " + configFile);
                 return null;
             }
+            status = g3Recognizer.initFromProto(fileBytes, paramResources.resources);
         }
-        Log.e("Vs.G3Recognizer", "Failed to bring up g3, Status code: " + i);
+
+        if(status == 0) {
+            return g3Recognizer;
+        }
+
+        Log.e("Vs.G3Recognizer", "Failed to bring up g3, Status code: " + status);
         return null;
     }
 
@@ -52,45 +59,17 @@ public class Greco3Recognizer
         return null;
     }
 
-    /* Error */
-    public static void maybeLoadSharedLibrary() {
-        // Byte code:
-        //   0: ldc 2
-        //   2: monitorenter
-        //   3: getstatic 17	com/google/android/speech/embedded/Greco3Recognizer:sSharedLibraryLoaded	Z
-        //   6: istore_1
-        //   7: iload_1
-        //   8: ifeq +7 -> 15
-        //   11: ldc 2
-        //   13: monitorexit
-        //   14: return
-        //   15: ldc 111
-        //   17: invokestatic 116	java/lang/System:loadLibrary	(Ljava/lang/String;)V
-        //   20: invokestatic 119	com/google/android/speech/embedded/Greco3Recognizer:nativeInit	()V
-        //   23: iconst_1
-        //   24: putstatic 17	com/google/android/speech/embedded/Greco3Recognizer:sSharedLibraryLoaded	Z
-        //   27: goto -16 -> 11
-        //   30: astore_0
-        //   31: ldc 2
-        //   33: monitorexit
-        //   34: aload_0
-        //   35: athrow
-        //   36: astore_2
-        //   37: ldc 121
-        //   39: invokestatic 116	java/lang/System:loadLibrary	(Ljava/lang/String;)V
-        //   42: goto -22 -> 20
-        // Local variable table:
-        //   start	length	slot	name	signature
-        //   30	5	0	localObject	Object
-        //   6	2	1	bool	boolean
-        //   36	1	2	localUnsatisfiedLinkError	java.lang.UnsatisfiedLinkError
-        // Exception table:
-        //   from	to	target	type
-        //   3	7	30	finally
-        //   15	20	30	finally
-        //   20	27	30	finally
-        //   37	42	30	finally
-        //   15	20	36	java/lang/UnsatisfiedLinkError
+    public static synchronized void maybeLoadSharedLibrary() {
+        if (sSharedLibraryLoaded) {
+            return;
+        }
+        try {
+            System.loadLibrary("google_recognizer_jni_l");
+        } catch (UnsatisfiedLinkError ule) {
+            System.loadLibrary("google_recognizer_jni");
+        }
+        nativeInit();
+        sSharedLibraryLoaded = true;
     }
 
     public int cancel() {
@@ -116,8 +95,8 @@ public class Greco3Recognizer
     }
 
     public void setCallback(Greco3Callback paramGreco3Callback) {
-        RecognizerCallbackWrapper.access$102(this.mCallback, paramGreco3Callback);
-        this.mProgressMs = 0L;
+        mCallback.mDelegate = paramGreco3Callback;
+        mProgressMs = 0x0;
     }
 
     public void setSamplingRate(int paramInt) {
@@ -126,7 +105,7 @@ public class Greco3Recognizer
 
     private static class RecognizerCallbackWrapper
             implements RecognizerCallback {
-        private Greco3Callback mDelegate;
+        private static Greco3Callback mDelegate;
 
         public void handleAudioLevelEvent(RecognizerProtos.AudioLevelEvent paramAudioLevelEvent) {
             if (this.mDelegate != null) {

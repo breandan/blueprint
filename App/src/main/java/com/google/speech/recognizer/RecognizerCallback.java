@@ -1,5 +1,7 @@
 package com.google.speech.recognizer;
 
+import com.google.speech.recognizer.api.RecognizerProtos;
+
 public abstract interface RecognizerCallback {
     public abstract void handleAudioLevelEvent(RecognizerProtos.AudioLevelEvent paramAudioLevelEvent);
 
