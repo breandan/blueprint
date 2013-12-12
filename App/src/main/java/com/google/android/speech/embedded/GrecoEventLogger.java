@@ -1,5 +1,7 @@
 package com.google.android.speech.embedded;
 
+import com.google.speech.logs.RecognizerOuterClass;
+
 import javax.annotation.Nullable;
 
 public abstract interface GrecoEventLogger {

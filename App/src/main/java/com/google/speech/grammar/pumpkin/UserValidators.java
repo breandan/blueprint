@@ -6,26 +6,21 @@ import java.util.Map;
 
 public class UserValidators {
     private Map<String, Validator> javaValidators = new HashMap();
-    private long nativeUserValidators = nativeCreate(paramArrayOfByte);
+    private long nativeUserValidators;
 
     public UserValidators(PumpkinConfigProto.PumpkinConfig paramPumpkinConfig) {
         this(paramPumpkinConfig.toByteArray());
     }
 
     public UserValidators(byte[] paramArrayOfByte) {
+        nativeUserValidators = nativeCreate(paramArrayOfByte);
         if (this.nativeUserValidators == 0L) {
             throw new NullPointerException("Couldn't create UserValidator native object from the provided config");
         }
     }
 
-    private void delete() {
-        try {
-            nativeDelete(this.nativeUserValidators);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    private synchronized void delete() {
+        nativeDelete(this.nativeUserValidators);
     }
 
     private native void nativeAddJavaValidator(long paramLong, String paramString);
@@ -40,44 +35,28 @@ public class UserValidators {
 
     private native void nativeSetContacts(long paramLong, String[] paramArrayOfString);
 
-    public void addUserValidator(String paramString, String[] paramArrayOfString) {
-        try {
-            nativeAddUserValidator(this.nativeUserValidators, paramString, paramArrayOfString);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized void addUserValidator(String paramString, String[] paramArrayOfString) {
+        nativeAddUserValidator(this.nativeUserValidators, paramString, paramArrayOfString);
     }
 
-    public void addUserValidatorFromMap(String paramString, Map<String, String> paramMap) {
-        try {
-            String[] arrayOfString1 = new String[paramMap.size()];
-            String[] arrayOfString2 = new String[paramMap.size()];
-            int i = 0;
-            Iterator localIterator = paramMap.entrySet().iterator();
-            while (localIterator.hasNext()) {
-                Map.Entry localEntry = (Map.Entry) localIterator.next();
-                arrayOfString1[i] = ((String) localEntry.getKey());
-                arrayOfString2[i] = ((String) localEntry.getValue());
-                i++;
-            }
-            nativeAddMapBasedValidator(this.nativeUserValidators, paramString, arrayOfString1, arrayOfString2);
-            return;
-        } finally {
+    public synchronized void addUserValidatorFromMap(String paramString, Map<String, String> paramMap) {
+        String[] arrayOfString1 = new String[paramMap.size()];
+        String[] arrayOfString2 = new String[paramMap.size()];
+        int i = 0;
+        Iterator localIterator = paramMap.entrySet().iterator();
+        while (localIterator.hasNext()) {
+            Map.Entry localEntry = (Map.Entry) localIterator.next();
+            arrayOfString1[i] = ((String) localEntry.getKey());
+            arrayOfString2[i] = ((String) localEntry.getValue());
+            i++;
         }
+        nativeAddMapBasedValidator(this.nativeUserValidators, paramString, arrayOfString1, arrayOfString2);
     }
 
-    public void addValidator(String paramString, Validator paramValidator) {
-        try {
-            paramValidator.init();
-            nativeAddJavaValidator(this.nativeUserValidators, paramString);
-            this.javaValidators.put(paramString, paramValidator);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized void addValidator(String paramString, Validator paramValidator) {
+        paramValidator.init();
+        nativeAddJavaValidator(this.nativeUserValidators, paramString);
+        this.javaValidators.put(paramString, paramValidator);
     }
 
     public String canonicalize(String paramString1, String paramString2) {
@@ -104,14 +83,8 @@ public class UserValidators {
         return localValidator.getPosterior(paramString2);
     }
 
-    public void setContacts(String[] paramArrayOfString) {
-        try {
-            nativeSetContacts(this.nativeUserValidators, paramArrayOfString);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized void setContacts(String[] paramArrayOfString) {
+        nativeSetContacts(this.nativeUserValidators, paramArrayOfString);
     }
 }
 

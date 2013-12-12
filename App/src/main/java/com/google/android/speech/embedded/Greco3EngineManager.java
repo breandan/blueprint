@@ -5,6 +5,10 @@ import android.util.Log;
 import com.google.android.shared.util.ConcurrentUtils;
 import com.google.android.shared.util.StopWatch;
 import com.google.common.base.Preconditions;
+import com.google.speech.logs.RecognizerOuterClass;
+import com.google.speech.recognizer.api.NativeRecognizer;
+import com.google.speech.recognizer.api.RecognizerSessionParamsProto;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.File;
 import java.io.InputStream;
@@ -20,16 +24,16 @@ import javax.annotation.Nullable;
 
 public class Greco3EngineManager
         implements Greco3DataManager.PathDeleter {
-    private Future<Greco3Recognizer> mCurrentRecognition;
-    private Greco3Recognizer mCurrentRecognizer;
     @Nullable
     private final EndpointerModelCopier mEndpointerModelCopier;
     private final Greco3DataManager mGreco3DataManager;
     @Nullable
     private final Greco3Preferences mGreco3Preferences;
-    private boolean mInitialized;
     private final ExecutorService mRecognitionExecutor;
     private final HashMap<Greco3Mode, Resources> mResourcesByMode;
+    private Future<Greco3Recognizer> mCurrentRecognition;
+    private Greco3Recognizer mCurrentRecognizer;
+    private boolean mInitialized;
 
     public Greco3EngineManager(Greco3DataManager paramGreco3DataManager, @Nullable Greco3Preferences paramGreco3Preferences, @Nullable EndpointerModelCopier paramEndpointerModelCopier) {
         this.mGreco3DataManager = paramGreco3DataManager;
@@ -294,9 +298,8 @@ public class Greco3EngineManager
 
     public void release(Greco3Recognizer paramGreco3Recognizer) {
         boolean bool1 = true;
-        boolean bool2;
-        if (this.mCurrentRecognition != null) {
-            bool2 = bool1;
+        if (this.mCurrentRecognition == null) {
+            boolean bool2 = bool1;
         }
         for (; ; ) {
             Preconditions.checkState(bool2);
@@ -316,11 +319,8 @@ public class Greco3EngineManager
             } catch (InterruptedException localInterruptedException) {
                 Thread.currentThread().interrupt();
                 Log.e("VS.G3EngineManager", "Interrupted waiting for recognition to complete.");
-                return;
             } catch (ExecutionException localExecutionException) {
-                for (; ; ) {
-                    Log.e("VS.G3EngineManager", "Exception while running recognition: " + localExecutionException);
-                }
+                Log.e("VS.G3EngineManager", "Exception while running recognition: " + localExecutionException);
             }
         }
     }
@@ -379,13 +379,12 @@ public class Greco3EngineManager
 
         public boolean equals(Object paramObject) {
             if (!(paramObject instanceof Resources)) {
-            }
-            Resources localResources;
-            do {
                 return false;
-                localResources = (Resources) paramObject;
             }
-            while ((!this.locale.equals(localResources.locale)) || (this.mode != localResources.mode) || (this.mode != Greco3Mode.GRAMMAR) || (this.grammarType != localResources.grammarType));
+
+            Resources localResources = (Resources) paramObject;
+            if (!this.locale.equals(localResources.locale) || (this.mode != localResources.mode) || (this.mode != Greco3Mode.GRAMMAR) || (this.grammarType != localResources.grammarType))
+                return false;
             return true;
         }
 

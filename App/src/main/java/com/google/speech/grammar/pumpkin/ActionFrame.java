@@ -12,14 +12,8 @@ public class ActionFrame {
 
     private static native void nativeDelete(long paramLong);
 
-    public void delete() {
-        try {
-            nativeDelete(this.nativeActionFrame);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized void delete() {
+        nativeDelete(this.nativeActionFrame);
     }
 
     protected void finalize() {

@@ -22,16 +22,10 @@ public class Tagger {
 
     private static native byte[] nativeTag(long paramLong1, long paramLong2, long paramLong3, String paramString);
 
-    public void delete() {
-        try {
-            if (this.nativeTagger != 0L) {
-                nativeDelete(this.nativeTagger);
-                this.nativeTagger = 0L;
-            }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
+    public synchronized void delete() {
+        if (this.nativeTagger != 0L) {
+            nativeDelete(this.nativeTagger);
+            this.nativeTagger = 0L;
         }
     }
 

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.android.speech.params.SessionParams;
 import com.google.common.collect.Lists;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;

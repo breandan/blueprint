@@ -1,11 +1,16 @@
 package com.google.android.speech.embedded;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.common.collect.Maps;
+import com.google.common.io.Closeables;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -129,95 +134,22 @@ class LocaleResourcesImpl
             this.mUnprocessedGrammars.add(new GrammarInfo(paramGreco3Grammar, paramString, paramFile1, localLanguagePack));
         }
     }
-
-    /* Error */
-    void addHotwordPrompt(File paramFile) {
-        // Byte code:
-        //   0: aconst_null
-        //   1: astore_2
-        //   2: new 168	java/io/BufferedReader
-        //   5: dup
-        //   6: new 170	java/io/FileReader
-        //   9: dup
-        //   10: aload_1
-        //   11: invokespecial 171	java/io/FileReader:<init>	(Ljava/io/File;)V
-        //   14: bipush 100
-        //   16: invokespecial 174	java/io/BufferedReader:<init>	(Ljava/io/Reader;I)V
-        //   19: astore_3
-        //   20: aload_3
-        //   21: invokevirtual 177	java/io/BufferedReader:readLine	()Ljava/lang/String;
-        //   24: astore 9
-        //   26: aload 9
-        //   28: invokestatic 183	android/text/TextUtils:isEmpty	(Ljava/lang/CharSequence;)Z
-        //   31: ifne +17 -> 48
-        //   34: aload_0
-        //   35: getfield 47	com/google/android/speech/embedded/LocaleResourcesImpl:mPathToHotwordPromptMap	Ljava/util/HashMap;
-        //   38: aload_1
-        //   39: invokevirtual 187	java/io/File:getParentFile	()Ljava/io/File;
-        //   42: aload 9
-        //   44: invokevirtual 154	java/util/HashMap:put	(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
-        //   47: pop
-        //   48: aload_3
-        //   49: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   52: return
-        //   53: astore 4
-        //   55: ldc 189
-        //   57: ldc 191
-        //   59: aload 4
-        //   61: invokestatic 197	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-        //   64: pop
-        //   65: aload_2
-        //   66: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   69: return
-        //   70: astore 7
-        //   72: ldc 189
-        //   74: ldc 199
-        //   76: aload 7
-        //   78: invokestatic 197	android/util/Log:e	(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
-        //   81: pop
-        //   82: aload_2
-        //   83: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   86: return
-        //   87: astore 5
-        //   89: aload_2
-        //   90: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   93: aload 5
-        //   95: athrow
-        //   96: astore 5
-        //   98: aload_3
-        //   99: astore_2
-        //   100: goto -11 -> 89
-        //   103: astore 7
-        //   105: aload_3
-        //   106: astore_2
-        //   107: goto -35 -> 72
-        //   110: astore 4
-        //   112: aload_3
-        //   113: astore_2
-        //   114: goto -59 -> 55
-        // Local variable table:
-        //   start	length	slot	name	signature
-        //   0	117	0	this	LocaleResourcesImpl
-        //   0	117	1	paramFile	File
-        //   1	113	2	localObject1	Object
-        //   19	94	3	localBufferedReader	java.io.BufferedReader
-        //   53	7	4	localFileNotFoundException1	java.io.FileNotFoundException
-        //   110	1	4	localFileNotFoundException2	java.io.FileNotFoundException
-        //   87	7	5	localObject2	Object
-        //   96	1	5	localObject3	Object
-        //   70	7	7	localIOException1	java.io.IOException
-        //   103	1	7	localIOException2	java.io.IOException
-        //   24	19	9	str	String
-        // Exception table:
-        //   from	to	target	type
-        //   2	20	53	java/io/FileNotFoundException
-        //   2	20	70	java/io/IOException
-        //   2	20	87	finally
-        //   55	65	87	finally
-        //   72	82	87	finally
-        //   20	48	96	finally
-        //   20	48	103	java/io/IOException
-        //   20	48	110	java/io/FileNotFoundException
+    void addHotwordPrompt(File file) {
+        BufferedReader br = 0x0;
+        try {
+            String prompt = br.readLine();
+            if(!TextUtils.isEmpty(prompt)) {
+                mPathToHotwordPromptMap.put(file.getParentFile(), prompt);
+            }
+        } catch(FileNotFoundException e) {
+            Log.e("VS.LocaleResourcesImpl", "Could not open hotword prompt file.", e);
+            return;
+        } catch(IOException e) {
+            Log.e("VS.LocaleResourcesImpl", "Could not read hotword prompt file.", e);
+            return;
+        } finally {
+            Closeables.closeQuietly(br);
+        }
     }
 
     void addMetadata(File paramFile) {

@@ -34,7 +34,6 @@ import com.google.android.sidekick.main.calendar.CalendarIntentService;
 import com.google.android.sidekick.main.inject.DefaultSidekickInjector;
 import com.google.android.sidekick.main.inject.SidekickInjector;
 import com.google.android.sidekick.main.location.LocationOracle;
-import com.google.android.sidekick.main.location.LocationOracle.RunningLock;
 import com.google.android.speech.contacts.RelationshipNameLookup;
 import com.google.android.voicesearch.VoiceSearchServices;
 import com.google.common.base.Preconditions;
@@ -68,37 +67,20 @@ public class VelvetServices {
         this.mAsyncServices = new AsyncServicesImpl();
     }
 
-    private UriLoader<Drawable> createIconLoader() {
-        int i = Math.round(this.mAppContext.getResources().getDimension(2131689567));
-        return CascadingUriLoader.create(ImmutableList.of(new CachingImageLoader(createUiThreadPostingBackgroundLoader(new ResizingImageLoader(i, i, new ContentProviderImageLoader(this.mAppContext)))), new ResourceImageLoader(this.mAppContext)));
-    }
-
-    private UriLoader<Drawable> createNonCachingImageLoader() {
-        return CascadingUriLoader.create(ImmutableList.of(createUiThreadPostingBackgroundLoader(new NetworkImageLoader(getCoreServices().getHttpHelper(), this.mAppContext.getResources())), createUiThreadPostingBackgroundLoader(new DataUriImageLoader(this.mAppContext.getResources())), createUiThreadPostingBackgroundLoader(new ContentProviderImageLoader(this.mAppContext)), new ResourceImageLoader(this.mAppContext)));
-    }
-
-    private <A> UriLoader<A> createUiThreadPostingBackgroundLoader(SynchronousLoader<A> paramSynchronousLoader) {
-        BackgroundUriLoader localBackgroundUriLoader = new BackgroundUriLoader(this.mAsyncServices.getPooledBackgroundExecutorService(), paramSynchronousLoader);
-        return new PostToExecutorLoader(this.mAsyncServices.getUiThreadExecutor(), localBackgroundUriLoader);
-    }
-
-    public static VelvetServices get() {
+    public synchronized static VelvetServices get() {
         for (; ; ) {
-            try {
-                VelvetApplication.warnIfNotInMainProcess();
-                if (sServices == null) {
-                    sServices = new VelvetServices(VelvetApplication.get());
-                    VelvetServices localVelvetServices = sServices;
-                    return localVelvetServices;
-                }
-                boolean bool;
-                if (sServices.mAppContext == VelvetApplication.get()) {
-                    bool = true;
-                    Preconditions.checkState(bool);
-                } else {
-                    bool = false;
-                }
-            } finally {
+            VelvetApplication.warnIfNotInMainProcess();
+            if (sServices == null) {
+                sServices = new VelvetServices(VelvetApplication.get());
+                VelvetServices localVelvetServices = sServices;
+                return localVelvetServices;
+            }
+            boolean bool;
+            if (sServices.mAppContext == VelvetApplication.get()) {
+                bool = true;
+                Preconditions.checkState(bool);
+            } else {
+                bool = false;
             }
         }
     }
@@ -116,6 +98,20 @@ public class VelvetServices {
             return;
         } finally {
         }
+    }
+
+    private UriLoader<Drawable> createIconLoader() {
+        int i = Math.round(this.mAppContext.getResources().getDimension(2131689567));
+        return CascadingUriLoader.create(ImmutableList.of(new CachingImageLoader(createUiThreadPostingBackgroundLoader(new ResizingImageLoader(i, i, new ContentProviderImageLoader(this.mAppContext)))), new ResourceImageLoader(this.mAppContext)));
+    }
+
+    private UriLoader<Drawable> createNonCachingImageLoader() {
+        return CascadingUriLoader.create(ImmutableList.of(createUiThreadPostingBackgroundLoader(new NetworkImageLoader(getCoreServices().getHttpHelper(), this.mAppContext.getResources())), createUiThreadPostingBackgroundLoader(new DataUriImageLoader(this.mAppContext.getResources())), createUiThreadPostingBackgroundLoader(new ContentProviderImageLoader(this.mAppContext)), new ResourceImageLoader(this.mAppContext)));
+    }
+
+    private <A> UriLoader<A> createUiThreadPostingBackgroundLoader(SynchronousLoader<A> paramSynchronousLoader) {
+        BackgroundUriLoader localBackgroundUriLoader = new BackgroundUriLoader(this.mAsyncServices.getPooledBackgroundExecutorService(), paramSynchronousLoader);
+        return new PostToExecutorLoader(this.mAsyncServices.getUiThreadExecutor(), localBackgroundUriLoader);
     }
 
     private void registerSidekickAlarms() {
@@ -221,86 +217,63 @@ public class VelvetServices {
         }
     }
 
-    public LocationOracle getLocationOracle() {
-        try {
-            LocationOracle localLocationOracle = getSidekickInjector().getLocationOracle();
-            return localLocationOracle;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized LocationOracle getLocationOracle() {
+        LocationOracle localLocationOracle = getSidekickInjector().getLocationOracle();
+        return localLocationOracle;
     }
 
-    public UriLoader<Drawable> getNonCachingImageLoader() {
-        try {
-            if (this.mNonCachingImageLoader == null) {
-                this.mNonCachingImageLoader = createNonCachingImageLoader();
-            }
-            UriLoader localUriLoader = this.mNonCachingImageLoader;
-            return localUriLoader;
-        } finally {
+    public synchronized UriLoader<Drawable> getNonCachingImageLoader() {
+        if (this.mNonCachingImageLoader == null) {
+            this.mNonCachingImageLoader = createNonCachingImageLoader();
         }
+        UriLoader localUriLoader = this.mNonCachingImageLoader;
+        return localUriLoader;
     }
 
-    public GsaPreferenceController getPreferenceController() {
-        try {
-            if (this.mPrefController == null) {
-                this.mPrefController = new GsaPreferenceController(this.mAppContext);
-            }
-            GsaPreferenceController localGsaPreferenceController = this.mPrefController;
-            return localGsaPreferenceController;
-        } finally {
+    public synchronized GsaPreferenceController getPreferenceController() {
+        if (this.mPrefController == null) {
+            this.mPrefController = new GsaPreferenceController(this.mAppContext);
         }
+        GsaPreferenceController localGsaPreferenceController = this.mPrefController;
+        return localGsaPreferenceController;
     }
 
-    public RelationshipManager getRelationshipManager() {
-        try {
-            if (this.mRelationshipManager == null) {
-                this.mRelationshipManager = new RelationshipManager(getCoreServices().getSearchSettings(), this.mAppContext, getRelationshipNameLookup());
-            }
-            RelationshipManager localRelationshipManager = this.mRelationshipManager;
-            return localRelationshipManager;
-        } finally {
+    public synchronized RelationshipManager getRelationshipManager() {
+        if (this.mRelationshipManager == null) {
+            this.mRelationshipManager = new RelationshipManager(getCoreServices().getSearchSettings(), this.mAppContext, getRelationshipNameLookup());
         }
+        RelationshipManager localRelationshipManager = this.mRelationshipManager;
+        return localRelationshipManager;
     }
 
-    public RelationshipNameLookup getRelationshipNameLookup() {
-        try {
-            if (this.mRelationshipNameLookup == null) {
-                this.mRelationshipNameLookup = new RelationshipNameLookup(getVoiceSearchServices().getSettings().getSpokenLocaleBcp47());
-            }
-            RelationshipNameLookup localRelationshipNameLookup = this.mRelationshipNameLookup;
-            return localRelationshipNameLookup;
-        } finally {
+    public synchronized RelationshipNameLookup getRelationshipNameLookup() {
+        if (this.mRelationshipNameLookup == null) {
+            this.mRelationshipNameLookup = new RelationshipNameLookup(getVoiceSearchServices().getSettings().getSpokenLocaleBcp47());
         }
+        RelationshipNameLookup localRelationshipNameLookup = this.mRelationshipNameLookup;
+        return localRelationshipNameLookup;
     }
 
-    public SidekickInjector getSidekickInjector() {
-        try {
-            if (this.mSidekickInjector == null) {
-                this.mSidekickInjector = new DefaultSidekickInjector(this.mAppContext, getPreferenceController(), getCoreServices(), this.mAsyncServices, (VelvetApplication) this.mAppContext, this);
-                this.mAsyncServices.getPooledBackgroundExecutorService().execute(new Runnable() {
-                    public void run() {
-                        VelvetServices.this.startNowServices();
-                    }
-                });
-            }
-            SidekickInjector localSidekickInjector = this.mSidekickInjector;
-            return localSidekickInjector;
-        } finally {
+    public synchronized SidekickInjector getSidekickInjector() {
+        if (this.mSidekickInjector == null) {
+            this.mSidekickInjector = new DefaultSidekickInjector(this.mAppContext, getPreferenceController(), getCoreServices(), this.mAsyncServices, (VelvetApplication) this.mAppContext, this);
+            this.mAsyncServices.getPooledBackgroundExecutorService().execute(new Runnable() {
+                public void run() {
+                    VelvetServices.this.startNowServices();
+                }
+            });
         }
+        SidekickInjector localSidekickInjector = this.mSidekickInjector;
+        return localSidekickInjector;
     }
 
-    public VoiceSearchServices getVoiceSearchServices() {
-        try {
-            if (this.mVoiceSearchServices == null) {
-                this.mVoiceSearchServices = new VoiceSearchServices(this.mAppContext, this.mAsyncServices, getPreferenceController(), getCoreServices(), this);
-                this.mVoiceSearchServices.init();
-            }
-            VoiceSearchServices localVoiceSearchServices = this.mVoiceSearchServices;
-            return localVoiceSearchServices;
-        } finally {
+    public synchronized VoiceSearchServices getVoiceSearchServices() {
+        if (this.mVoiceSearchServices == null) {
+            this.mVoiceSearchServices = new VoiceSearchServices(this.mAppContext, this.mAsyncServices, getPreferenceController(), getCoreServices(), this);
+            this.mVoiceSearchServices.init();
         }
+        VoiceSearchServices localVoiceSearchServices = this.mVoiceSearchServices;
+        return localVoiceSearchServices;
     }
 
     public void maybeRegisterSidekickAlarms() {

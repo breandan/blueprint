@@ -9,21 +9,15 @@ public class ActionFrameManager {
         }
     }
 
-    private void delete() {
-        try {
-            nativeDelete(this.nativeActionFrameManager);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
-    }
-
     private static native long nativeCreate();
 
     private static native void nativeDelete(long paramLong);
 
     private static native long nativeLoadActionFrame(long paramLong, byte[] paramArrayOfByte);
+
+    private synchronized void delete() {
+        nativeDelete(this.nativeActionFrameManager);
+    }
 
     public ActionFrame createActionFrame(byte[] paramArrayOfByte) {
         long l = nativeLoadActionFrame(this.nativeActionFrameManager, paramArrayOfByte);

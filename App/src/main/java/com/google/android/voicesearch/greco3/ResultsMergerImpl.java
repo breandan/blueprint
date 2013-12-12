@@ -16,6 +16,8 @@ import com.google.android.speech.exception.RecognizeException;
 import com.google.android.speech.logger.SpeechLibLogger;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.s3.S3;
 import com.google.speech.s3.S3.S3Response;
 
 import java.util.Iterator;
@@ -343,18 +345,7 @@ public class ResultsMergerImpl
     }
 
     private static enum State {
-        static {
-            USE_PRIMARY = new State("USE_PRIMARY", 1);
-            USE_SECONDARY = new State("USE_SECONDARY", 2);
-            State[] arrayOfState = new State[3];
-            arrayOfState[0] = WAITING;
-            arrayOfState[1] = USE_PRIMARY;
-            arrayOfState[2] = USE_SECONDARY;
-            $VALUES = arrayOfState;
-        }
-
-        private State() {
-        }
+        WAITING, USE_PRIMARY, USE_SECONDARY;
     }
 }
 

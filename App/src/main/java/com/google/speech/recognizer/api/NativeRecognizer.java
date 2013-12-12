@@ -4,6 +4,7 @@ import com.google.protobuf.micro.CodedInputStreamMicro;
 import com.google.protobuf.micro.CodedOutputStreamMicro;
 import com.google.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.google.protobuf.micro.MessageMicro;
+import com.google.speech.logs.RecognizerOuterClass;
 
 import java.io.IOException;
 

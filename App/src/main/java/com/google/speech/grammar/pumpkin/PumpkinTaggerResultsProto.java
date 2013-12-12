@@ -39,8 +39,20 @@ public final class PumpkinTaggerResultsProto {
             return this.name_;
         }
 
+        public ActionArgument setName(String paramString) {
+            this.hasName = true;
+            this.name_ = paramString;
+            return this;
+        }
+
         public float getScore() {
             return this.score_;
+        }
+
+        public ActionArgument setScore(float paramFloat) {
+            this.hasScore = true;
+            this.score_ = paramFloat;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -72,16 +84,40 @@ public final class PumpkinTaggerResultsProto {
             return this.type_;
         }
 
+        public ActionArgument setType(int paramInt) {
+            this.hasType = true;
+            this.type_ = paramInt;
+            return this;
+        }
+
         public String getUnnormalizedValue() {
             return this.unnormalizedValue_;
+        }
+
+        public ActionArgument setUnnormalizedValue(String paramString) {
+            this.hasUnnormalizedValue = true;
+            this.unnormalizedValue_ = paramString;
+            return this;
         }
 
         public String getUserType() {
             return this.userType_;
         }
 
+        public ActionArgument setUserType(String paramString) {
+            this.hasUserType = true;
+            this.userType_ = paramString;
+            return this;
+        }
+
         public String getValue() {
             return this.value_;
+        }
+
+        public ActionArgument setValue(String paramString) {
+            this.hasValue = true;
+            this.value_ = paramString;
+            return this;
         }
 
         public boolean hasName() {
@@ -139,42 +175,6 @@ public final class PumpkinTaggerResultsProto {
             }
         }
 
-        public ActionArgument setName(String paramString) {
-            this.hasName = true;
-            this.name_ = paramString;
-            return this;
-        }
-
-        public ActionArgument setScore(float paramFloat) {
-            this.hasScore = true;
-            this.score_ = paramFloat;
-            return this;
-        }
-
-        public ActionArgument setType(int paramInt) {
-            this.hasType = true;
-            this.type_ = paramInt;
-            return this;
-        }
-
-        public ActionArgument setUnnormalizedValue(String paramString) {
-            this.hasUnnormalizedValue = true;
-            this.unnormalizedValue_ = paramString;
-            return this;
-        }
-
-        public ActionArgument setUserType(String paramString) {
-            this.hasUserType = true;
-            this.userType_ = paramString;
-            return this;
-        }
-
-        public ActionArgument setValue(String paramString) {
-            this.hasValue = true;
-            this.value_ = paramString;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasName()) {
@@ -230,8 +230,20 @@ public final class PumpkinTaggerResultsProto {
             return this.actionExportName_;
         }
 
+        public HypothesisResult setActionExportName(String paramString) {
+            this.hasActionExportName = true;
+            this.actionExportName_ = paramString;
+            return this;
+        }
+
         public String getActionName() {
             return this.actionName_;
+        }
+
+        public HypothesisResult setActionName(String paramString) {
+            this.hasActionName = true;
+            this.actionName_ = paramString;
+            return this;
         }
 
         public int getCachedSize() {
@@ -243,6 +255,12 @@ public final class PumpkinTaggerResultsProto {
 
         public float getScore() {
             return this.score_;
+        }
+
+        public HypothesisResult setScore(float paramFloat) {
+            this.hasScore = true;
+            this.score_ = paramFloat;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -270,6 +288,12 @@ public final class PumpkinTaggerResultsProto {
 
         public String getTaggedHypothesis() {
             return this.taggedHypothesis_;
+        }
+
+        public HypothesisResult setTaggedHypothesis(String paramString) {
+            this.hasTaggedHypothesis = true;
+            this.taggedHypothesis_ = paramString;
+            return this;
         }
 
         public boolean hasActionExportName() {
@@ -316,30 +340,6 @@ public final class PumpkinTaggerResultsProto {
                 }
                 setTaggedHypothesis(paramCodedInputStreamMicro.readString());
             }
-        }
-
-        public HypothesisResult setActionExportName(String paramString) {
-            this.hasActionExportName = true;
-            this.actionExportName_ = paramString;
-            return this;
-        }
-
-        public HypothesisResult setActionName(String paramString) {
-            this.hasActionName = true;
-            this.actionName_ = paramString;
-            return this;
-        }
-
-        public HypothesisResult setScore(float paramFloat) {
-            this.hasScore = true;
-            this.score_ = paramFloat;
-            return this;
-        }
-
-        public HypothesisResult setTaggedHypothesis(String paramString) {
-            this.hasTaggedHypothesis = true;
-            this.taggedHypothesis_ = paramString;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -416,18 +416,19 @@ public final class PumpkinTaggerResultsProto {
         public PumpkinTaggerResults mergeFrom(CodedInputStreamMicro paramCodedInputStreamMicro)
                 throws IOException {
             for (; ; ) {
-                int i = paramCodedInputStreamMicro.readTag();
-                switch (i) {
+                int tag = paramCodedInputStreamMicro.readTag();
+                switch (tag) {
                     default:
-                        if (parseUnknownField(paramCodedInputStreamMicro, i)) {
+                        if (parseUnknownField(paramCodedInputStreamMicro, tag)) {
                             continue;
                         }
                     case 0:
                         return this;
+                    case 10:
+                        PumpkinTaggerResultsProto.HypothesisResult value = new PumpkinTaggerResultsProto.HypothesisResult();
+                        paramCodedInputStreamMicro.readMessage(value);
+                        addHypothesis(value);
                 }
-                PumpkinTaggerResultsProto.HypothesisResult localHypothesisResult = new PumpkinTaggerResultsProto.HypothesisResult();
-                paramCodedInputStreamMicro.readMessage(localHypothesisResult);
-                addHypothesis(localHypothesisResult);
             }
         }
 
