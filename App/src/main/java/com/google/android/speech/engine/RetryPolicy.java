@@ -1,7 +1,7 @@
 package com.google.android.speech.engine;
 
 import com.google.android.speech.exception.RecognizeException;
-import com.google.speech.s3.S3.S3Response;
+import com.google.speech.s3.S3;
 
 import javax.annotation.Nullable;
 

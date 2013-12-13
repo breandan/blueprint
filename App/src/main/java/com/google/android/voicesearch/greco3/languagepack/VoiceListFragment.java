@@ -14,6 +14,7 @@ import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.android.velvet.VelvetServices;
 import com.google.android.voicesearch.VoiceSearchServices;
 import com.google.common.collect.Lists;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
