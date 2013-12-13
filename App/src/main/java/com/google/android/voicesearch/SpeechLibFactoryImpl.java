@@ -20,6 +20,7 @@ import com.google.android.speech.params.RecognitionEngineParams;
 import com.google.android.speech.params.SessionParams;
 import com.google.android.speech.utils.NetworkInformation;
 import com.google.android.voicesearch.greco3.ResultsMergerImpl;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;

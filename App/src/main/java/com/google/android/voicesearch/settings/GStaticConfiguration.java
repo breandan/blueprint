@@ -6,10 +6,7 @@ import android.util.Log;
 import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.search.core.GserviceWrapper;
 import com.google.android.search.core.preferences.SharedPreferencesExt;
-import com.google.android.search.core.preferences.SharedPreferencesExt.Editor;
 import com.google.android.search.core.util.HttpHelper;
-import com.google.android.search.core.util.HttpHelper.GetRequest;
-import com.google.android.search.core.util.HttpHelper.HttpException;
 import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.shared.util.ProtoUtils;
 import com.google.android.voicesearch.logger.EventLogger;
@@ -17,6 +14,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.google.protobuf.micro.InvalidProtocolBufferMicroException;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,17 +27,17 @@ import javax.annotation.Nullable;
 
 class GStaticConfiguration {
     static final String BUNDLE_TIMESTAMP = "2013_10_04_22_22_03";
-    private GstaticConfiguration.Configuration mConfiguration;
-    private SharedPrefsData mCurrentPrefsData;
     private final ExecutorService mExecutorService;
     private final GserviceWrapper mGserviceWrapper;
     private final ArrayList<Settings.ConfigurationChangeListener> mListeners;
-    private volatile Future<?> mLoadFuture;
     private final Runnable mLoadRunnable;
     private final Object mLoadingLock = new Object();
     private final GsaPreferenceController mPrefController;
     private final Resources mResources;
     private final Object mScheduleLoadLock = new Object();
+    private GstaticConfiguration.Configuration mConfiguration;
+    private SharedPrefsData mCurrentPrefsData;
+    private volatile Future<?> mLoadFuture;
 
     public GStaticConfiguration(GsaPreferenceController paramGsaPreferenceController, Resources paramResources, ExecutorService paramExecutorService, GserviceWrapper paramGserviceWrapper) {
         this.mPrefController = paramGsaPreferenceController;
@@ -63,6 +61,100 @@ class GStaticConfiguration {
                 }
             }
         };
+    }
+
+    static String getTimestampFromUrl(String paramString) {
+        int i = paramString.lastIndexOf('/');
+        if (i == -1) {
+        }
+        int j;
+        do {
+            return null;
+            j = paramString.indexOf('_', i);
+        } while (j == -1);
+        int k = j + 1;
+        try {
+            String str = paramString.substring(k, k + "2013_10_04_22_22_03".length());
+            return str;
+        } catch (IndexOutOfBoundsException localIndexOutOfBoundsException) {
+        }
+        return null;
+    }
+
+    private static boolean isPreferenceObsolete(String prefTimestamp) {
+        if(prefTimestamp == null) {
+            return true;
+        }
+        if(prefTimestamp.length() == "2013_10_04_22_22_03".length()) {
+            boolean localboolean1 = preferenceObsolete;
+            Log.i("GStaticConfiguration", "Bundled: 2013_10_04_22_22_03, pref: " + prefTimestamp + " pref obsolete" + "2013_10_04_22_22_03".compareTo(prefTimestamp) > 0 ? localboolean1 : 0x0);
+            preferenceObsolete;
+            return preferenceObsolete;
+        }
+        return true;
+    }
+
+    private static GstaticConfiguration.Configuration loadBundledConfig(Resources paramResources) {
+        InputStream localInputStream = null;
+        try {
+            localInputStream = paramResources.openRawResource(2131165184);
+            GstaticConfiguration.Configuration localConfiguration = GstaticConfiguration.Configuration.parseFrom(ByteStreams.toByteArray(localInputStream));
+            return localConfiguration;
+        } catch (IOException localIOException) {
+            throw new RuntimeException("Unable to load from asset", localIOException);
+        } finally {
+            Closeables.closeQuietly(localInputStream);
+        }
+    }
+
+    private static GstaticConfiguration.Configuration maybeMergeDebugOverride(SharedPrefsData paramSharedPrefsData) {
+        GstaticConfiguration.Configuration base = paramSharedPrefsData.experimentData == null ? paramSharedPrefsData.configData : paramSharedPrefsData.experimentData;
+        if(paramSharedPrefsData.overridenData == null) {
+            return base;
+        }
+        try {
+            return (GstaticConfiguration.Configuration)(GstaticConfiguration.Configuration)ProtoUtils.copyOf(base).mergeFrom(paramSharedPrefsData.overridenData.toByteArray());
+        } catch(InvalidProtocolBufferMicroException e) {
+            return base;
+        }
+    }
+
+    private static boolean maybeOverrideFromResources(SharedPrefsData paramSharedPrefsData, Resources paramResources) {
+        if ((!isPreferenceObsolete(paramSharedPrefsData.configTimestamp)) && (paramSharedPrefsData.configData != null)) {
+            return false;
+        }
+        paramSharedPrefsData.configData = ((GstaticConfiguration.Configuration) Preconditions.checkNotNull(loadBundledConfig(paramResources)));
+        paramSharedPrefsData.configTimestamp = "2013_10_04_22_22_03";
+        return true;
+    }
+
+    @Nullable
+    private static GstaticConfiguration.Configuration parseConfig(byte[] paramArrayOfByte) {
+        if (paramArrayOfByte == null) {
+            return null;
+        }
+        try {
+            GstaticConfiguration.Configuration localConfiguration = GstaticConfiguration.Configuration.parseFrom(paramArrayOfByte);
+            return localConfiguration;
+        } catch (InvalidProtocolBufferMicroException localInvalidProtocolBufferMicroException) {
+        }
+        return null;
+    }
+
+    private static void setOrClearConfigBytes(String paramString, GstaticConfiguration.Configuration paramConfiguration, SharedPreferencesExt.Editor paramEditor) {
+        if (paramConfiguration != null) {
+            paramEditor.putBytes(paramString, paramConfiguration.toByteArray());
+            return;
+        }
+        paramEditor.remove(paramString);
+    }
+
+    private static void setOrClearString(String paramString1, String paramString2, SharedPreferencesExt.Editor paramEditor) {
+        if (paramString2 != null) {
+            paramEditor.putString(paramString1, paramString2);
+            return;
+        }
+        paramEditor.remove(paramString1);
     }
 
     private byte[] download(HttpHelper paramHttpHelper, String paramString) {
@@ -153,88 +245,6 @@ class GStaticConfiguration {
         return str1;
     }
 
-    static String getTimestampFromUrl(String paramString) {
-        int i = paramString.lastIndexOf('/');
-        if (i == -1) {
-        }
-        int j;
-        do {
-            return null;
-            j = paramString.indexOf('_', i);
-        } while (j == -1);
-        int k = j + 1;
-        try {
-            String str = paramString.substring(k, k + "2013_10_04_22_22_03".length());
-            return str;
-        } catch (IndexOutOfBoundsException localIndexOutOfBoundsException) {
-        }
-        return null;
-    }
-
-    private static boolean isPreferenceObsolete(String paramString) {
-        boolean bool1 = true;
-        if (paramString == null) {
-        }
-        while (paramString.length() != "2013_10_04_22_22_03".length()) {
-            return bool1;
-        }
-        boolean bool2;
-        StringBuilder localStringBuilder;
-        if ("2013_10_04_22_22_03".compareTo(paramString) > 0) {
-            bool2 = bool1;
-            if (bool2) {
-                localStringBuilder = new StringBuilder().append("Bundled: 2013_10_04_22_22_03, pref: ").append(paramString).append(" pref obsolete");
-                if ("2013_10_04_22_22_03".compareTo(paramString) <= 0) {
-                    break label87;
-                }
-            }
-        }
-        for (; ; ) {
-            Log.i("GStaticConfiguration", bool1);
-            return bool2;
-            bool2 = false;
-            break;
-            label87:
-            bool1 = false;
-        }
-    }
-
-    private static GstaticConfiguration.Configuration loadBundledConfig(Resources paramResources) {
-        InputStream localInputStream = null;
-        try {
-            localInputStream = paramResources.openRawResource(2131165184);
-            GstaticConfiguration.Configuration localConfiguration = GstaticConfiguration.Configuration.parseFrom(ByteStreams.toByteArray(localInputStream));
-            return localConfiguration;
-        } catch (IOException localIOException) {
-            throw new RuntimeException("Unable to load from asset", localIOException);
-        } finally {
-            Closeables.closeQuietly(localInputStream);
-        }
-    }
-
-    private static GstaticConfiguration.Configuration maybeMergeDebugOverride(SharedPrefsData paramSharedPrefsData) {
-        if (paramSharedPrefsData.experimentData == null) {
-        }
-        for (GstaticConfiguration.Configuration localConfiguration1 = paramSharedPrefsData.configData; paramSharedPrefsData.overridenData == null; localConfiguration1 = paramSharedPrefsData.experimentData) {
-            return localConfiguration1;
-        }
-        try {
-            GstaticConfiguration.Configuration localConfiguration2 = (GstaticConfiguration.Configuration) ((GstaticConfiguration.Configuration) ProtoUtils.copyOf(localConfiguration1)).mergeFrom(paramSharedPrefsData.overridenData.toByteArray());
-            return localConfiguration2;
-        } catch (InvalidProtocolBufferMicroException localInvalidProtocolBufferMicroException) {
-        }
-        return localConfiguration1;
-    }
-
-    private static boolean maybeOverrideFromResources(SharedPrefsData paramSharedPrefsData, Resources paramResources) {
-        if ((!isPreferenceObsolete(paramSharedPrefsData.configTimestamp)) && (paramSharedPrefsData.configData != null)) {
-            return false;
-        }
-        paramSharedPrefsData.configData = ((GstaticConfiguration.Configuration) Preconditions.checkNotNull(loadBundledConfig(paramResources)));
-        paramSharedPrefsData.configTimestamp = "2013_10_04_22_22_03";
-        return true;
-    }
-
     private GstaticConfiguration.Configuration maybeWaitForConfiguration() {
         synchronized (this.mLoadingLock) {
             if (this.mConfiguration != null) {
@@ -274,19 +284,6 @@ class GStaticConfiguration {
         }
     }
 
-    @Nullable
-    private static GstaticConfiguration.Configuration parseConfig(byte[] paramArrayOfByte) {
-        if (paramArrayOfByte == null) {
-            return null;
-        }
-        try {
-            GstaticConfiguration.Configuration localConfiguration = GstaticConfiguration.Configuration.parseFrom(paramArrayOfByte);
-            return localConfiguration;
-        } catch (InvalidProtocolBufferMicroException localInvalidProtocolBufferMicroException) {
-        }
-        return null;
-    }
-
     private void scheduleNotifyListener() {
         this.mExecutorService.submit(new Runnable() {
             public void run() {
@@ -303,22 +300,6 @@ class GStaticConfiguration {
             this.mLoadingLock.notifyAll();
             return;
         }
-    }
-
-    private static void setOrClearConfigBytes(String paramString, GstaticConfiguration.Configuration paramConfiguration, SharedPreferencesExt.Editor paramEditor) {
-        if (paramConfiguration != null) {
-            paramEditor.putBytes(paramString, paramConfiguration.toByteArray());
-            return;
-        }
-        paramEditor.remove(paramString);
-    }
-
-    private static void setOrClearString(String paramString1, String paramString2, SharedPreferencesExt.Editor paramEditor) {
-        if (paramString2 != null) {
-            paramEditor.putString(paramString1, paramString2);
-            return;
-        }
-        paramEditor.remove(paramString1);
     }
 
     public void addListener(Settings.ConfigurationChangeListener paramConfigurationChangeListener) {
@@ -371,6 +352,16 @@ class GStaticConfiguration {
         return new GstaticConfiguration.Configuration().setId("override");
     }
 
+    public void setOverrideConfiguration(@Nullable GstaticConfiguration.Configuration paramConfiguration) {
+        SharedPrefsData localSharedPrefsData = maybeLoadFromSharedPrefs();
+        localSharedPrefsData.overridenData = paramConfiguration;
+        if (!maybeOverrideFromResources(localSharedPrefsData, this.mResources)) {
+            writeToSharedPrefs(localSharedPrefsData);
+        }
+        setCurrentPrefs(localSharedPrefsData);
+        scheduleNotifyListener();
+    }
+
     public String getTimestamp() {
         return maybeLoadFromSharedPrefs().configTimestamp;
     }
@@ -391,16 +382,6 @@ class GStaticConfiguration {
             localSharedPrefsData2.overridenData = parseConfig(localSharedPreferencesExt.getBytes("gstatic_configuration_override_1", null));
             return localSharedPrefsData2;
         }
-    }
-
-    public void setOverrideConfiguration(@Nullable GstaticConfiguration.Configuration paramConfiguration) {
-        SharedPrefsData localSharedPrefsData = maybeLoadFromSharedPrefs();
-        localSharedPrefsData.overridenData = paramConfiguration;
-        if (!maybeOverrideFromResources(localSharedPrefsData, this.mResources)) {
-            writeToSharedPrefs(localSharedPrefsData);
-        }
-        setCurrentPrefs(localSharedPrefsData);
-        scheduleNotifyListener();
     }
 
     public void update(HttpHelper paramHttpHelper) {

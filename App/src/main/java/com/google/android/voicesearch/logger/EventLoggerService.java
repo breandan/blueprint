@@ -19,6 +19,7 @@ import com.google.android.voicesearch.VoiceSearchServices;
 import com.google.android.voicesearch.logger.store.EventLoggerStores;
 import com.google.android.voicesearch.settings.Settings;
 import com.google.common.io.Closeables;
+import com.google.speech.logs.VoicesearchClientLogProto;
 
 import java.io.File;
 import java.io.FileOutputStream;

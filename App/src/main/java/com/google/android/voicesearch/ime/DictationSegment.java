@@ -12,12 +12,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class DictationSegment {
-    private int mDisplayLength = 0;
-    @Nullable
-    private SpannableString mFinalTextSpannable;
     private final HypothesisToSuggestionSpansConverter mHypothesisToSuggestionSpansConverter;
     private final String mRequestId;
     private final int mSegmentId;
+    private int mDisplayLength = 0;
+    @Nullable
+    private SpannableString mFinalTextSpannable;
     private CharSequence mText;
 
     public DictationSegment(String paramString, int paramInt, HypothesisToSuggestionSpansConverter paramHypothesisToSuggestionSpansConverter) {
@@ -28,27 +28,13 @@ public class DictationSegment {
 
     private static int getCommonStart(CharSequence paramCharSequence1, CharSequence paramCharSequence2, int paramInt) {
         if ((paramCharSequence1 == null) || (paramCharSequence2 == null)) {
-            i = 0;
-            return i;
+
         }
         int j = Math.min(paramInt, paramCharSequence2.length());
-        for (int i = 0; ; i++) {
-            if (i >= j) {
-                break label55;
-            }
-            if (paramCharSequence1.charAt(i) != paramCharSequence2.charAt(i)) {
-                break;
-            }
-        }
-        label55:
-        return j;
-    }
+        for (int i = 0;(i < j) || paramCharSequence1.charAt(i) != paramCharSequence2.charAt(i); i++) {
 
-    private CharSequence getFinalText() {
-        if (!isFinal()) {
-            return this.mText;
         }
-        return this.mFinalTextSpannable;
+        return j;
     }
 
     private static int getNextSplitPos(CharSequence paramCharSequence, int paramInt) {
@@ -57,6 +43,13 @@ public class DictationSegment {
             return paramCharSequence.length();
         }
         return Math.min(i, paramCharSequence.length());
+    }
+
+    private CharSequence getFinalText() {
+        if (!isFinal()) {
+            return this.mText;
+        }
+        return this.mFinalTextSpannable;
     }
 
     private UpdateText updateText(CharSequence paramCharSequence) {
@@ -107,16 +100,17 @@ public class DictationSegment {
     public UpdateText updateFinal(@Nonnull Hypothesis paramHypothesis) {
         this.mFinalTextSpannable = this.mHypothesisToSuggestionSpansConverter.getSuggestionSpannableString(this.mRequestId, this.mSegmentId, paramHypothesis);
         UpdateText localUpdateText = updateText(this.mFinalTextSpannable);
-        if (this.mDisplayLength == this.mText.length()) {
-            if (localUpdateText == null) {
-                break label84;
-            }
-        }
-        label84:
+
         for (int i = localUpdateText.mDeleteBeforeCursor + this.mDisplayLength - localUpdateText.mNewText.length(); ; i = this.mDisplayLength) {
+            if (this.mDisplayLength == this.mText.length()) {
+                if (localUpdateText == null) {
+                    break;
+                }
+            }
             localUpdateText = new UpdateText(i, getFinalText());
-            return localUpdateText;
         }
+
+        return localUpdateText;
     }
 
     public UpdateText updatePartial(CharSequence paramCharSequence) {

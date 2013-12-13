@@ -1,5 +1,7 @@
 package com.google.android.speech;
 
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
+
 import java.util.List;
 
 public abstract interface SpeechSettings {

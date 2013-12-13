@@ -9,16 +9,17 @@ import android.view.inputmethod.InputConnection;
 import com.google.android.shared.util.TextUtil;
 import com.google.android.speech.embedded.Greco3Mode;
 import com.google.android.speech.params.SessionParams;
+import com.google.speech.common.proto.RecognitionContextProto;
 
 import java.util.concurrent.Executor;
 
 public class VoiceRecognitionHandler {
     private static boolean DEBUG = false;
-    private VoiceInputMethodManager.DictationListener mDictationListener;
     private final VoiceImeInputMethodService mInputMethodService;
+    private final Executor mUiThreadExecutor;
+    private VoiceInputMethodManager.DictationListener mDictationListener;
     private SessionParams mSessionParams;
     private boolean mStarted;
-    private final Executor mUiThreadExecutor;
 
     public VoiceRecognitionHandler(VoiceImeInputMethodService paramVoiceImeInputMethodService, Executor paramExecutor) {
         this.mInputMethodService = paramVoiceImeInputMethodService;
@@ -34,14 +35,14 @@ public class VoiceRecognitionHandler {
     }
 
     private boolean isSingleLine() {
-        InputConnection localInputConnection = this.mInputMethodService.getCurrentInputConnection();
-        if (localInputConnection == null) {
-        }
-        ExtractedText localExtractedText;
-        do {
+        InputConnection ic = mInputMethodService.getCurrentInputConnection();
+        if (ic == null) {
             return false;
-            localExtractedText = localInputConnection.getExtractedText(new ExtractedTextRequest(), 0);
-        } while ((localExtractedText == null) || ((0x1 & localExtractedText.flags) <= 0));
+        }
+        ExtractedText et = ic.getExtractedText(new ExtractedTextRequest(), 0);
+        if (et == null || (et.flags & 0x1) <= 0) {
+            return false;
+        }
         return true;
     }
 

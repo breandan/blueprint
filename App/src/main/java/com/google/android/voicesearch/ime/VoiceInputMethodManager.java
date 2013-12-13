@@ -1,8 +1,10 @@
 package com.google.android.voicesearch.ime;
 
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.inputmethodservice.InputMethodService;
 import android.os.PowerManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.PrintWriterPrinter;
 import android.view.View;
@@ -13,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.google.android.search.core.AsyncServices;
 import com.google.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.google.android.speech.Recognizer;
+import com.google.android.speech.alternates.Hypothesis;
 import com.google.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.google.android.speech.exception.RecognizeException;
 import com.google.android.speech.listeners.RecognitionEventListenerAdapter;
@@ -27,12 +30,13 @@ import com.google.android.voicesearch.logger.EventLoggerService;
 import com.google.android.voicesearch.settings.Settings;
 import com.google.android.voicesearch.util.ErrorUtils;
 import com.google.common.base.Preconditions;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 
 public class VoiceInputMethodManager {
-    private boolean mBackToPrevImeOnDone = false;
     private final Runnable mBackToPreviousImeRunnable = new Runnable() {
         public void run() {
             VoiceInputMethodManager.this.backToPreviousIme();
@@ -43,7 +47,6 @@ public class VoiceInputMethodManager {
     private final DictationResultHandlerImpl mDictationResultHandler;
     private final TemporaryData<Void> mForcePauseOnStart = new TemporaryData(null);
     private final ImeLoggerHelper mImeLoggerHelper;
-    private boolean mInputViewActive;
     private final Runnable mReleaseResourcesRunnable = new Runnable() {
         public void run() {
             VoiceInputMethodManager.this.maybeReleaseResources();
@@ -58,6 +61,8 @@ public class VoiceInputMethodManager {
     private final VoiceInputViewHandler mVoiceInputViewHandler;
     private final VoiceLanguageSelector mVoiceLanguageSelector;
     private final VoiceRecognitionHandler mVoiceRecognitionHandler;
+    private boolean mBackToPrevImeOnDone = false;
+    private boolean mInputViewActive;
 
     public VoiceInputMethodManager(VoiceLanguageSelector paramVoiceLanguageSelector, ScreenStateMonitor paramScreenStateMonitor, ScheduledSingleThreadedExecutor paramScheduledSingleThreadedExecutor, ImeLoggerHelper paramImeLoggerHelper, Settings paramSettings, AudioTrackSoundManager paramAudioTrackSoundManager, VoiceImeSubtypeUpdater paramVoiceImeSubtypeUpdater, VoiceInputViewHandler paramVoiceInputViewHandler, VoiceImeInputMethodService paramVoiceImeInputMethodService, VoiceRecognitionHandler paramVoiceRecognitionHandler, DictationResultHandlerImpl paramDictationResultHandlerImpl) {
         Log.i("VoiceInputMethodManager", "#()");
@@ -74,12 +79,7 @@ public class VoiceInputMethodManager {
         this.mDictationResultHandler = paramDictationResultHandlerImpl;
     }
 
-    private void backToPreviousIme() {
-        maybeReleaseResources();
-        this.mVoiceImeInputMethodService.switchToLastInputMethod();
-    }
-
-    public static VoiceInputMethodManager create(InputMethodService paramInputMethodService) {
+    public static VoiceInputMethodManager create(final InputMethodService paramInputMethodService) {
         AsyncServices localAsyncServices = VelvetServices.get().getAsyncServices();
         ImeLoggerHelper localImeLoggerHelper = new ImeLoggerHelper();
         final VoiceSearchServices localVoiceSearchServices = VelvetServices.get().getVoiceSearchServices();
@@ -93,11 +93,11 @@ public class VoiceInputMethodManager {
         VoiceLanguageSelector localVoiceLanguageSelector = new VoiceLanguageSelector(paramInputMethodService, localSettings);
         VoiceImeInputMethodService local3 = new VoiceImeInputMethodService() {
             public InputConnection getCurrentInputConnection() {
-                return this.val$inputMethodService.getCurrentInputConnection();
+                return paramInputMethodService.getCurrentInputConnection();
             }
 
             public EditorInfo getCurrentInputEditorInfo() {
-                return this.val$inputMethodService.getCurrentInputEditorInfo();
+                return paramInputMethodService.getCurrentInputEditorInfo();
             }
 
             public Recognizer getRecognizer() {
@@ -105,7 +105,7 @@ public class VoiceInputMethodManager {
             }
 
             public Resources getResources() {
-                return this.val$inputMethodService.getResources();
+                return paramInputMethodService.getResources();
             }
 
             public boolean isScreenOn() {
@@ -113,16 +113,21 @@ public class VoiceInputMethodManager {
             }
 
             public void scheduleSendEvents() {
-                EventLoggerService.scheduleSendEvents(this.val$inputMethodService);
+                EventLoggerService.scheduleSendEvents(paramInputMethodService);
             }
 
             public void switchToLastInputMethod() {
-                ((InputMethodManager) this.val$inputMethodService.getSystemService("input_method")).switchToLastInputMethod(this.val$inputMethodService.getWindow().getWindow().getAttributes().token);
+                ((InputMethodManager) paramInputMethodService.getSystemService("input_method")).switchToLastInputMethod(paramInputMethodService.getWindow().getWindow().getAttributes().token);
             }
         };
         VoiceRecognitionHandler localVoiceRecognitionHandler = new VoiceRecognitionHandler(local3, localAsyncServices.getUiThreadExecutor());
         DictationResultHandlerImpl localDictationResultHandlerImpl = new DictationResultHandlerImpl(local3, localHypothesisToSuggestionSpansConverter, localSettings, new LatinTextFormatter(), localAsyncServices.getUiThreadExecutor());
         return new VoiceInputMethodManager(localVoiceLanguageSelector, localScreenStateMonitor, localAsyncServices.getUiThreadExecutor(), localImeLoggerHelper, localSettings, localAudioTrackSoundManager, localVoiceImeSubtypeUpdater, localVoiceInputViewHandler, local3, localVoiceRecognitionHandler, localDictationResultHandlerImpl);
+    }
+
+    private void backToPreviousIme() {
+        maybeReleaseResources();
+        this.mVoiceImeInputMethodService.switchToLastInputMethod();
     }
 
     private void forceReleaseResources() {
@@ -161,85 +166,31 @@ public class VoiceInputMethodManager {
         this.mDictationResultHandler.handleRecognitionResult(paramHypothesis, paramString);
     }
 
-    private void interruptDictation() {
-        if (this.mVoiceRecognitionHandler != null) {
-            if (this.mImeLoggerHelper != null) {
-                this.mImeLoggerHelper.onInterrupt();
-            }
-            stopRecording();
-            backToPreviousIme();
-        }
-    }
-
-    private boolean isDictationSupportedByField() {
-        EditorInfo localEditorInfo = this.mVoiceImeInputMethodService.getCurrentInputEditorInfo();
-        int i = 0xFFF & localEditorInfo.inputType;
-        int j;
-        int k;
-        if (i == 129) {
-            j = 1;
-            if (i != 225) {
-                break label77;
-            }
-            k = 1;
-            label38:
-            if (i != 18) {
-                break label83;
-            }
-        }
-        label77:
-        label83:
-        for (int m = 1; ; m = 0) {
-            if ((j == 0) && (k == 0) && (m == 0)) {
-                break label89;
-            }
-            Log.i("VoiceInputMethodManager", "Voice IME is not supported for password input type");
-            return false;
-            j = 0;
-            break;
-            k = 0;
-            break label38;
-        }
-        label89:
-        if ((localEditorInfo != null) && (localEditorInfo.privateImeOptions != null)) {
-            for (String str : localEditorInfo.privateImeOptions.split(",")) {
-                if (("noMicrophoneKey".equals(str)) || ("nm".equals(str))) {
-                    Log.i("VoiceInputMethodManager", "Voice IME has been disabled for this field");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     private void maybeReleaseResources() {
-        if (this.mContinueRecording.isExpired()) {
+        if (mContinueRecording.isExpired()) {
             Log.i("VoiceInputMethodManager", "#releaseResources");
-            if (this.mInputViewActive) {
-                if (this.mImeLoggerHelper == null) {
-                    break label99;
+            if (mInputViewActive) {
+                if (mImeLoggerHelper != null) {
+                    mImeLoggerHelper.onFinishInput();
+                } else {
+                    Log.w("VoiceInputMethodManager", "onFinishInput - mImeLoggerHelper is null");
                 }
-                this.mImeLoggerHelper.onFinishInput();
             }
-            for (; ; ) {
-                this.mInputViewActive = false;
-                this.mScreenStateMonitor.unregister();
-                this.mDictationBcp47Locale.extend();
-                this.mVoiceImeInputMethodService.scheduleSendEvents();
-                stopDictation();
-                this.mUiThreadExecutor.cancelExecute(this.mReleaseResourcesRunnable);
-                this.mUiThreadExecutor.cancelExecute(this.mBackToPreviousImeRunnable);
-                return;
-                label99:
-                Log.w("VoiceInputMethodManager", "onFinishInput - mImeLoggerHelper is null");
-            }
+            mInputViewActive = false;
+            mScreenStateMonitor.unregister();
+            mDictationBcp47Locale.extend();
+            mVoiceImeInputMethodService.scheduleSendEvents();
+            stopDictation();
+            mUiThreadExecutor.cancelExecute(mReleaseResourcesRunnable);
+            mUiThreadExecutor.cancelExecute(mBackToPreviousImeRunnable);
+            return;
         }
         Log.i("VoiceInputMethodManager", "#releaseResources - schedule");
         scheduleReleaseResources();
     }
 
     private void maybeUpdateImeSubtypes() {
-        this.mVoiceImeSubtypeUpdater.maybeScheduleUpdate(this.mSettings.getConfiguration());
+        mVoiceImeSubtypeUpdater.maybeScheduleUpdate(mSettings.getConfiguration());
     }
 
     private void scheduleReleaseResources() {
@@ -248,28 +199,26 @@ public class VoiceInputMethodManager {
     }
 
     private void startDictation() {
-        if (!this.mInputViewActive) {
+        if (!mInputViewActive) {
             return;
         }
-        SessionParams localSessionParams = this.mVoiceRecognitionHandler.createSessionParams((String) this.mDictationBcp47Locale.getData(), this.mSettings.isProfanityFilterEnabled());
-        this.mDictationResultHandler.init(localSessionParams.getRequestId());
-        this.mVoiceInputViewHandler.setLanguages((String) this.mDictationBcp47Locale.getData(), this.mVoiceLanguageSelector.getEnabledDialects((String) this.mDictationBcp47Locale.getData()));
-        this.mVoiceInputViewHandler.displayAudioNotInitialized();
-        this.mVoiceRecognitionHandler.cancelRecognition();
-        this.mVoiceRecognitionHandler.startRecognizer(localSessionParams, new DictationListener());
+        SessionParams sessionParams = mVoiceRecognitionHandler.createSessionParams((String) mDictationBcp47Locale.getData(), mSettings.isProfanityFilterEnabled());
+        mDictationResultHandler.init(sessionParams.getRequestId());
+        mVoiceInputViewHandler.setLanguages((String) mDictationBcp47Locale.getData(), mVoiceLanguageSelector.getEnabledDialects((String) mDictationBcp47Locale.getData()));
+        mVoiceInputViewHandler.displayAudioNotInitialized();
+        mVoiceRecognitionHandler.cancelRecognition();
+        mVoiceRecognitionHandler.startRecognizer(sessionParams, new VoiceInputMethodManager.DictationListener());
     }
 
     private void stopDictation() {
-        if (this.mVoiceRecognitionHandler != null) {
-            this.mVoiceRecognitionHandler.cancelRecognition();
-        }
-        for (; ; ) {
-            if (this.mDictationResultHandler != null) {
-                this.mDictationResultHandler.handleStop();
-                this.mDictationResultHandler.reset();
-            }
-            return;
+        if (mVoiceRecognitionHandler != null) {
+            mVoiceRecognitionHandler.cancelRecognition();
+        } else {
             Log.w("VoiceInputMethodManager", "onFinishInput - mVoiceRecognitionDelegate is null");
+        }
+        if (mDictationResultHandler != null) {
+            mDictationResultHandler.handleStop();
+            mDictationResultHandler.reset();
         }
     }
 
@@ -303,43 +252,36 @@ public class VoiceInputMethodManager {
 
     public View handleCreateInputView() {
         Log.i("VoiceInputMethodManager", "#handleCreateInputView");
-        this.mVoiceInputViewHandler.getView(new VoiceInputViewHandler.Callback() {
-            public void close() {
-                if (VoiceInputMethodManager.this.mVoiceRecognitionHandler.isWaitingForResults()) {
-                    VoiceInputMethodManager.access$602(VoiceInputMethodManager.this, true);
-                    VoiceInputMethodManager.this.mVoiceInputViewHandler.displayWorking();
-                    return;
-                }
-                VoiceInputMethodManager.this.backToPreviousIme();
-            }
+        return mVoiceInputViewHandler.getView(new VoiceInputViewHandler.Callback() {
 
-            public void forceClose() {
-                VoiceInputMethodManager.this.backToPreviousIme();
-            }
-
-            public void onDisplayDialectSelectionPopup() {
-                VoiceInputMethodManager.this.stopRecording();
-                VoiceInputMethodManager.this.stopDictation();
-                VoiceInputMethodManager.this.mVoiceInputViewHandler.displayAudioNotInitialized();
-                VoiceInputMethodManager.this.maybeUpdateImeSubtypes();
-            }
-
-            public void onUpdateDialect(GstaticConfiguration.Dialect paramAnonymousDialect) {
-                EventLogger.recordClientEvent(67);
-                VoiceInputMethodManager.this.mDictationBcp47Locale.setData(paramAnonymousDialect.getBcp47Locale());
-                VoiceInputMethodManager.this.startDictation();
-                VoiceInputMethodManager.this.mContinueRecording.extend();
+            public void stopRecognition() {
+                mVoiceRecognitionHandler.stopListening();
+                mImeLoggerHelper.onPauseRecognition();
             }
 
             public void startRecognition() {
-                VoiceInputMethodManager.this.mImeLoggerHelper.onRestartRecognition();
-                VoiceInputMethodManager.this.startDictation();
+                mImeLoggerHelper.onRestartRecognition();
             }
 
-            public void stopRecognition() {
-                VoiceInputMethodManager.this.mVoiceRecognitionHandler.stopListening();
-                VoiceInputMethodManager.this.mImeLoggerHelper.onPauseRecognition();
-                VoiceInputMethodManager.this.handlePause();
+            public void forceClose() {
+            }
+
+            public void close() {
+                if (mVoiceRecognitionHandler.isWaitingForResults()) {
+                    mBackToPrevImeOnDone = true;
+                    mVoiceInputViewHandler.displayWorking();
+                    return;
+                }
+            }
+
+            public void onDisplayDialectSelectionPopup() {
+                mVoiceInputViewHandler.displayAudioNotInitialized();
+            }
+
+            public void onUpdateDialect(GstaticConfiguration.Dialect dialect) {
+                EventLogger.recordClientEvent(0x43);
+                mDictationBcp47Locale.setData(dialect.getBcp47Locale());
+                mContinueRecording.extend();
             }
         });
     }
@@ -374,81 +316,6 @@ public class VoiceInputMethodManager {
         if (this.mImeLoggerHelper != null) {
             this.mImeLoggerHelper.onShowWindow();
         }
-    }
-
-    public void handleStartInputView(EditorInfo paramEditorInfo, boolean paramBoolean) {
-        StringBuilder localStringBuilder = new StringBuilder().append("#handleStartInputView [active=").append(this.mInputViewActive).append(",keepRecording=");
-        if (!this.mContinueRecording.isExpired()) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Log.i("VoiceInputMethodManager", bool + " ] " + this);
-            if (this.mInputViewActive) {
-                break label259;
-            }
-            if ((!isDictationSupportedByField()) || (!this.mVoiceImeInputMethodService.isScreenOn())) {
-                Log.i("VoiceInputMethodManager", "Voice IME cannot be started");
-                this.mUiThreadExecutor.execute(this.mBackToPreviousImeRunnable);
-            }
-            this.mScreenStateMonitor.register(new ScreenStateMonitor.Listener() {
-                public void onScreenOff() {
-                    VoiceInputMethodManager.this.backToPreviousIme();
-                }
-            });
-            this.mImeLoggerHelper.onStartInputView(this.mVoiceImeInputMethodService.getCurrentInputEditorInfo());
-            this.mInputViewActive = true;
-            this.mBackToPrevImeOnDone = false;
-            if ((this.mDictationBcp47Locale.isExpired()) || (this.mDictationBcp47Locale.getData() == null)) {
-                this.mDictationBcp47Locale.setData(this.mVoiceLanguageSelector.getDictationBcp47Locale());
-            }
-            if (this.mForcePauseOnStart.isExpired()) {
-                break;
-            }
-            this.mForcePauseOnStart.extend();
-            this.mVoiceInputViewHandler.setLanguages((String) this.mDictationBcp47Locale.getData(), this.mVoiceLanguageSelector.getEnabledDialects((String) this.mDictationBcp47Locale.getData()));
-            this.mVoiceInputViewHandler.displayPause(false);
-            return;
-        }
-        startDictation();
-        return;
-        label259:
-        if (!this.mContinueRecording.isExpired()) {
-            this.mContinueRecording.extend();
-            this.mUiThreadExecutor.cancelExecute(this.mReleaseResourcesRunnable);
-            this.mVoiceInputViewHandler.setLanguages((String) this.mDictationBcp47Locale.getData(), this.mVoiceLanguageSelector.getEnabledDialects((String) this.mDictationBcp47Locale.getData()));
-            this.mVoiceInputViewHandler.restoreState();
-            return;
-        }
-        Log.e("VoiceInputMethodManager", "#handleStartInputView: unhandled");
-    }
-
-    public void handleUpdateSelection(int paramInt1, int paramInt2, int paramInt3, int paramInt4, int paramInt5, int paramInt6) {
-        if (paramInt3 != paramInt4) {
-            interruptDictation();
-        }
-    }
-
-    public void handleViewClicked(boolean paramBoolean) {
-        Log.i("VoiceInputMethodManager", "#handleViewClicked[" + paramBoolean + "]");
-        if (!paramBoolean) {
-            interruptDictation();
-        }
-    }
-
-    public boolean isMaybeForceFullScreen() {
-        EditorInfo localEditorInfo = this.mVoiceImeInputMethodService.getCurrentInputEditorInfo();
-        if (localEditorInfo != null) {
-            if ((0x10000000 & localEditorInfo.imeOptions) == 0) {
-            }
-        }
-        Resources localResources;
-        do {
-            do {
-                return false;
-            } while ((0x2000000 & localEditorInfo.imeOptions) != 0);
-            localResources = this.mVoiceImeInputMethodService.getResources();
-        }
-        while (localResources.getDisplayMetrics().heightPixels > localResources.getDimension(2131689631));
-        return true;
     }
 
     public class DictationListener

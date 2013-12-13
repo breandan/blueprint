@@ -2,6 +2,7 @@ package com.google.android.voicesearch.ime;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
 import com.google.android.speech.utils.SpokenLanguageUtils;
@@ -9,6 +10,7 @@ import com.google.android.voicesearch.logger.BugLogger;
 import com.google.android.voicesearch.settings.Settings;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,31 +36,28 @@ public class VoiceLanguageSelector {
     }
 
     private static InputmethodSubtypeAdapter createInputmethodSubtypeAdapter(Context paramContext) {
-        new InputmethodSubtypeAdapter() {
+        final InputMethodManager imm = (InputMethodManager)paramContext.getSystemService("input_method");
+        return new InputmethodSubtypeAdapter() {
             public String getCurrentSubtypeLocale() {
-                return this.val$imm.getCurrentInputMethodSubtype().getLocale();
+                return imm.getCurrentInputMethodSubtype().getLocale();
             }
 
             public String[] getEnabledBcp47Locales() {
-                List localList = this.val$imm.getEnabledInputMethodSubtypeList(null, false);
-                ArrayList localArrayList = new ArrayList();
-                int i = 0;
-                if (i < localList.size()) {
-                    String str = ((InputMethodSubtype) localList.get(i)).getExtraValueOf("bcp47");
-                    if (str != null) {
-                        localArrayList.add(str);
+                List<InputMethodSubtype> subtypes = imm.getEnabledInputMethodSubtypeList(null, false);
+                ArrayList<String> supportedLocales = new ArrayList<String>();
+                for(int i = 0; i < subtypes.size(); i = i + 1) {
+                    String bcp47Locale = ((InputMethodSubtype)subtypes.get(i)).getExtraValueOf("bcp47");
+                    if(bcp47Locale != null) {
+                        supportedLocales.add(bcp47Locale);
+                        continue;
                     }
-                    for (; ; ) {
-                        i++;
-                        break;
-                        BugLogger.record(6833013);
-                    }
+                    BugLogger.record(0x684375);
                 }
-                return (String[]) localArrayList.toArray(new String[localArrayList.size()]);
+                return (String[])supportedLocales.toArray(new String[supportedLocales.size()]);
             }
 
             public String getLastInputMethodSubtypeLocale() {
-                InputMethodSubtype localInputMethodSubtype = this.val$imm.getLastInputMethodSubtype();
+                InputMethodSubtype localInputMethodSubtype = imm.getLastInputMethodSubtype();
                 if (localInputMethodSubtype != null) {
                     return localInputMethodSubtype.getLocale();
                 }
@@ -68,26 +67,20 @@ public class VoiceLanguageSelector {
     }
 
     public String getDictationBcp47Locale() {
-        String str1;
-        if (this.mInputmethodSubtypeAdapter.getEnabledBcp47Locales().length == 0) {
-            String str3 = this.mInputmethodSubtypeAdapter.getLastInputMethodSubtypeLocale();
-            GstaticConfiguration.Configuration localConfiguration = this.mSettings.getConfiguration();
-            String[] arrayOfString = new String[2];
-            arrayOfString[0] = str3;
-            arrayOfString[1] = ((String) this.mPhoneLocaleSupplier.get());
-            str1 = SpokenLanguageUtils.getSpokenBcp47Locale(localConfiguration, arrayOfString);
-            if (str1 == null) {
-                str1 = this.mSettings.getSpokenLocaleBcp47();
+        if(mInputmethodSubtypeAdapter.getEnabledBcp47Locales().length == 0) {
+            String imeLocale = mInputmethodSubtypeAdapter.getLastInputMethodSubtypeLocale();
+            String spokenBcp47Locale = SpokenLanguageUtils.getSpokenBcp47Locale(mSettings.getConfiguration(), new String[] {imeLocale, (String)mPhoneLocaleSupplier.get()});
+            if(spokenBcp47Locale == null) {
+                return spokenBcp47Locale;
             }
         }
-        do {
-            return str1;
-            str1 = SpokenLanguageUtils.getSpokenBcp47Locale(this.mSettings.getConfiguration(), this.mInputmethodSubtypeAdapter.getCurrentSubtypeLocale());
-        } while (str1 != null);
-        Log.e("VoiceLanguageSelector", "The subtype of the IME are not aligned with the supported locale");
-        String str2 = this.mSettings.getSpokenLocaleBcp47();
-        BugLogger.record(6271090);
-        return str2;
+        String spokenBcp47Locale = SpokenLanguageUtils.getSpokenBcp47Locale(mSettings.getConfiguration(), mInputmethodSubtypeAdapter.getCurrentSubtypeLocale());
+        if(spokenBcp47Locale == null) {
+            Log.e("VoiceLanguageSelector", "The subtype of the IME are not aligned with the supported locale");
+            spokenBcp47Locale = mSettings.getSpokenLocaleBcp47();
+            BugLogger.record(0x5fb072);
+        }
+        return spokenBcp47Locale;
     }
 
     public GstaticConfiguration.Dialect[] getEnabledDialects(String paramString) {

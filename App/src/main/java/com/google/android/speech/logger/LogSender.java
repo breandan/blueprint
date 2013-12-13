@@ -1,5 +1,7 @@
 package com.google.android.speech.logger;
 
+import com.google.speech.logs.VoicesearchClientLogProto;
+
 import java.io.IOException;
 import java.util.ArrayList;
 

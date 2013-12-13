@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -13,6 +14,7 @@ import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.android.voicesearch.ime.ImeUtils;
 import com.google.android.voicesearch.logger.EventLogger;
 import com.google.common.base.Preconditions;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 public class LanguageSpinner
         extends Spinner {

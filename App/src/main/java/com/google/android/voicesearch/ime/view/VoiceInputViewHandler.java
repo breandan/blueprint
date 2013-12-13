@@ -13,26 +13,27 @@ import com.google.android.voicesearch.logger.EventLogger;
 import com.google.android.voicesearch.ui.DrawSoundLevelsView;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.HashSet;
 
 public class VoiceInputViewHandler {
+    private final Context mContext;
+    private final SpeechLevelSource mSpeechLevelSource;
+    private final ViewBuilder mViewBuilder;
     private RelativeLayout mClickableMicLevels;
     private View[] mClickables;
-    private final Context mContext;
     private ImageView mImageIndicator;
     private TextView mImeStateView;
     private View mInputView;
     private LanguageSpinner mLanguageView;
     private ImageView mPrevImeView;
     private DrawSoundLevelsView mSoundLevels;
-    private final SpeechLevelSource mSpeechLevelSource;
     private View.OnClickListener mStartRecognitionListener;
     private State mState;
     private Button mStopButton;
     private View.OnClickListener mStopRecognitionListener;
     private TextView mTitleView;
-    private final ViewBuilder mViewBuilder;
     private View[] mViews;
     private View mWaitingForResultBar;
 
@@ -53,18 +54,18 @@ public class VoiceInputViewHandler {
         }
     }
 
-    private void showView(View paramView, HashSet<View> paramHashSet) {
-        if (paramHashSet.contains(paramView)) {
-            paramView.setVisibility(0);
-            if (paramView == this.mSoundLevels) {
-                this.mSoundLevels.setEnabled(true);
+    private void showView(View view, HashSet<View> visibleViews) {
+        if(visibleViews.contains(view)) {
+            view.setVisibility(0x0);
+            if(view == mSoundLevels) {
+                mSoundLevels.setEnabled(true);
             }
-        }
-        do {
             return;
-            paramView.setVisibility(4);
-        } while (paramView != this.mSoundLevels);
-        this.mSoundLevels.setEnabled(false);
+        }
+        view.setVisibility(0x4);
+        if(view == mSoundLevels) {
+            mSoundLevels.setEnabled(false);
+        }
     }
 
     private void showViews(View... paramVarArgs) {
@@ -166,11 +167,12 @@ public class VoiceInputViewHandler {
                 paramCallback.startRecognition();
             }
         };
-        this.mStopRecognitionListener = new View.OnClickListener() {
-            public void onClick(View paramAnonymousView) {
-                paramCallback.stopRecognition();
-            }
-        };
+        this.mStopRecognitionListener = new
+                View.OnClickListener() {
+                    public void onClick(View paramAnonymousView) {
+                        paramCallback.stopRecognition();
+                    }
+                };
         this.mTitleView = ((TextView) Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296382)));
         this.mSoundLevels = ((DrawSoundLevelsView) Preconditions.checkNotNull((DrawSoundLevelsView) this.mInputView.findViewById(2131296715)));
         this.mSoundLevels.setLevelSource(this.mSpeechLevelSource);
@@ -253,6 +255,15 @@ public class VoiceInputViewHandler {
         this.mLanguageView.setLanguages(paramString, paramArrayOfDialect);
     }
 
+    private static enum State {
+        AUDIO_NOT_INITIALIZED,
+        ERROR,
+        LISTENING,
+        PAUSED,
+        RECORDING,
+        WORKING;
+    }
+
     public static abstract interface Callback
             extends LanguageSpinner.Callback {
         public abstract void close();
@@ -262,22 +273,6 @@ public class VoiceInputViewHandler {
         public abstract void startRecognition();
 
         public abstract void stopRecognition();
-    }
-
-    private static enum State {
-        static {
-            State[] arrayOfState = new State[6];
-            arrayOfState[0] = AUDIO_NOT_INITIALIZED;
-            arrayOfState[1] = ERROR;
-            arrayOfState[2] = LISTENING;
-            arrayOfState[3] = PAUSED;
-            arrayOfState[4] = RECORDING;
-            arrayOfState[5] = WORKING;
-            $VALUES = arrayOfState;
-        }
-
-        private State() {
-        }
     }
 }
 

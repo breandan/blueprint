@@ -73,6 +73,13 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class VoiceSearchServices {
     private final AsyncServices mAsyncServices;
+    private final Context mContext;
+    private final CoreSearchServices mCoreSearchServices;
+    private final Object mCreationLock;
+    private final DeviceCapabilityManager mDeviceCapabilityManager;
+    private final GsaPreferenceController mPreferenceController;
+    private final ScheduledExecutorService mScheduledExecutorService;
+    private final Settings mSettings;
     private AudioController mAudioController;
     private AudioManager mAudioManager;
     private AudioRouter mAudioRouter;
@@ -80,10 +87,6 @@ public class VoiceSearchServices {
     private BluetoothCarClassifier mBluetoothCarClassifier;
     private BluetoothController mBluetoothController;
     private ContactLookup mContactLookup;
-    private final Context mContext;
-    private final CoreSearchServices mCoreSearchServices;
-    private final Object mCreationLock;
-    private final DeviceCapabilityManager mDeviceCapabilityManager;
     private DeviceParams mDeviceParams;
     private EarsContentProviderHelper mEarsProviderHelper;
     private Greco3Container mGreco3Container;
@@ -95,10 +98,7 @@ public class VoiceSearchServices {
     private NetworkRequestProducerParams mNrpp;
     private OfflineActionsManager mOfflineActionsManager;
     private PersonalizationHelper mPersonalizationHelper;
-    private final GsaPreferenceController mPreferenceController;
     private Recognizer mRecognizer;
-    private final ScheduledExecutorService mScheduledExecutorService;
-    private final Settings mSettings;
     private AudioTrackSoundManager mSoundManager;
     private SpeechLevelSource mSpeechLevelSource;
     private SpeechLibFactory mSpeechLibFactory;
@@ -146,7 +146,7 @@ public class VoiceSearchServices {
 
     private RecognitionEngineParams.NetworkParams createNetworkParams() {
         PairHttpConnectionFactory localPairHttpConnectionFactory = new PairHttpConnectionFactory(new ServerInfoSupplier(this.mSettings, this.mCoreSearchServices.getConfig(), this.mCoreSearchServices.getSearchUrlHelper(), DebugFeatures.getInstance()), getConnectionFactory());
-        new RecognitionEngineParams.NetworkParams(localPairHttpConnectionFactory, localPairHttpConnectionFactory, new DefaultRetryPolicy(new Supplier() {
+        return new RecognitionEngineParams.NetworkParams(localPairHttpConnectionFactory, localPairHttpConnectionFactory, new DefaultRetryPolicy(new Supplier() {
             public GstaticConfiguration.NetworkRecognizer get() {
                 return VoiceSearchServices.this.mSettings.getConfiguration().getNetworkRecognizer();
             }
@@ -188,17 +188,6 @@ public class VoiceSearchServices {
             return false;
         }
         return paramGsaConfigFlags.hasPumpkinLocale(paramString);
-    }
-
-    public PumpkinTagger createPumpkinTagger(String paramString) {
-        ScheduledExecutorService localScheduledExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(1, "PumpkinTagger");
-        ScheduledSingleThreadedExecutor localScheduledSingleThreadedExecutor = this.mAsyncServices.getUiThreadExecutor();
-        boolean bool = isFollowOnEnabled(this.mCoreSearchServices.getGsaConfigFlags(), this.mSettings.getSpokenLocaleBcp47());
-        return new PumpkinTagger(this.mContext, this.mCoreSearchServices, bool, localScheduledSingleThreadedExecutor, localScheduledExecutorService, new AndroidPumpkinLoader(this.mContext, paramString), ContactLookup.newInstance(this.mContext), AppSelectionHelper.fromContext(this.mContext), VelvetServices.get().getGsaConfigFlags());
-    }
-
-    public SoundSearchController createSoundSearchController() {
-        return new SoundSearchController(this, this.mAsyncServices.getUiThreadExecutor());
     }
 
     public VoiceSearchController createVoiceSearchController(Clock paramClock, SearchUrlHelper paramSearchUrlHelper) {

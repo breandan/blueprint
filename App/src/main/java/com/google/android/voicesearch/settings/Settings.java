@@ -16,9 +16,9 @@ import com.google.android.speech.SpeechSettings;
 import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -59,17 +59,16 @@ public class Settings
     }
 
     private boolean isBlacklistedSoundSearchDevice() {
-        GstaticConfiguration.Configuration localConfiguration = getConfiguration();
-        if (!localConfiguration.hasSoundSearch()) {
+        GstaticConfiguration.Configuration config = getConfiguration();
+        if (!config.hasSoundSearch()) {
+            return false;
         }
-        Iterator localIterator;
-        do {
-            while (!localIterator.hasNext()) {
-                return false;
-                localIterator = localConfiguration.getSoundSearch().getBlacklistedDevicesList().iterator();
+        for (String device : config.getSoundSearch().getBlacklistedDevicesList()) {
+            if (device.equalsIgnoreCase(Build.MODEL)) {
+                return true;
             }
-        } while (!((String) localIterator.next()).equalsIgnoreCase(Build.MODEL));
-        return true;
+        }
+        return false;
     }
 
     private String setDefaultSpokenLocaleBcp47(GstaticConfiguration.Configuration paramConfiguration) {
@@ -165,16 +164,33 @@ public class Settings
         return getPrefs().getInt("languagePacksAutoUpdate", 2);
     }
 
+    public void setLanguagePacksAutoUpdate(int strategy) {
+        Preconditions.checkArgument((strategy == 0) || (strategy == 1) || (strategy == 2));
+        getPrefs().edit().putInt("languagePacksAutoUpdate", strategy).apply();
+    }
+
     public GstaticConfiguration.Configuration getOverrideConfiguration() {
         return this.mGStaticConfiguration.getOverrideConfiguration();
+    }
+
+    public void setOverrideConfiguration(GstaticConfiguration.Configuration paramConfiguration) {
+        this.mGStaticConfiguration.setOverrideConfiguration(paramConfiguration);
     }
 
     public int getPersonalizationValue() {
         return getPrefs().getInt("pref-voice-personalization-status", 0);
     }
 
+    public void setPersonalizationValue(int paramInt) {
+        getPrefs().edit().putInt("pref-voice-personalization-status", paramInt).apply();
+    }
+
     public String getS3ServerOverride() {
         return getPrefs().getString("debugS3Server", "");
+    }
+
+    public void setS3ServerOverride(String paramString) {
+        getPrefs().edit().putString("debugS3Server", paramString).apply();
     }
 
     public int getServerEndpointingActivityTimeoutMs() {
@@ -185,16 +201,12 @@ public class Settings
         return SpokenLanguageUtils.getMainJavaLocaleForBcp47(getConfiguration(), getSpokenLocaleBcp47());
     }
 
-    public String getSpokenLocaleBcp47() {
-        try {
-            Object localObject2 = getPrefs().getString("spoken-language-bcp-47", null);
-            if (localObject2 == null) {
-                String str = setDefaultSpokenLocaleBcp47(getConfiguration());
-                localObject2 = str;
-            }
-            return localObject2;
-        } finally {
+    public synchronized String getSpokenLocaleBcp47() {
+        String slb47 = getPrefs().getString("spoken-language-bcp-47", null);
+        if (slb47 == null) {
+            slb47 = setDefaultSpokenLocaleBcp47(getConfiguration());
         }
+        return slb47;
     }
 
     public String getVoiceSearchTokenType() {
@@ -258,6 +270,10 @@ public class Settings
         return getPrefs().getBoolean("debugS3Logging", false);
     }
 
+    public void setS3DebugLoggingEnabled(boolean paramBoolean) {
+        getPrefs().edit().putBoolean("debugS3Logging", paramBoolean).apply();
+    }
+
     public boolean isServerEndpointingEnabled() {
         return this.mConfigFlags.isServerEndpointingEnabled();
     }
@@ -266,14 +282,8 @@ public class Settings
         return ((this.mSearchConfig.getSoundSearchEnabled()) && (!isBlacklistedSoundSearchDevice())) || (getConfiguration().hasDebug());
     }
 
-    public boolean isSpokenLocaleBcp47Set() {
-        try {
-            boolean bool = getPrefs().contains("spoken-language-bcp-47");
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized boolean isSpokenLocaleBcp47Set() {
+        return getPrefs().contains("spoken-language-bcp-47");
     }
 
     public boolean isTtsOnlyForHandsFree() {
@@ -284,44 +294,10 @@ public class Settings
         getPrefs().edit().putBoolean("hasEverUsedVoiceSearch", true).apply();
     }
 
-    public void setLanguagePacksAutoUpdate(int paramInt) {
-        int i = 1;
-        if ((paramInt == 0) || (paramInt == i) || (paramInt == 2)) {
-        }
-        for (; ; ) {
-            Preconditions.checkArgument(i);
-            getPrefs().edit().putInt("languagePacksAutoUpdate", paramInt).apply();
-            return;
-            i = 0;
-        }
-    }
-
-    public void setOverrideConfiguration(GstaticConfiguration.Configuration paramConfiguration) {
-        this.mGStaticConfiguration.setOverrideConfiguration(paramConfiguration);
-    }
-
-    public void setPersonalizationValue(int paramInt) {
-        getPrefs().edit().putInt("pref-voice-personalization-status", paramInt).apply();
-    }
-
-    public void setS3DebugLoggingEnabled(boolean paramBoolean) {
-        getPrefs().edit().putBoolean("debugS3Logging", paramBoolean).apply();
-    }
-
-    public void setS3ServerOverride(String paramString) {
-        getPrefs().edit().putString("debugS3Server", paramString).apply();
-    }
-
-    public void setSpokenLanguageBcp47(String paramString, boolean paramBoolean) {
-        try {
-            SharedPreferences localSharedPreferences = getPrefs();
-            if (!paramString.equals(localSharedPreferences.getString("spoken-language-bcp-47", null))) {
-                localSharedPreferences.edit().putString("spoken-language-bcp-47", paramString).putBoolean("spoken-language-default", paramBoolean).apply();
-            }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
+    public synchronized void setSpokenLanguageBcp47(String paramString, boolean paramBoolean) {
+        SharedPreferences localSharedPreferences = getPrefs();
+        if (!paramString.equals(localSharedPreferences.getString("spoken-language-bcp-47", null))) {
+            localSharedPreferences.edit().putString("spoken-language-bcp-47", paramString).putBoolean("spoken-language-default", paramBoolean).apply();
         }
     }
 

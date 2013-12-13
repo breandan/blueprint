@@ -22,7 +22,7 @@ public class IntentApiActivity
     private IntentApiViewHelper mViewHelper;
 
     private View.OnClickListener buildFinishListener(final int paramInt) {
-        new View.OnClickListener() {
+        return new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 IntentApiActivity.this.mController.finishWithReturnCode(paramInt);
             }

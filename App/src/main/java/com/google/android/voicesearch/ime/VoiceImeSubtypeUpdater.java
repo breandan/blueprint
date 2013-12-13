@@ -7,6 +7,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
 import com.google.android.speech.utils.SpokenLanguageUtils;
+import com.google.android.voicesearch.settings.Settings;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.ArrayList;
 import java.util.Iterator;

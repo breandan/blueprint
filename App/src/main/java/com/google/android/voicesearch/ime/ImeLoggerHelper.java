@@ -57,22 +57,20 @@ public class ImeLoggerHelper {
         this.mFirstImeRun = true;
     }
 
-    public void onStartInputView(EditorInfo paramEditorInfo) {
-        String str = "";
-        if (paramEditorInfo != null) {
-            str = TextUtil.safeToString(paramEditorInfo.packageName);
+    public void onStartInputView(EditorInfo editorInfo) {
+        String triggerApplicationId = "";
+        if (editorInfo != null) {
+            triggerApplicationId = TextUtil.safeToString(editorInfo.packageName);
         }
-        EventLogger.recordClientEvent(35, str);
-        if (this.mFirstImeRun) {
-            this.mStartTimestamp = VoiceSearchClock.elapsedRealtime();
+        EventLogger.recordClientEvent(0x23, triggerApplicationId);
+        if (mFirstImeRun) {
+            mStartTimestamp = VoiceSearchClock.elapsedRealtime();
+        } else {
+            EventLogger.recordClientEvent(0x24);
         }
-        for (; ; ) {
-            this.mActive = true;
-            this.mFirstImeRun = false;
-            this.mWaitingForResult = false;
-            return;
-            EventLogger.recordClientEvent(36);
-        }
+        mActive = true;
+        mFirstImeRun = false;
+        mWaitingForResult = false;
     }
 
     public void setWaitingForResult(boolean paramBoolean) {

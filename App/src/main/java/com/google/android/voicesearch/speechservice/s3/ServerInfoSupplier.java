@@ -10,6 +10,7 @@ import com.google.android.search.core.google.SearchUrlHelper;
 import com.google.android.shared.util.ProtoUtils;
 import com.google.android.voicesearch.settings.Settings;
 import com.google.common.base.Supplier;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.Iterator;
 

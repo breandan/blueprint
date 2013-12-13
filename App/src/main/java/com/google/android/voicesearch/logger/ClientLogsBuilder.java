@@ -13,15 +13,18 @@ import com.google.android.search.core.google.SearchBoxLogging;
 import com.google.android.search.core.suggest.SuggestionLauncher.SummonsLogData;
 import com.google.android.search.core.suggest.presenter.IcingInitialization.DiagnosticsLogData;
 import com.google.android.search.core.summons.icing.InternalCorpus;
+import com.google.android.search.core.util.LatencyTracker;
 import com.google.android.search.core.util.LatencyTracker.Event;
 import com.google.android.search.core.util.LatencyTracker.EventList;
 import com.google.android.speech.utils.HexUtils;
 import com.google.android.voicesearch.contacts.ContactSelectData;
+import com.google.android.voicesearch.logger.store.MainEventLoggerStore;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.protobuf.micro.InvalidProtocolBufferMicroException;
+import com.google.speech.logs.VoicesearchClientLogProto;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
