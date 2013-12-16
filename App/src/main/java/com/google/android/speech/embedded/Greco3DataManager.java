@@ -309,16 +309,10 @@ public class Greco3DataManager {
         this.mUiThread.execute(paramRunnable);
     }
 
-    public void blockingUpdateResources(boolean paramBoolean) {
-        try {
+    public synchronized void blockingUpdateResources(boolean paramBoolean) {
             ExtraPreconditions.checkNotMainThread();
             updateResourcesLocked(paramBoolean);
             waitForPendingUpdates();
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public File createOuputPathForGrammarCache(Greco3Grammar paramGreco3Grammar, String paramString) {
@@ -458,27 +452,15 @@ public class Greco3DataManager {
         return true;
     }
 
-    public void initialize() {
-        try {
+    public synchronized void initialize() {
             if (!isInitialized()) {
                 updateResourcesLocked(false);
             }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public void initialize(Runnable paramRunnable) {
-        try {
+    public synchronized void initialize(Runnable paramRunnable) {
             addInitializationCallback(paramRunnable);
             initialize();
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     /* Error */

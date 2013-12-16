@@ -315,11 +315,6 @@ public final class GstaticConfiguration {
         private GstaticConfiguration.ServerInfo tcpServerInfo_ = null;
         private GstaticConfiguration.VoiceSearch voiceSearch_ = null;
 
-        public static Configuration parseFrom(CodedInputStreamMicro paramCodedInputStreamMicro)
-                throws IOException {
-            return new Configuration().mergeFrom(paramCodedInputStreamMicro);
-        }
-
         public static Configuration parseFrom(byte[] paramArrayOfByte)
                 throws InvalidProtocolBufferMicroException {
             return (Configuration) new Configuration().mergeFrom(paramArrayOfByte);
@@ -1971,20 +1966,8 @@ public final class GstaticConfiguration {
             return this.header_;
         }
 
-        public String getHttpHeaderKey(int paramInt) {
-            return (String) this.httpHeaderKey_.get(paramInt);
-        }
-
-        public int getHttpHeaderKeyCount() {
-            return this.httpHeaderKey_.size();
-        }
-
         public List<String> getHttpHeaderKeyList() {
             return this.httpHeaderKey_;
-        }
-
-        public String getHttpHeaderValue(int paramInt) {
-            return (String) this.httpHeaderValue_.get(paramInt);
         }
 
         public List<String> getHttpHeaderValueList() {
@@ -2397,11 +2380,6 @@ public final class GstaticConfiguration {
         private int minimumDeviceClass_ = 0;
         private int sizeKb_ = 0;
         private int version_ = 0;
-
-        public static LanguagePack parseFrom(CodedInputStreamMicro paramCodedInputStreamMicro)
-                throws IOException {
-            return new LanguagePack().mergeFrom(paramCodedInputStreamMicro);
-        }
 
         public LanguagePack addCompatibleBcp47Locales(String paramString) {
             if (paramString == null) {

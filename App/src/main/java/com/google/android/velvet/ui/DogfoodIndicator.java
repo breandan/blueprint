@@ -26,7 +26,7 @@ public class DogfoodIndicator
         this.mTextPaint.setTextAlign(Paint.Align.LEFT);
         this.mTextPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
         this.mTextBounds = new Rect();
-        this.mTextPaint.getTextBounds("CONFIDENTIAL", 0, "CONFIDENTIAL".length(), this.mTextBounds);
+        this.mTextPaint.getTextBounds("CONFIDENTIAL", 0, 12, this.mTextBounds);
         this.mBannerPaint = new Paint();
         this.mBannerPaint.setColor(-2133000192);
         this.mBannerPaint.setAntiAlias(true);

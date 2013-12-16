@@ -67,14 +67,9 @@ public class Greco3Preferences {
         writeToSharedPrefs("g3_active_downloads", serializeHashMapToDelimitedKeyValuePairs(localHashMap));
     }
 
-    public HashMap<String, Long> getActiveDownloads() {
-        try {
+    public synchronized HashMap<String, Long> getActiveDownloads() {
             HashMap localHashMap = buildHashMapFromDelimitedKeyValuePairs(this.mSharedPreferences.getString("g3_active_downloads", ""));
             return localHashMap;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public String getCompiledGrammarRevisionId(Greco3Grammar paramGreco3Grammar) {

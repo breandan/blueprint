@@ -76,14 +76,8 @@ public class ExtraPreconditions {
             return this;
         }
 
-        public void reset() {
-            try {
+        public synchronized void reset() {
                 this.mThread = null;
-                return;
-            } finally {
-                localObject =finally;
-                throw localObject;
-            }
         }
     }
 

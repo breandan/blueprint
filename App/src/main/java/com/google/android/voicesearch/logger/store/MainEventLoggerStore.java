@@ -12,31 +12,18 @@ public class MainEventLoggerStore
     private final ArrayList<Integer> mEvents = new ArrayList();
     private final ArrayList<Long> mTime = new ArrayList();
 
-    public void clearResults() {
-        try {
+    public synchronized void clearResults() {
             this.mEvents.clear();
             this.mTime.clear();
             this.mDatas.clear();
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public Results getAndClearResults() {
-        try {
+    public synchronized Results getAndClearResults() {
             Results localResults = getResults();
             clearResults();
-            return localResults;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public Results getResults() {
-        try {
+    public synchronized Results getResults() {
             Results local1 = new Results() {
                 public Object getData(int paramAnonymousInt) {
                     return this.val$datas.get(paramAnonymousInt);
@@ -54,24 +41,13 @@ public class MainEventLoggerStore
                     return this.val$events.size();
                 }
             };
-            return local1;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public void recordEvent(int paramInt, Object paramObject) {
-        try {
+    public synchronized void recordEvent(int paramInt, Object paramObject) {
             long l = SystemClock.elapsedRealtime();
             this.mEvents.add(Integer.valueOf(paramInt));
             this.mTime.add(Long.valueOf(l));
             this.mDatas.add(paramObject);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public static abstract interface Results {

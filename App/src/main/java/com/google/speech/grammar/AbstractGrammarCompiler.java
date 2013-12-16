@@ -31,98 +31,50 @@ public abstract class AbstractGrammarCompiler {
 
     private static native boolean nativeWriteSemanticFst(long paramLong, String paramString1, String paramString2);
 
-    public boolean compileAbnf(String paramString) {
-        try {
-            assertValidState();
-            boolean bool = nativeCompile(this.nativeObj, paramString.getBytes(Charset.forName("UTF-8")));
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized boolean compileAbnf(String paramString) {
+	assertValidState();
+	return nativeCompile(this.nativeObj, paramString.getBytes(Charset.forName("UTF-8")));
     }
 
-    public void delete() {
-        try {
+    public synchronized void delete() {
             if (this.nativeObj != 0L) {
                 nativeDelete(this.nativeObj);
                 this.nativeObj = 0L;
             }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     protected void finalize() {
         delete();
     }
 
-    public boolean initFromFile(String paramString, String[] paramArrayOfString) {
-        try {
+    public synchronized boolean initFromFile(String paramString, String[] paramArrayOfString) {
             assertValidState();
             boolean bool = nativeInitFromFile(this.nativeObj, paramString, paramArrayOfString);
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public boolean initFromProto(byte[] paramArrayOfByte, String[] paramArrayOfString) {
-        try {
+    public synchronized boolean initFromProto(byte[] paramArrayOfByte, String[] paramArrayOfString) {
             assertValidState();
-            boolean bool = nativeInitFromProto(this.nativeObj, paramArrayOfByte, paramArrayOfString);
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+            return nativeInitFromProto(this.nativeObj, paramArrayOfByte, paramArrayOfString);
     }
 
-    public boolean readCache(String paramString) {
-        try {
+    public synchronized boolean readCache(String paramString) {
             assertValidState();
-            boolean bool = nativeReadCache(this.nativeObj, paramString);
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+            return nativeReadCache(this.nativeObj, paramString);
     }
 
-    public boolean writeCache(String paramString, boolean paramBoolean) {
-        try {
+    public synchronized boolean writeCache(String paramString, boolean paramBoolean) {
             assertValidState();
-            boolean bool = nativeWriteCache(this.nativeObj, paramString, paramBoolean);
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+            return nativeWriteCache(this.nativeObj, paramString, paramBoolean);
     }
 
-    public boolean writeClgFst(String paramString1, String paramString2) {
-        try {
+    public synchronized boolean writeClgFst(String paramString1, String paramString2) {
             assertValidState();
-            boolean bool = nativeWriteClgFst(this.nativeObj, paramString1, paramString2);
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+            return nativeWriteClgFst(this.nativeObj, paramString1, paramString2);
     }
 
-    public boolean writeSemanticFst(String paramString1, String paramString2) {
-        try {
+    public synchronized boolean writeSemanticFst(String paramString1, String paramString2) {
             assertValidState();
-            boolean bool = nativeWriteSemanticFst(this.nativeObj, paramString1, paramString2);
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+            return nativeWriteSemanticFst(this.nativeObj, paramString1, paramString2);
     }
 }
 

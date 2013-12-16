@@ -89,17 +89,11 @@ public class ImageMetadataController {
         this.mCurrentTimer = this.mTimerExecutor.schedule(this.mTimerRunnable, 2L, TimeUnit.SECONDS);
     }
 
-    public void fetchMoreImages() {
-        try {
+    public synchronized void fetchMoreImages() {
             if ((this.mCurrentLoader == null) && (!this.mIsParsing) && (!this.mNoMoreImages) && (this.mQuery.isTextOrVoiceWebSearchWithQueryChars())) {
                 this.mCurrentLoader = new ImageMetadataLoader(this.mPulledCount, null);
                 this.mBgExecutor.execute(this.mCurrentLoader);
             }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     protected String fetchXml(Query paramQuery, int paramInt)
@@ -243,15 +237,9 @@ public class ImageMetadataController {
         }
     }
 
-    public void setImages(List<VelvetImage> paramList) {
-        try {
+    public synchronized void setImages(List<VelvetImage> paramList) {
             this.mLoadedImageData.clear();
             this.mLoadedImageData.addAll(paramList);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public void setJson(String paramString, Query paramQuery) {
@@ -278,25 +266,13 @@ public class ImageMetadataController {
         }
     }
 
-    public void setQuery(Query paramQuery, String paramString) {
-        try {
+    public synchronized void setQuery(Query paramQuery, String paramString) {
             setQueryInternal(paramQuery, paramString, false);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public void setQueryWithImages(Query paramQuery, String paramString, List<VelvetImage> paramList) {
-        try {
+    public synchronized void setQueryWithImages(Query paramQuery, String paramString, List<VelvetImage> paramList) {
             setQueryInternal(paramQuery, paramString, true);
             this.mLoadedImageData.addAll(paramList);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     private class ImageMetadataLoader

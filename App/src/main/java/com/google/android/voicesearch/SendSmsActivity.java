@@ -151,8 +151,7 @@ public class SendSmsActivity
             this.mNumMessages = paramInt;
         }
 
-        private void registerSuccessfulMessage(Context paramContext, Intent paramIntent) {
-            try {
+        private synchronized void registerSuccessfulMessage(Context paramContext, Intent paramIntent) {
                 this.mNumMessages = (-1 + this.mNumMessages);
                 SendSmsActivity.this.mTimeoutWatchdog.extend();
                 if (this.mNumMessages < 1) {
@@ -160,11 +159,6 @@ public class SendSmsActivity
                     SmsUtils.insertSentSmsIntoDatabase(paramContext, paramIntent.getStringExtra("com.google.android.voicesearch.extras.SMS_MESSAGE"), str);
                     SendSmsActivity.this.fireSuccess();
                 }
-                return;
-            } finally {
-                localObject =finally;
-                throw localObject;
-            }
         }
 
         public void onReceive(Context paramContext, Intent paramIntent) {

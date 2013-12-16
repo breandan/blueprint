@@ -104,15 +104,9 @@ public class DefaultRetryPolicy
         return false;
     }
 
-    public void reset() {
-        try {
+    public synchronized void reset() {
             this.mCounter = -1;
             this.mRecognitionStartedTimestamp = this.mClock.currentTimeMillis();
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 }
 

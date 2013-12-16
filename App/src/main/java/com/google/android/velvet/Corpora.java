@@ -140,18 +140,12 @@ public class Corpora
         return (WebCorpus) this.mCorpora.get("web");
     }
 
-    public void init() {
-        try {
+    public synchronized void init() {
             if (!this.mInitialized) {
                 addCorpora(new Corpus("summons", Util.getResourceUri(this.mContext, 2130837883), Util.getResourceUri(this.mContext, 2131363119), 2130968644, null, this, null), ImmutableList.of());
                 this.mDownloadableWebCorpora.initializeFromCached();
                 this.mInitialized = true;
             }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public void initializeDelayed() {

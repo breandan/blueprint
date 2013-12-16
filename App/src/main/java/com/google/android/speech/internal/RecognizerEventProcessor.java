@@ -113,7 +113,7 @@ public class RecognizerEventProcessor {
             if (str2.startsWith("_p")) {
             }
             try {
-                int k = Integer.parseInt(str2.substring("_p".length()));
+                int k = Integer.parseInt(str2.substring(2));
                 i = k;
             } catch (NumberFormatException localNumberFormatException) {
                 for (; ; ) {
@@ -121,7 +121,7 @@ public class RecognizerEventProcessor {
                 }
             }
             if (str2.startsWith("_d")) {
-                localStringBuilder.append(str2.substring("_d".length()));
+                localStringBuilder.append(str2.substring(2));
             }
         }
         label152:

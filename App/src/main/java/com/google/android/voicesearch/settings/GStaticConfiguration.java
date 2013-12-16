@@ -6,8 +6,6 @@ import android.util.Log;
 import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.search.core.GserviceWrapper;
 import com.google.android.search.core.preferences.SharedPreferencesExt;
-import com.google.android.search.core.util.HttpHelper;
-import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.shared.util.ProtoUtils;
 import com.google.android.voicesearch.logger.EventLogger;
 import com.google.common.base.Preconditions;
@@ -26,9 +24,7 @@ import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 
 class GStaticConfiguration {
-    static final String BUNDLE_TIMESTAMP = "2013_10_04_22_22_03";
     private final ExecutorService mExecutorService;
-    private final GserviceWrapper mGserviceWrapper;
     private final ArrayList<Settings.ConfigurationChangeListener> mListeners;
     private final Runnable mLoadRunnable;
     private final Object mLoadingLock = new Object();
@@ -43,7 +39,6 @@ class GStaticConfiguration {
         this.mPrefController = paramGsaPreferenceController;
         this.mResources = paramResources;
         this.mExecutorService = paramExecutorService;
-        this.mGserviceWrapper = paramGserviceWrapper;
         this.mListeners = new ArrayList();
         this.mLoadRunnable = new Runnable() {
             public void run() {
@@ -63,35 +58,8 @@ class GStaticConfiguration {
         };
     }
 
-    static String getTimestampFromUrl(String paramString) {
-        int i = paramString.lastIndexOf('/');
-        if (i == -1) {
-        }
-        int j;
-        do {
-            return null;
-            j = paramString.indexOf('_', i);
-        } while (j == -1);
-        int k = j + 1;
-        try {
-            String str = paramString.substring(k, k + "2013_10_04_22_22_03".length());
-            return str;
-        } catch (IndexOutOfBoundsException localIndexOutOfBoundsException) {
-        }
-        return null;
-    }
-
     private static boolean isPreferenceObsolete(String prefTimestamp) {
-        if(prefTimestamp == null) {
-            return true;
-        }
-        if(prefTimestamp.length() == "2013_10_04_22_22_03".length()) {
-            boolean localboolean1 = preferenceObsolete;
-            Log.i("GStaticConfiguration", "Bundled: 2013_10_04_22_22_03, pref: " + prefTimestamp + " pref obsolete" + "2013_10_04_22_22_03".compareTo(prefTimestamp) > 0 ? localboolean1 : 0x0);
-            preferenceObsolete;
-            return preferenceObsolete;
-        }
-        return true;
+        return false;
     }
 
     private static GstaticConfiguration.Configuration loadBundledConfig(Resources paramResources) {
@@ -109,12 +77,12 @@ class GStaticConfiguration {
 
     private static GstaticConfiguration.Configuration maybeMergeDebugOverride(SharedPrefsData paramSharedPrefsData) {
         GstaticConfiguration.Configuration base = paramSharedPrefsData.experimentData == null ? paramSharedPrefsData.configData : paramSharedPrefsData.experimentData;
-        if(paramSharedPrefsData.overridenData == null) {
+        if (paramSharedPrefsData.overridenData == null) {
             return base;
         }
         try {
-            return (GstaticConfiguration.Configuration)(GstaticConfiguration.Configuration)ProtoUtils.copyOf(base).mergeFrom(paramSharedPrefsData.overridenData.toByteArray());
-        } catch(InvalidProtocolBufferMicroException e) {
+            return (GstaticConfiguration.Configuration) (GstaticConfiguration.Configuration) ProtoUtils.copyOf(base).mergeFrom(paramSharedPrefsData.overridenData.toByteArray());
+        } catch (InvalidProtocolBufferMicroException e) {
             return base;
         }
     }
@@ -157,118 +125,23 @@ class GStaticConfiguration {
         paramEditor.remove(paramString1);
     }
 
-    private byte[] download(HttpHelper paramHttpHelper, String paramString) {
-        try {
-            byte[] arrayOfByte = paramHttpHelper.rawGet(new HttpHelper.GetRequest(paramString), 0);
-            return arrayOfByte;
-        } catch (HttpHelper.HttpException localHttpException) {
-            Log.w("GStaticConfiguration", "HTTPException error in updating the configuration");
-            return null;
-        } catch (IOException localIOException) {
-            Log.w("GStaticConfiguration", "IOException error in updating the configuration");
-        }
-        return null;
-    }
-
-    private boolean downloadFromNetwork(SharedPrefsData paramSharedPrefsData, HttpHelper paramHttpHelper) {
-        String str1 = this.mGserviceWrapper.getString("voice_search:gstatic_experiment_url");
-        String str2 = paramSharedPrefsData.experimentUrl;
-        int i = 0;
-        if (str2 != null) {
-            i = 0;
-            if (str1 == null) {
-                paramSharedPrefsData.experimentUrl = null;
-                paramSharedPrefsData.experimentData = null;
-                i = 1;
-            }
-        }
-        String str3;
-        if (str1 != null) {
-            if (str1.equals(paramSharedPrefsData.experimentUrl)) {
-                str3 = null;
-            }
-        }
-        while (str3 == null) {
-            if (i != 0) {
-                maybeOverrideFromResources(paramSharedPrefsData, this.mResources);
-                return true;
-                str3 = str1;
-                continue;
-                str3 = getNewConfigurationUrl(paramSharedPrefsData);
-            } else {
-                return false;
-            }
-        }
-        Preconditions.checkNotNull(str3);
-        byte[] arrayOfByte = download(paramHttpHelper, str3);
-        if (arrayOfByte == null) {
-            Log.i("GStaticConfiguration", "Configuration not updated - error");
-            return false;
-        }
-        GstaticConfiguration.Configuration localConfiguration;
-        try {
-            localConfiguration = GstaticConfiguration.Configuration.parseFrom(arrayOfByte);
-            if (str1 != null) {
-                paramSharedPrefsData.experimentUrl = str1;
-                paramSharedPrefsData.experimentData = localConfiguration;
-                return true;
-            }
-        } catch (InvalidProtocolBufferMicroException localInvalidProtocolBufferMicroException) {
-            Log.i("GStaticConfiguration", "Downloaded Configuration cannot be parsed", localInvalidProtocolBufferMicroException);
-            return false;
-        }
-        paramSharedPrefsData.configTimestamp = getTimestampFromUrl(str3);
-        paramSharedPrefsData.configData = localConfiguration;
-        return true;
-    }
-
-    private String getNewConfigurationUrl(SharedPrefsData paramSharedPrefsData) {
-        String str1 = this.mGserviceWrapper.getString("voice_search:gstatic_url");
-        if ((str1 == null) || (str1.indexOf('/') == -1)) {
-            Log.w("GStaticConfiguration", "No valid gstatic url found.");
-            return null;
-        }
-        String str2 = getTimestampFromUrl(str1);
-        if (str2 == null) {
-            Log.w("GStaticConfiguration", "No valid timestamp in gstatic url.");
-            return null;
-        }
-        String str3 = paramSharedPrefsData.configTimestamp;
-        if (str3 == null) {
-            Log.i("GStaticConfiguration", "Ignore gservice update: no configuration");
-            return null;
-        }
-        if (str3.compareTo(str2) >= 0) {
-            return null;
-        }
-        Log.i("GStaticConfiguration", "#getNewConfigurationUrl [pref=" + str3 + ", gservice=" + str2);
-        return str1;
-    }
-
     private GstaticConfiguration.Configuration maybeWaitForConfiguration() {
-        synchronized (this.mLoadingLock) {
-            if (this.mConfiguration != null) {
-                GstaticConfiguration.Configuration localConfiguration4 = this.mConfiguration;
-                return localConfiguration4;
-            }
-            EventLogger.recordLatencyStart(1);
-            for (; ; ) {
-                GstaticConfiguration.Configuration localConfiguration1 = this.mConfiguration;
-                if (localConfiguration1 == null) {
-                    try {
-                        this.mLoadingLock.wait();
-                    } catch (InterruptedException localInterruptedException) {
-                        Log.e("GStaticConfiguration", "Interrupted waiting for configuration");
-                        Thread.currentThread().interrupt();
-                        GstaticConfiguration.Configuration localConfiguration3 = new GstaticConfiguration.Configuration();
-                        return localConfiguration3;
-                    }
+        synchronized (mLoadingLock) {
+            if (mConfiguration != null) {
+                return mConfiguration;
+            } else {
+                EventLogger.recordLatencyStart(0x1);
+                try {
+                    mLoadingLock.wait();
+                } catch (InterruptedException e) {
+                    Log.e("GStaticConfiguration", "Interrupted waiting for configuration");
+                    Thread.currentThread().interrupt();
+                    return new GstaticConfiguration.Configuration();
                 }
+                EventLogger.recordClientEvent(0x3);
+                return mConfiguration;
             }
         }
-        EventLogger.recordClientEvent(3);
-        GstaticConfiguration.Configuration localConfiguration2 = this.mConfiguration;
-        return localConfiguration2;
     }
 
     private void notifyListener() {
@@ -284,14 +157,6 @@ class GStaticConfiguration {
         }
     }
 
-    private void scheduleNotifyListener() {
-        this.mExecutorService.submit(new Runnable() {
-            public void run() {
-                GStaticConfiguration.this.notifyListener();
-            }
-        });
-    }
-
     private void setCurrentPrefs(SharedPrefsData paramSharedPrefsData) {
         GstaticConfiguration.Configuration localConfiguration = maybeMergeDebugOverride(paramSharedPrefsData);
         synchronized (this.mLoadingLock) {
@@ -302,33 +167,19 @@ class GStaticConfiguration {
         }
     }
 
-    public void addListener(Settings.ConfigurationChangeListener paramConfigurationChangeListener) {
-        for (; ; ) {
-            synchronized (this.mScheduleLoadLock) {
-                if (this.mLoadFuture == null) {
-                    bool = true;
-                    Preconditions.checkState(bool);
-                    this.mListeners.add(paramConfigurationChangeListener);
-                    return;
-                }
-            }
-            boolean bool = false;
+    public void addListener(Settings.ConfigurationChangeListener listener) {
+        synchronized (mScheduleLoadLock) {
+            Preconditions.checkState((mLoadFuture == null));
+            mListeners.add(listener);
         }
     }
 
     void asyncLoad() {
-        for (; ; ) {
-            synchronized (this.mScheduleLoadLock) {
-                if (this.mListeners.size() > 0) {
-                    bool = true;
-                    Preconditions.checkState(bool);
-                    if (this.mLoadFuture == null) {
-                        this.mLoadFuture = this.mExecutorService.submit(this.mLoadRunnable);
-                    }
-                    return;
-                }
+        synchronized (mScheduleLoadLock) {
+            Preconditions.checkState((mListeners.size() > 0));
+            if (mLoadFuture == null) {
+                mLoadFuture = mExecutorService.submit(mLoadRunnable);
             }
-            boolean bool = false;
         }
     }
 
@@ -342,28 +193,6 @@ class GStaticConfiguration {
             GstaticConfiguration.Configuration localConfiguration = this.mConfiguration;
             return localConfiguration;
         }
-    }
-
-    public GstaticConfiguration.Configuration getOverrideConfiguration() {
-        SharedPrefsData localSharedPrefsData = maybeLoadFromSharedPrefs();
-        if (localSharedPrefsData.overridenData != null) {
-            return localSharedPrefsData.overridenData;
-        }
-        return new GstaticConfiguration.Configuration().setId("override");
-    }
-
-    public void setOverrideConfiguration(@Nullable GstaticConfiguration.Configuration paramConfiguration) {
-        SharedPrefsData localSharedPrefsData = maybeLoadFromSharedPrefs();
-        localSharedPrefsData.overridenData = paramConfiguration;
-        if (!maybeOverrideFromResources(localSharedPrefsData, this.mResources)) {
-            writeToSharedPrefs(localSharedPrefsData);
-        }
-        setCurrentPrefs(localSharedPrefsData);
-        scheduleNotifyListener();
-    }
-
-    public String getTimestamp() {
-        return maybeLoadFromSharedPrefs().configTimestamp;
     }
 
     protected SharedPrefsData maybeLoadFromSharedPrefs() {
@@ -381,17 +210,6 @@ class GStaticConfiguration {
             localSharedPrefsData2.experimentData = parseConfig(localSharedPreferencesExt.getBytes("gstatic_configuration_experiment_data", null));
             localSharedPrefsData2.overridenData = parseConfig(localSharedPreferencesExt.getBytes("gstatic_configuration_override_1", null));
             return localSharedPrefsData2;
-        }
-    }
-
-    public void update(HttpHelper paramHttpHelper) {
-        ExtraPreconditions.checkNotMainThread();
-        SharedPrefsData localSharedPrefsData = maybeLoadFromSharedPrefs();
-        boolean bool = downloadFromNetwork(localSharedPrefsData, paramHttpHelper);
-        setCurrentPrefs(localSharedPrefsData);
-        if (bool) {
-            writeToSharedPrefs(localSharedPrefsData);
-            notifyListener();
         }
     }
 

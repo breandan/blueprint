@@ -199,14 +199,8 @@ public class DefaultEndpointerEventProcessor
         //   48	58	63	finally
     }
 
-    private void setEndOfSpeechTriggerPoint(long paramLong) {
-        try {
+    private synchronized void setEndOfSpeechTriggerPoint(long paramLong) {
             this.mEndOfSpeechTriggerMs = paramLong;
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     /* Error */

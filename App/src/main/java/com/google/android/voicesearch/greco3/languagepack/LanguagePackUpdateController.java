@@ -532,14 +532,8 @@ public class LanguagePackUpdateController
         this.mGreco3DataManager.initialize(this.mDataManagerInitializationCallback);
     }
 
-    public boolean isActiveDownload(GstaticConfiguration.LanguagePack paramLanguagePack) {
-        try {
-            boolean bool = isActiveDownload(paramLanguagePack.getLanguagePackId());
-            return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized boolean isActiveDownload(GstaticConfiguration.LanguagePack paramLanguagePack) {
+           return isActiveDownload(paramLanguagePack.getLanguagePackId());
     }
 
     boolean isActiveDownload(String paramString) {
@@ -572,15 +566,9 @@ public class LanguagePackUpdateController
         this.mListeners.add(paramListener);
     }
 
-    public void removeActiveDownload(String paramString) {
-        try {
+    public synchronized void removeActiveDownload(String paramString) {
             this.mActiveDownloads.remove(paramString);
             this.mPreferenceStore.removeActiveDownload(paramString);
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public void unregisterListener(Listener paramListener) {

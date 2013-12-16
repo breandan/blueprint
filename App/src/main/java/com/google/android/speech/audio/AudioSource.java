@@ -12,14 +12,14 @@ import javax.annotation.Nullable;
 
 public class AudioSource
         implements AudioInputStreamFactory {
-    private CaptureThread mCaptureThread;
-    private AudioInputStreamFactory mInputStreamFactory;
     private final int mMaxBuffers;
     private final int mMinBuffers;
     private final int mReadSize;
     private final int mSampleRate;
     @Nullable
     private final SpeechLevelGenerator mSpeechLevelGenerator;
+    private CaptureThread mCaptureThread;
+    private AudioInputStreamFactory mInputStreamFactory;
     private Tee mTee;
 
     public AudioSource(int paramInt1, int paramInt2, int paramInt3, int paramInt4, AudioInputStreamFactory paramAudioInputStreamFactory, @Nullable SpeechLevelSource paramSpeechLevelSource) {
@@ -82,16 +82,10 @@ public class AudioSource
         this.mTee.setStartAtDelegatePos(l);
     }
 
-    public void shutdown() {
-        try {
-            stopListening();
-            this.mInputStreamFactory = null;
-            this.mTee = null;
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized void shutdown() {
+        stopListening();
+        this.mInputStreamFactory = null;
+        this.mTee = null;
     }
 
     /* Error */
@@ -175,10 +169,10 @@ public class AudioSource
     private static class CaptureThread
             extends Thread {
         private final RecognitionEventListener mEventListener;
-        private InputStream mLeader;
         private final int mReadSize;
         @Nullable
         private final SpeechLevelGenerator mSpeechLevelGenerator;
+        private InputStream mLeader;
 
         public CaptureThread(int paramInt, @Nullable SpeechLevelGenerator paramSpeechLevelGenerator, RecognitionEventListener paramRecognitionEventListener) {
             super();

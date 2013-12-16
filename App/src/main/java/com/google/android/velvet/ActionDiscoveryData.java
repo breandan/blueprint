@@ -158,25 +158,15 @@ public class ActionDiscoveryData
         return str2;
     }
 
-    public ActionV2Protos.HelpAction getNow() {
-        try {
+    public synchronized ActionV2Protos.HelpAction getNow() {
             Preconditions.checkState(this.mLoaded);
             ActionV2Protos.HelpAction localHelpAction = this.mHelpData;
             return localHelpAction;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public boolean haveNow() {
-        try {
+    public synchronized boolean haveNow() {
             boolean bool = this.mLoaded;
             return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public boolean isSupported(@Nullable String paramString) {

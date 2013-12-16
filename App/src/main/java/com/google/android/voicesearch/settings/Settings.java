@@ -11,7 +11,6 @@ import com.google.android.search.core.GserviceWrapper;
 import com.google.android.search.core.SearchConfig;
 import com.google.android.search.core.SearchSettings;
 import com.google.android.search.core.util.HttpHelper;
-import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.speech.SpeechSettings;
 import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.common.base.Preconditions;
@@ -28,9 +27,7 @@ import javax.annotation.Nullable;
 public class Settings
         implements SpeechSettings {
     private final GsaConfigFlags mConfigFlags;
-    private final Context mContext;
     private final GStaticConfiguration mGStaticConfiguration;
-    private final HttpHelper mHttpHelper;
     private final GsaPreferenceController mPrefController;
     private final SearchConfig mSearchConfig;
     private final SearchSettings mSearchSettings;
@@ -41,11 +38,9 @@ public class Settings
 
     Settings(GsaPreferenceController paramGsaPreferenceController, Context paramContext, SearchSettings paramSearchSettings, SearchConfig paramSearchConfig, GsaConfigFlags paramGsaConfigFlags, HttpHelper paramHttpHelper, GStaticConfiguration paramGStaticConfiguration) {
         this.mPrefController = paramGsaPreferenceController;
-        this.mContext = paramContext;
         this.mSearchSettings = paramSearchSettings;
         this.mSearchConfig = paramSearchConfig;
         this.mConfigFlags = paramGsaConfigFlags;
-        this.mHttpHelper = paramHttpHelper;
         this.mGStaticConfiguration = paramGStaticConfiguration;
         this.mGStaticConfiguration.addListener(new ConfigurationChangeListener() {
             public void onChange(GstaticConfiguration.Configuration paramAnonymousConfiguration) {
@@ -99,10 +94,6 @@ public class Settings
         this.mGStaticConfiguration.asyncLoad();
     }
 
-    public void clearS3ServerOverride() {
-        getPrefs().edit().remove("debugS3Server").apply();
-    }
-
     public GstaticConfiguration.Configuration getConfiguration() {
         return this.mGStaticConfiguration.getConfiguration();
     }
@@ -110,10 +101,6 @@ public class Settings
     @Nullable
     public GstaticConfiguration.Configuration getConfigurationIfReady() {
         return this.mGStaticConfiguration.getConfigurationIfReady();
-    }
-
-    public String getConfigurationTimestamp() {
-        return this.mGStaticConfiguration.getTimestamp();
     }
 
     public String getDebugRecognitionEngineRestrict() {
@@ -169,14 +156,6 @@ public class Settings
         getPrefs().edit().putInt("languagePacksAutoUpdate", strategy).apply();
     }
 
-    public GstaticConfiguration.Configuration getOverrideConfiguration() {
-        return this.mGStaticConfiguration.getOverrideConfiguration();
-    }
-
-    public void setOverrideConfiguration(GstaticConfiguration.Configuration paramConfiguration) {
-        this.mGStaticConfiguration.setOverrideConfiguration(paramConfiguration);
-    }
-
     public int getPersonalizationValue() {
         return getPrefs().getInt("pref-voice-personalization-status", 0);
     }
@@ -187,10 +166,6 @@ public class Settings
 
     public String getS3ServerOverride() {
         return getPrefs().getString("debugS3Server", "");
-    }
-
-    public void setS3ServerOverride(String paramString) {
-        getPrefs().edit().putString("debugS3Server", paramString).apply();
     }
 
     public int getServerEndpointingActivityTimeoutMs() {
@@ -211,10 +186,6 @@ public class Settings
 
     public String getVoiceSearchTokenType() {
         return this.mSearchConfig.getVoiceSearchTokenType();
-    }
-
-    public String getVoiceSearchTokenTypeRefreshed() {
-        return getPrefs().getString("authTokenTypeRefreshed", "");
     }
 
     public boolean hasEverUsedVoiceSearch() {
@@ -250,10 +221,6 @@ public class Settings
         return "embeddedOnly".equals(getDebugRecognitionEngineRestrict());
     }
 
-    public boolean isHotwordDetectorEnabled() {
-        return getPrefs().getBoolean("hotwordDetector", true);
-    }
-
     public boolean isNetworkRecognitionOnlyForDebug() {
         return "networkOnly".equals(getDebugRecognitionEngineRestrict());
     }
@@ -270,24 +237,12 @@ public class Settings
         return getPrefs().getBoolean("debugS3Logging", false);
     }
 
-    public void setS3DebugLoggingEnabled(boolean paramBoolean) {
-        getPrefs().edit().putBoolean("debugS3Logging", paramBoolean).apply();
-    }
-
     public boolean isServerEndpointingEnabled() {
         return this.mConfigFlags.isServerEndpointingEnabled();
     }
 
     public boolean isSoundSearchEnabled() {
         return ((this.mSearchConfig.getSoundSearchEnabled()) && (!isBlacklistedSoundSearchDevice())) || (getConfiguration().hasDebug());
-    }
-
-    public synchronized boolean isSpokenLocaleBcp47Set() {
-        return getPrefs().contains("spoken-language-bcp-47");
-    }
-
-    public boolean isTtsOnlyForHandsFree() {
-        return getPrefs().getString("ttsMode", this.mContext.getString(2131363479)).equals("handsFreeOnly");
     }
 
     public void setHasEverUsedVoiceSearch() {
@@ -299,15 +254,6 @@ public class Settings
         if (!paramString.equals(localSharedPreferences.getString("spoken-language-bcp-47", null))) {
             localSharedPreferences.edit().putString("spoken-language-bcp-47", paramString).putBoolean("spoken-language-default", paramBoolean).apply();
         }
-    }
-
-    public boolean shouldTtsNeverPlay() {
-        return getPrefs().getString("ttsMode", this.mContext.getString(2131363479)).equals("never");
-    }
-
-    public void updateStaticConfiguration() {
-        ExtraPreconditions.checkNotMainThread();
-        this.mGStaticConfiguration.update(this.mHttpHelper);
     }
 
     public static abstract interface ConfigurationChangeListener {

@@ -10,25 +10,16 @@ public class SingleRecordingAudioStore
     private String mLastRequestId;
 
     @Nullable
-    public AudioStore.AudioRecording getAudio(String requestId) {
-        try {
-            if (TextUtils.equals(requestId, mLastRequestId)) {
-
-            }
-        } finally {
+    public synchronized AudioStore.AudioRecording getAudio(String requestId) {
+        if (TextUtils.equals(requestId, mLastRequestId)) {
+            return mLastAudioRecording;
         }
-
+        return null;
     }
 
     @Nullable
-    public AudioStore.AudioRecording getLastAudio() {
-        try {
-            AudioStore.AudioRecording localAudioRecording = this.mLastAudioRecording;
-            return localAudioRecording;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized AudioStore.AudioRecording getLastAudio() {
+        return this.mLastAudioRecording;
     }
 
     public boolean hasAudio(String requestId) {
@@ -36,14 +27,8 @@ public class SingleRecordingAudioStore
     }
 
     public void put(String paramString, AudioStore.AudioRecording paramAudioRecording) {
-        try {
-            this.mLastRequestId = paramString;
-            this.mLastAudioRecording = paramAudioRecording;
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+        this.mLastRequestId = paramString;
+        this.mLastAudioRecording = paramAudioRecording;
     }
 }
 

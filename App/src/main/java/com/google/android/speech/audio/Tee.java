@@ -331,14 +331,8 @@ public class Tee {
         }
     }
 
-    void remove(int paramInt) {
-        try {
+    void synchronized remove(int paramInt) {
             this.mReadPositions[paramInt] = 2147483647;
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public void setStartAtDelegatePos(long paramLong) {
@@ -413,17 +407,11 @@ public class Tee {
             this.mStreamId = paramInt;
         }
 
-        public void close() {
-            try {
+        public synchronized void close() {
                 if (this.mSharedStream != null) {
                     this.mSharedStream.remove(this.mStreamId);
                     this.mSharedStream = null;
                 }
-                return;
-            } finally {
-                localObject =finally;
-                throw localObject;
-            }
         }
 
         public int read() {

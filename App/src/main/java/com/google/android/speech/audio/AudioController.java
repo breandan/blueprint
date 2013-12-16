@@ -158,51 +158,31 @@ public class AudioController {
         return this.mContext.getPackageManager().checkPermission("android.permission.CAPTURE_AUDIO_HOTWORD", this.mContext.getPackageName()) == 0;
     }
 
-    public AudioInputStreamFactory createInputStreamFactory(AudioInputParams paramAudioInputParams) {
-        try {
-            this.mAudioSource = createAudioSource(getRawInputStreamFactoryLocked(paramAudioInputParams), paramAudioInputParams);
-            AudioSource localAudioSource = this.mAudioSource;
-            return localAudioSource;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
+    public synchronized AudioInputStreamFactory createInputStreamFactory(AudioInputParams paramAudioInputParams) {
+	    this.mAudioSource = createAudioSource(getRawInputStreamFactoryLocked(paramAudioInputParams), paramAudioInputParams);
+	    AudioSource localAudioSource = this.mAudioSource;
+	    return localAudioSource;
     }
 
-    public AudioInputStreamFactory rewindInputStreamFactory(long paramLong) {
-        try {
+    public synchronized AudioInputStreamFactory rewindInputStreamFactory(long paramLong) {
             Preconditions.checkNotNull(this.mAudioSource);
             Preconditions.checkState(this.mListening);
             this.mAudioSource = new AudioSource(this.mAudioSource);
             this.mAudioSource.setStartTime(paramLong);
             AudioSource localAudioSource = this.mAudioSource;
             return localAudioSource;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public void setRawInputStreamFactory(@Nullable AudioInputStreamFactory paramAudioInputStreamFactory) {
-        try {
+    public synchronized void setRawInputStreamFactory(@Nullable AudioInputStreamFactory paramAudioInputStreamFactory) {
             this.mRawInputStreamFactory = paramAudioInputStreamFactory;
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
-    public void shutdown() {
-        try {
+    public synchronized void shutdown() {
             if (this.mAudioSource != null) {
                 this.mAudioSource.shutdown();
                 this.mAudioSource = null;
             }
             stopListening();
-            return;
-        } finally {
-        }
     }
 
     public void startListening(AudioInputParams paramAudioInputParams, RecognitionEventListener paramRecognitionEventListener) {

@@ -138,14 +138,9 @@ public class GrammarCompilationService
         return localIntent;
     }
 
-    public static boolean isGrammarCompilationAlarmSet() {
-        try {
+    public synchronized static boolean isGrammarCompilationAlarmSet() {
             boolean bool = sGrammarCompilationAlarmSet;
             return bool;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     private static boolean isStaleRevision(String paramString) {

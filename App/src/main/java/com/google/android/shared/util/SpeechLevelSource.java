@@ -13,16 +13,10 @@ public class SpeechLevelSource {
         }
     }
 
-    public void clearListener(Listener paramListener) {
-        try {
+    public synchronized void clearListener(Listener paramListener) {
             if (this.mListener == paramListener) {
                 this.mListener = null;
             }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public int getSpeechLevel() {
@@ -33,14 +27,8 @@ public class SpeechLevelSource {
         setSpeechLevel(-1);
     }
 
-    public void setListener(Listener paramListener) {
-        try {
+    public synchronized void setListener(Listener paramListener) {
             this.mListener = paramListener;
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     public void setSpeechLevel(int paramInt) {

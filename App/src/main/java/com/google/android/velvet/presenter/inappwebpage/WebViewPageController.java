@@ -369,15 +369,9 @@ public class WebViewPageController {
             return false;
         }
 
-        public void delayedPageLoad() {
-            try {
+        public synchronized void delayedPageLoad() {
                 this.mDelayedPageLoad = true;
                 WebViewPageController.this.log("delayedPageLoad");
-                return;
-            } finally {
-                localObject =finally;
-                throw localObject;
-            }
         }
 
         public boolean pageLoadFinished(String paramString) {
@@ -397,17 +391,11 @@ public class WebViewPageController {
             }
         }
 
-        public boolean pageReady() {
-            try {
+        public synchronized boolean pageReady() {
                 this.mDelayedPageLoad = true;
                 WebViewPageController.this.log("pageReady");
                 boolean bool = takeNotifyPageReady();
                 return bool;
-            } finally {
-                localObject =finally;
-                throw localObject;
-            }
-        }
     }
 }
 

@@ -17,17 +17,11 @@ public abstract class ResourceManager {
         }
     }
 
-    public void delete() {
-        try {
+    public synchronized void delete() {
             if (this.nativeObj != 0L) {
                 nativeDelete(this.nativeObj);
                 this.nativeObj = 0L;
             }
-            return;
-        } finally {
-            localObject =finally;
-            throw localObject;
-        }
     }
 
     protected void finalize() {

@@ -460,18 +460,12 @@ public class InAppWebPagePresenter {
         private boolean elementsRemoved = false;
         private LinkedList<Object> mLog = Lists.newLinkedList();
 
-        public void add(Object paramObject) {
-            try {
+        public synchronized void add(Object paramObject) {
                 this.mLog.add(paramObject);
                 if (this.mLog.size() > this.MAX_CAPACITY) {
                     this.mLog.removeFirst();
                     this.elementsRemoved = true;
                 }
-                return;
-            } finally {
-                localObject =finally;
-                throw localObject;
-            }
         }
 
         public Iterator<Object> iterator() {

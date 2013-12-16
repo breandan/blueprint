@@ -13,12 +13,12 @@ public abstract class GrammarBuilder {
     private static final Pattern ABNF_RESERVED_TOKENS = Pattern.compile("[\\Q/|*+?=;[]()<>${}\"\\\\E]");
 
     public static String decodeName(String paramString) {
-        return new String(Base64.decode(paramString.substring(1 + paramString.indexOf("_", "XX_".length())), 11));
+        return new String(Base64.decode(paramString.substring(1 + paramString.indexOf("_", 3)), 11));
     }
 
     public static double decodeWeight(String paramString) {
-        int i = paramString.indexOf("_", "XX_".length());
-        return Double.parseDouble(paramString.substring("XX_".length(), i).replace('P', '.'));
+        int i = paramString.indexOf("_", 3);
+        return Double.parseDouble(paramString.substring(3, i).replace('P', '.'));
     }
 
     static String[] getWords(String paramString) {
