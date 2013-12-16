@@ -3,6 +3,7 @@ package speech;
 import com.google.protobuf.micro.CodedInputStreamMicro;
 import com.google.protobuf.micro.CodedOutputStreamMicro;
 import com.google.protobuf.micro.MessageMicro;
+import com.google.speech.common.Alternates;
 import com.google.speech.common.Alternates.RecognitionClientAlternates;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -461,8 +462,12 @@ public final class InterpretationProto
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     speech.InterpretationProto
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     speech.InterpretationProto
+
+ * JD-Core Version:    0.7.0.1
+
  */
