@@ -45,7 +45,7 @@ public enum Greco3Mode {
 
     public static Greco3Mode valueOf(File paramFile) {
         String str = getFileName(paramFile);
-        return (Greco3Mode) MODE_MAP.get(str);
+        return MODE_MAP.get(str);
     }
 
     public boolean isEndpointerMode() {

@@ -1,6 +1,7 @@
 package com.google.android.speech.embedded;
 
 import com.google.android.voicesearch.logger.EventLogger;
+import com.google.speech.logs.RecognizerOuterClass;
 
 public class GrecoEventLoggerFactory
         implements GrecoEventLogger.Factory {

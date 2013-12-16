@@ -231,98 +231,39 @@ public class Greco3EngineManager
         return getResourcesInternal(paramString, paramGreco3Mode, paramGreco3Grammar);
     }
 
-    /* Error */
     public void maybeInitialize() {
-        // Byte code:
-        //   0: aload_0
-        //   1: monitorenter
-        //   2: aload_0
-        //   3: getfield 321	com/google/android/speech/embedded/Greco3EngineManager:mInitialized	Z
-        //   6: ifeq +6 -> 12
-        //   9: aload_0
-        //   10: monitorexit
-        //   11: return
-        //   12: aload_0
-        //   13: monitorexit
-        //   14: aload_0
-        //   15: getfield 32	com/google/android/speech/embedded/Greco3EngineManager:mGreco3DataManager	Lcom/google/android/speech/embedded/Greco3DataManager;
-        //   18: iconst_0
-        //   19: invokevirtual 338	com/google/android/speech/embedded/Greco3DataManager:blockingUpdateResources	(Z)V
-        //   22: aload_0
-        //   23: getfield 36	com/google/android/speech/embedded/Greco3EngineManager:mEndpointerModelCopier	Lcom/google/android/speech/embedded/EndpointerModelCopier;
-        //   26: ifnull +34 -> 60
-        //   29: aload_0
-        //   30: getfield 36	com/google/android/speech/embedded/Greco3EngineManager:mEndpointerModelCopier	Lcom/google/android/speech/embedded/EndpointerModelCopier;
-        //   33: aload_0
-        //   34: getfield 32	com/google/android/speech/embedded/Greco3EngineManager:mGreco3DataManager	Lcom/google/android/speech/embedded/Greco3DataManager;
-        //   37: invokevirtual 342	com/google/android/speech/embedded/Greco3DataManager:getModelsDirSupplier	()Lcom/google/common/base/Supplier;
-        //   40: aload_0
-        //   41: getfield 32	com/google/android/speech/embedded/Greco3EngineManager:mGreco3DataManager	Lcom/google/android/speech/embedded/Greco3DataManager;
-        //   44: invokeinterface 348 3 0
-        //   49: ifeq +11 -> 60
-        //   52: aload_0
-        //   53: getfield 32	com/google/android/speech/embedded/Greco3EngineManager:mGreco3DataManager	Lcom/google/android/speech/embedded/Greco3DataManager;
-        //   56: iconst_1
-        //   57: invokevirtual 338	com/google/android/speech/embedded/Greco3DataManager:blockingUpdateResources	(Z)V
-        //   60: aload_0
-        //   61: monitorenter
-        //   62: aload_0
-        //   63: iconst_1
-        //   64: putfield 321	com/google/android/speech/embedded/Greco3EngineManager:mInitialized	Z
-        //   67: aload_0
-        //   68: monitorexit
-        //   69: return
-        //   70: astore_2
-        //   71: aload_0
-        //   72: monitorexit
-        //   73: aload_2
-        //   74: athrow
-        //   75: astore_1
-        //   76: aload_0
-        //   77: monitorexit
-        //   78: aload_1
-        //   79: athrow
-        // Local variable table:
-        //   start	length	slot	name	signature
-        //   0	80	0	this	Greco3EngineManager
-        //   75	4	1	localObject1	Object
-        //   70	4	2	localObject2	Object
-        // Exception table:
-        //   from	to	target	type
-        //   62	69	70	finally
-        //   71	73	70	finally
-        //   2	11	75	finally
-        //   12	14	75	finally
-        //   76	78	75	finally
+        synchronized (this) {
+            if (mInitialized) {
+                return;
+            }
+            mGreco3DataManager.blockingUpdateResources(false);
+            if (mEndpointerModelCopier != null) {
+                if (mEndpointerModelCopier.copyEndpointerModels(mGreco3DataManager.getModelsDirSupplier(), mGreco3DataManager)) {
+                    mGreco3DataManager.blockingUpdateResources(true);
+                }
+            }
+            synchronized (this) {
+                mInitialized = true;
+            }
+        }
     }
 
-    public void release(Greco3Recognizer paramGreco3Recognizer) {
-        boolean bool1 = true;
-        if (this.mCurrentRecognition == null) {
-            boolean bool2 = bool1;
+    public void release(Greco3Recognizer recognizer) {
+        Preconditions.checkState((mCurrentRecognition != null));
+        Preconditions.checkState((recognizer == mCurrentRecognizer));
+        recognizer.cancel();
+        try {
+            mCurrentRecognition.get();
+        } catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Log.e("VS.G3EngineManager", "Interrupted waiting for recognition to complete.");
+            return;
+        } catch(ExecutionException e) {
+            Log.e("VS.G3EngineManager", "Exception while running recognition: " + e);
         }
-        for (; ; ) {
-            Preconditions.checkState(bool2);
-            if (paramGreco3Recognizer == this.mCurrentRecognizer) {
-                Preconditions.checkState(bool1);
-                paramGreco3Recognizer.cancel();
-            }
-            try {
-                this.mCurrentRecognition.get();
-                this.mCurrentRecognizer.delete();
-                this.mCurrentRecognition = null;
-                this.mCurrentRecognizer = null;
-                return;
-                bool2 = false;
-                continue;
-                bool1 = false;
-            } catch (InterruptedException localInterruptedException) {
-                Thread.currentThread().interrupt();
-                Log.e("VS.G3EngineManager", "Interrupted waiting for recognition to complete.");
-            } catch (ExecutionException localExecutionException) {
-                Log.e("VS.G3EngineManager", "Exception while running recognition: " + localExecutionException);
-            }
-        }
+        mCurrentRecognizer.delete();
+        mCurrentRecognition = null;
+        mCurrentRecognizer = null;
     }
 
     public void startRecognition(final Greco3Recognizer paramGreco3Recognizer, InputStream paramInputStream, Greco3Callback paramGreco3Callback, final RecognizerSessionParamsProto.RecognizerSessionParams paramRecognizerSessionParams, @Nullable final GrecoEventLogger paramGrecoEventLogger, final GstaticConfiguration.LanguagePack paramLanguagePack) {

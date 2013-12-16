@@ -5,6 +5,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 
 import com.google.speech.grammar.pumpkin.ActionFrame;
+import com.google.speech.grammar.pumpkin.PumpkinConfigProto;
 import com.google.speech.grammar.pumpkin.PumpkinLoader;
 
 import java.io.FileInputStream;

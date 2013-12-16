@@ -12,7 +12,7 @@ import com.google.android.speech.logger.SpeechLibLogger;
 import com.google.android.speech.network.request.RecognizerSessionParamsBuilderTask;
 import com.google.android.speech.params.SessionParams;
 import com.google.common.base.Preconditions;
-import com.google.common.io.Closeables;
+import com.google.common.io.Closeables;import com.google.speech.recognizer.api.RecognizerSessionParamsProto;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +58,7 @@ public class Greco3RecognitionEngine
     }
 
     private RecognizerSessionParamsProto.RecognizerSessionParams getEmbeddedRecognizerParams(SessionParams paramSessionParams) {
-        return (RecognizerSessionParamsProto.RecognizerSessionParams) new RecognizerSessionParamsBuilderTask(this.mSpeechSettings, paramSessionParams.getAudioInputParams().getSamplingRate(), paramSessionParams.isPartialResultsEnabled(), paramSessionParams.isAlternatesEnabled(), paramSessionParams.isProfanityFilterEnabled()).call();
+        return new RecognizerSessionParamsBuilderTask(this.mSpeechSettings, paramSessionParams.getAudioInputParams().getSamplingRate(), paramSessionParams.isPartialResultsEnabled(), paramSessionParams.isAlternatesEnabled(), paramSessionParams.isProfanityFilterEnabled()).call();
     }
 
     public void close() {
@@ -79,74 +79,66 @@ public class Greco3RecognitionEngine
         return localGreco3Recognizer;
     }
 
-    @Nullable
-    Greco3Mode createRecognizerFor(String paramString, Greco3Mode paramGreco3Mode, Greco3Grammar paramGreco3Grammar) {
-        this.mGreco3EngineManager.maybeInitialize();
-        Greco3Mode localGreco3Mode1 = this.mModeSelector.getMode(paramGreco3Mode, paramGreco3Grammar);
-        Greco3Mode localGreco3Mode2 = this.mModeSelector.getFallbackMode(paramGreco3Mode, paramGreco3Grammar);
-        if (localGreco3Mode1 == null) {
-        }
-        Greco3EngineManager.Resources localResources;
-        do {
-            do {
-                return null;
-                localResources = this.mGreco3EngineManager.getResources(paramString, localGreco3Mode1, paramGreco3Grammar);
-                if ((localResources == null) && (localGreco3Mode1 == Greco3Mode.GRAMMAR) && (!"en-US".equals(paramString))) {
-                    localResources = this.mGreco3EngineManager.getResources("en-US", localGreco3Mode1, paramGreco3Grammar);
-                }
-                if (localResources != null) {
-                    break;
-                }
-            } while (localGreco3Mode2 == null);
-            localResources = this.mGreco3EngineManager.getResources(paramString, localGreco3Mode2, null);
-        } while (localResources == null);
-        for (Greco3Mode localGreco3Mode3 = localGreco3Mode2; ; localGreco3Mode3 = localGreco3Mode1) {
-            this.mCurrentRecognition = createRecognizer(localResources);
-            if (this.mCurrentRecognition != null) {
-                break;
-            }
-            this.mCurrentResources = null;
+    Greco3Mode createRecognizerFor(String bcp47Locale, Greco3Mode requested, Greco3Grammar grammarType) {
+        mGreco3EngineManager.maybeInitialize();
+        Greco3Mode primary = mModeSelector.getMode(requested, grammarType);
+        Greco3Mode fallback = mModeSelector.getFallbackMode(requested, grammarType);
+        Greco3Mode selected = null;
+        if(primary == null) {
             return null;
         }
-        this.mCurrentResources = localResources;
-        return localGreco3Mode3;
+        Greco3EngineManager.Resources resources = mGreco3EngineManager.getResources(bcp47Locale, primary, grammarType);
+        if((resources == null) && (primary == Greco3Mode.GRAMMAR) && (!"en-US".equals(bcp47Locale))) {
+            resources = mGreco3EngineManager.getResources("en-US", primary, grammarType);
+        }
+        if(resources == null) {
+            if(fallback != null) {
+                resources = mGreco3EngineManager.getResources(bcp47Locale, fallback, null);
+                if(resources != null) {
+                    selected = fallback;
+                }
+            }
+        } else {
+            selected = primary;
+        }
+        mCurrentRecognition = createRecognizer(resources);
+        if(mCurrentRecognition == null) {
+            mCurrentResources = null;
+            return null;
+        }
+        mCurrentResources = resources;
+        return selected;
     }
 
-    public void startRecognition(AudioInputStreamFactory paramAudioInputStreamFactory, RecognitionEngineCallback paramRecognitionEngineCallback, SessionParams paramSessionParams) {
-        Preconditions.checkNotNull(paramRecognitionEngineCallback);
-        this.mCurrentRecognition = null;
-        this.mCurrentResources = null;
+    public void startRecognition(AudioInputStreamFactory inputFactory, RecognitionEngineCallback callback, SessionParams sessionParams) {
+        Preconditions.checkNotNull(callback);
+        mCurrentRecognition = null;
+        mCurrentResources = null;
         Greco3Recognizer.maybeLoadSharedLibrary();
-        Greco3Mode localGreco3Mode1 = paramSessionParams.getGreco3Mode();
-        Greco3Mode localGreco3Mode2 = createRecognizerFor(paramSessionParams.getSpokenBcp47Locale(), localGreco3Mode1, paramSessionParams.getGreco3Grammar());
-        Greco3Callback localGreco3Callback = this.mCallbackFactory.create(paramRecognitionEngineCallback, localGreco3Mode2);
-        if (localGreco3Mode2 == null) {
-            cleanupAndDispatchStartError(localGreco3Callback, new EmbeddedRecognizerUnavailableException());
-        }
-        for (; ; ) {
+        Greco3Mode requestedMode = sessionParams.getGreco3Mode();
+        Greco3Mode selected = createRecognizerFor(sessionParams.getSpokenBcp47Locale(), requestedMode, sessionParams.getGreco3Grammar());
+        Greco3Callback g3Callback = mCallbackFactory.create(callback, selected);
+        if(selected == null) {
+            cleanupAndDispatchStartError(g3Callback, new Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException());
             return;
-            try {
-                this.mInput = paramAudioInputStreamFactory.createInputStream();
-                this.mGreco3EngineManager.startRecognition(this.mCurrentRecognition, this.mInput, localGreco3Callback, getEmbeddedRecognizerParams(paramSessionParams), this.mGrecoEventLoggerFactory.getEventLoggerForMode(localGreco3Mode2), this.mCurrentResources.languagePack);
-                if ((localGreco3Mode2.isEndpointerMode()) && (!localGreco3Mode1.isEndpointerMode())) {
-                    localGreco3Callback.handleError(new EmbeddedRecognizerUnavailableException());
-                    return;
-                }
-            } catch (IOException localIOException) {
-                cleanupAndDispatchStartError(localGreco3Callback, new AudioRecognizeException("Unable to create stream", localIOException));
-            }
+        }
+        try {
+            mInput = inputFactory.createInputStream();
+        } catch(IOException ioe) {
+            cleanupAndDispatchStartError(g3Callback, new AudioRecognizeException("Unable to create stream", ioe));
+            return;
+        }
+        mGreco3EngineManager.startRecognition(mCurrentRecognition, mInput, g3Callback, getEmbeddedRecognizerParams(sessionParams), mGrecoEventLoggerFactory.getEventLoggerForMode(selected), mCurrentResources.languagePack);
+        if((selected.isEndpointerMode()) && (!requestedMode.isEndpointerMode())) {
+            g3Callback.handleError(new Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException());
         }
     }
 
     public static final class EmbeddedRecognizerUnavailableException
             extends EmbeddedRecognizeException {
         public EmbeddedRecognizerUnavailableException() {
-            super();
+            super("Embedded recognizer unavailable");
         }
-    }
-
-    public static final class NoMatchesFromEmbeddedRecognizerException
-            extends NoMatchRecognizeException {
     }
 }
 
