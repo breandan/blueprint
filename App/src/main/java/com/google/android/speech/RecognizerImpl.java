@@ -33,10 +33,10 @@ public class RecognizerImpl
     private final RecognitionEngineStore mEngineStore;
     private final StateMachine<State> mListeningState = StateMachine.newBuilder("RecognizerImpl", State.IDLE).addTransition(State.IDLE, State.LISTENING).addTransition(State.LISTENING, State.IDLE).addTransition(State.LISTENING, State.LISTENING).addTransition(State.LISTENING, State.STOPPED).addTransition(State.STOPPED, State.IDLE).setSingleThreadOnly(true).setStrictMode(true).build();
     private final RecognitionDispatcher mRecognitionDispatcher;
-    private RecognitionEventListener mRecognitionListener;
-    private ResponseProcessor mResponseProcessor;
     private final SpeechLibFactory mSpeechLibFactory;
     private final SpeechLibLogger mSpeechLibLogger;
+    private RecognitionEventListener mRecognitionListener;
+    private ResponseProcessor mResponseProcessor;
 
     public RecognizerImpl(AudioController paramAudioController, AudioRecorder paramAudioRecorder, RecognitionDispatcher paramRecognitionDispatcher, RecognitionEngineStore paramRecognitionEngineStore, SpeechLibFactory paramSpeechLibFactory) {
         this.mAudioController = paramAudioController;
@@ -49,6 +49,14 @@ public class RecognizerImpl
 
     public static Recognizer create(ExecutorService paramExecutorService, AudioController paramAudioController, SpeechLibFactory paramSpeechLibFactory) {
         return (Recognizer) threadChange(paramExecutorService, new RecognizerImpl(paramAudioController, new AudioRecorder(), new RecognitionDispatcher(paramExecutorService, paramSpeechLibFactory), paramSpeechLibFactory.buildRecognitionEngineStore(), paramSpeechLibFactory));
+    }
+
+    private static final <T> T threadChange(Executor paramExecutor, Class<T> paramClass, T paramT) {
+        return ThreadChanger.createNonBlockingThreadChangeProxy(paramExecutor, paramClass, paramT);
+    }
+
+    private static final <T> T threadChange(Executor paramExecutor, T paramT) {
+        return ThreadChanger.createNonBlockingThreadChangeProxy(paramExecutor, paramT);
     }
 
     private void internalShutdownAudio() {
@@ -91,34 +99,22 @@ public class RecognizerImpl
         return true;
     }
 
-    private void recordStartRecognitionEvent(SessionParams paramSessionParams) {
-        if (paramSessionParams.getMode() != 6) {
-            this.mSpeechLibLogger.recordSpeechEvent(3, paramSessionParams.getRequestId());
+    private void recordStartRecognitionEvent(SessionParams params) {
+        if (params.getMode() == 6) {
+            this.mSpeechLibLogger.recordSpeechEvent(3, params.getRequestId());
         }
-        switch (paramSessionParams.getMode()) {
-            case 6:
-            default:
-                this.mSpeechLibLogger.recordSpeechEvent(8);
-                return;
-            case 7:
-                this.mSpeechLibLogger.recordSpeechEvent(10);
-                return;
-            case 8:
-                this.mSpeechLibLogger.recordSpeechEvent(15);
-                return;
+        switch (params.getMode()) {
+            case 4:
+                this.mSpeechLibLogger.recordSpeechEvent(11);
             case 5:
                 this.mSpeechLibLogger.recordSpeechEvent(12);
-                return;
+            case 6:
+                this.mSpeechLibLogger.recordSpeechEvent(8);
+            case 7:
+                this.mSpeechLibLogger.recordSpeechEvent(10);
+            case 8:
+                this.mSpeechLibLogger.recordSpeechEvent(15);
         }
-        this.mSpeechLibLogger.recordSpeechEvent(11);
-    }
-
-    private static final <T> T threadChange(Executor paramExecutor, Class<T> paramClass, T paramT) {
-        return ThreadChanger.createNonBlockingThreadChangeProxy(paramExecutor, paramClass, paramT);
-    }
-
-    private static final <T> T threadChange(Executor paramExecutor, T paramT) {
-        return ThreadChanger.createNonBlockingThreadChangeProxy(paramExecutor, paramT);
     }
 
     public void cancel(RecognitionEventListener paramRecognitionEventListener) {
@@ -130,7 +126,7 @@ public class RecognizerImpl
     }
 
     ResponseProcessor.AudioCallback getAudioCallback(final RecognitionEventListener paramRecognitionEventListener) {
-        new ResponseProcessor.AudioCallback() {
+        return new ResponseProcessor.AudioCallback() {
             public void recordingStarted(long paramAnonymousLong) {
                 if (RecognizerImpl.this.mAudioRecorder.isRecording()) {
                     RecognizerImpl.this.mAudioRecorder.setRecordingStartTime(paramAnonymousLong);
@@ -149,10 +145,6 @@ public class RecognizerImpl
                 }
             }
         };
-    }
-
-    void setResponseProcessor(ResponseProcessor paramResponseProcessor) {
-        this.mResponseProcessor = paramResponseProcessor;
     }
 
     public void startListening(SessionParams paramSessionParams, RecognitionEventListener paramRecognitionEventListener, Executor paramExecutor, @Nullable AudioStore paramAudioStore) {
@@ -237,16 +229,7 @@ public class RecognizerImpl
     }
 
     private static enum State {
-        static {
-            State[] arrayOfState = new State[3];
-            arrayOfState[0] = IDLE;
-            arrayOfState[1] = LISTENING;
-            arrayOfState[2] = STOPPED;
-            $VALUES = arrayOfState;
-        }
-
-        private State() {
-        }
+        IDLE, LISTENING, STOPPED;
     }
 }
 

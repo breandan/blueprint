@@ -25,8 +25,8 @@ public class HypothesisToSuggestionSpansConverter {
     private final SuggestionLogger mSuggestionLogger;
 
     public HypothesisToSuggestionSpansConverter(Context paramContext, SuggestionLogger paramSuggestionLogger) {
-        this.mApplicationContext = ((Context) Preconditions.checkNotNull(paramContext));
-        this.mSuggestionLogger = ((SuggestionLogger) Preconditions.checkNotNull(paramSuggestionLogger));
+        this.mApplicationContext = Preconditions.checkNotNull(paramContext);
+        this.mSuggestionLogger = Preconditions.checkNotNull(paramSuggestionLogger);
         this.mEasyEditSpanConstructor = getEasyEditSpanConstructor();
     }
 
@@ -34,24 +34,23 @@ public class HypothesisToSuggestionSpansConverter {
         for (; ; ) {
             try {
                 Constructor localConstructor = this.mEasyEditSpanConstructor;
-                if (localConstructor == null) {
-                    break label147;
+                EasyEditSpan localEasyEditSpan1;
+                if (localConstructor != null) {
+                    localEasyEditSpan1 = null;
                 }
                 try {
                     Intent localIntent = SuggestionSpanBroadcastReceiver.createIntentForEasyEditSpan(this.mApplicationContext, paramString, paramInt);
                     int i = this.mSuggestionCounter;
                     this.mSuggestionCounter = (i + 1);
                     PendingIntent localPendingIntent = PendingIntent.getBroadcast(paramContext, i, localIntent, 0);
-                    EasyEditSpan localEasyEditSpan3 = (EasyEditSpan) this.mEasyEditSpanConstructor.newInstance(new Object[]{localPendingIntent});
+                    EasyEditSpan localEasyEditSpan3 = this.mEasyEditSpanConstructor.newInstance(new Object[]{localPendingIntent});
                     localEasyEditSpan1 = localEasyEditSpan3;
                 } catch (IllegalArgumentException localIllegalArgumentException) {
                     try {
-                        localEasyEditSpan2 = new EasyEditSpan();
+                        EasyEditSpan localEasyEditSpan2 = new EasyEditSpan();
                         return localEasyEditSpan2;
                     } finally {
                     }
-                    localIllegalArgumentException = localIllegalArgumentException;
-                    localEasyEditSpan1 = null;
                     continue;
                 } catch (InstantiationException localInstantiationException) {
                     localEasyEditSpan1 = null;
@@ -68,9 +67,6 @@ public class HypothesisToSuggestionSpansConverter {
                 EasyEditSpan localEasyEditSpan2 = localEasyEditSpan1;
             } finally {
             }
-            continue;
-            label147:
-            EasyEditSpan localEasyEditSpan1 = null;
         }
     }
 

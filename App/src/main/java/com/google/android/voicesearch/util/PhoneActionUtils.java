@@ -30,6 +30,7 @@ import com.google.majel.proto.ContactProtos.ContactInformation;
 import com.google.majel.proto.ContactProtos.ContactInformation.PhoneNumber;
 import com.google.majel.proto.ContactProtos.ContactReference;
 import com.google.majel.proto.ContactProtos.ContactType;
+import com.google.majel.proto.MajelProtos;
 import com.google.majel.proto.MajelProtos.MajelResponse;
 import com.google.majel.proto.PeanutProtos.Peanut;
 

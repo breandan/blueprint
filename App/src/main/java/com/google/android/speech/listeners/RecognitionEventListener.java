@@ -1,9 +1,10 @@
 package com.google.android.speech.listeners;
 
 import com.google.android.speech.exception.RecognizeException;
-import com.google.audio.ears.proto.EarsService.EarsResultsResponse;
-import com.google.majel.proto.MajelProtos.MajelResponse;
-import com.google.speech.s3.PinholeStream.PinholeOutput;
+import com.google.audio.ears.proto.EarsService;
+import com.google.majel.proto.MajelProtos;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.s3.PinholeStream;
 
 public abstract interface RecognitionEventListener {
     public abstract void onBeginningOfSpeech(long paramLong);

@@ -2,7 +2,7 @@ package com.google.android.speech.test;
 
 import android.util.Log;
 
-import java.util.Iterator;
+import com.google.speech.recognizer.api.RecognizerProtos;import java.util.Iterator;
 import java.util.Locale;
 
 public class TestPlatformLog {

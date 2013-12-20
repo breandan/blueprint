@@ -21,12 +21,14 @@ import com.google.android.speech.audio.AudioUtils;
 import com.google.android.speech.callback.SimpleCallback;
 import com.google.android.speech.embedded.Greco3Grammar;
 import com.google.android.speech.embedded.Greco3Mode;
+import com.google.android.speech.embedded.Greco3RecognitionEngine;
 import com.google.android.speech.embedded.OfflineActionsManager;
 import com.google.android.speech.exception.NetworkRecognizeException;
 import com.google.android.speech.exception.NoMatchRecognizeException;
 import com.google.android.speech.exception.RecognizeException;
 import com.google.android.speech.listeners.CancellableRecognitionEventListener;
 import com.google.android.speech.listeners.RecognitionEventListenerAdapter;
+import com.google.android.speech.params.AudioInputParams;
 import com.google.android.speech.params.SessionParams;
 import com.google.android.speech.test.TestPlatformLog;
 import com.google.android.speech.utils.RecognizedText;
@@ -36,24 +38,25 @@ import com.google.android.voicesearch.settings.Settings;
 import com.google.android.voicesearch.util.PhoneActionUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.majel.proto.MajelProtos.MajelResponse;
-import com.google.speech.s3.PinholeStream.PinholeOutput;
+import com.google.majel.proto.MajelProtos;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.s3.PinholeStream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class VoiceSearchController {
     private final Clock mClock;
+    private final GsaConfigFlags mGsaConfigFlags;
+    private final SearchUrlHelper mSearchUrlHelper;
+    private final ExtraPreconditions.ThreadCheck mThreadCheck;
+    private final VoiceSearchServices mVss;
     @Nullable
     private CancellableRecognitionEventListener mEventListener;
     @Nullable
     private GrammarCompilationCallback mGrammarCompilationCallback;
-    private final GsaConfigFlags mGsaConfigFlags;
     private S3FetchTask mProxyFetchTask;
     private boolean mRecognitionInProgress;
-    private final SearchUrlHelper mSearchUrlHelper;
-    private final ExtraPreconditions.ThreadCheck mThreadCheck;
-    private final VoiceSearchServices mVss;
 
     public VoiceSearchController(VoiceSearchServices paramVoiceSearchServices, Clock paramClock, SearchUrlHelper paramSearchUrlHelper, GsaConfigFlags paramGsaConfigFlags) {
         this.mVss = paramVoiceSearchServices;
@@ -61,6 +64,14 @@ public class VoiceSearchController {
         this.mSearchUrlHelper = paramSearchUrlHelper;
         this.mThreadCheck = ExtraPreconditions.createSameThreadCheck();
         this.mGsaConfigFlags = paramGsaConfigFlags;
+    }
+
+    private static void maybeLogException(RecognizeException paramRecognizeException) {
+        if ((paramRecognizeException instanceof Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException)) {
+            Log.i("VoiceSearchController", "No recognizers available.");
+            return;
+        }
+        Log.e("VoiceSearchController", "onError", paramRecognizeException);
     }
 
     private void cancelInternal(boolean paramBoolean1, boolean paramBoolean2) {
@@ -87,48 +98,25 @@ public class VoiceSearchController {
         }
     }
 
-    private SessionParams getSessionParams(@Nullable AudioStore.AudioRecording paramAudioRecording, boolean paramBoolean, @Nullable Uri paramUri) {
-        AudioInputParams.Builder localBuilder = new AudioInputParams.Builder();
-        SessionParams.Builder localBuilder1;
-        Settings localSettings;
-        SessionParams.Builder localBuilder2;
-        if (paramAudioRecording != null) {
-            localBuilder.setSamplingRate(paramAudioRecording.getSampleRate());
-            localBuilder.setEncoding(AudioUtils.getAmrEncodingForRecording(paramAudioRecording).getRecognizerEncoding());
-            localBuilder1 = new SessionParams.Builder();
-            localSettings = this.mVss.getSettings();
-            localBuilder2 = localBuilder1.setSpokenBcp47Locale(localSettings.getSpokenLocaleBcp47()).setGreco3Grammar(Greco3Grammar.CONTACT_DIALING).setGreco3Mode(Greco3Mode.GRAMMAR);
-            if (paramAudioRecording == null) {
-                break label224;
-            }
+    private SessionParams getSessionParams(AudioStore.AudioRecording resendAudio, boolean isTriggeredFromBluetooth, Uri recordedAudioUri) {
+        AudioInputParams.Builder audioBuilder = new AudioInputParams.Builder();
+        if (resendAudio != null) {
+            audioBuilder.setSamplingRate(resendAudio.getSampleRate());
+            audioBuilder.setEncoding(AudioUtils.getAmrEncodingForRecording(resendAudio).getRecognizerEncoding());
+        } else if (recordedAudioUri != null) {
+            audioBuilder.setRecordedAudioUri(recordedAudioUri);
+        } else if ((mVss.getGsaConfigFlags().shouldUseAmrWbEncoding()) && (!mVss.getSettings().isBluetoothHeadsetEnabled()) && (!isTriggeredFromBluetooth)) {
+            audioBuilder.setEncoding(0x9);
+            audioBuilder.setSamplingRate(0x3e80);
         }
-        label224:
-        for (boolean bool = true; ; bool = false) {
-            localBuilder2.setResendingAudio(bool).setMode(2).setProfanityFilterEnabled(localSettings.isProfanityFilterEnabled()).setAudioInputParams(localBuilder.build()).setServerEndpointingEnabled(this.mVss.getGsaConfigFlags().isServerEndpointingEnabled());
-            String str = this.mVss.getSearchConfig().getVoiceActionsS3ServiceOverride();
-            if (!TextUtils.isEmpty(str)) {
-                localBuilder1.setServiceOverride(str);
-            }
-            return localBuilder1.build();
-            if (paramUri != null) {
-                localBuilder.setRecordedAudioUri(paramUri);
-                break;
-            }
-            if ((!this.mVss.getGsaConfigFlags().shouldUseAmrWbEncoding()) || (this.mVss.getSettings().isBluetoothHeadsetEnabled()) || (paramBoolean)) {
-                break;
-            }
-            localBuilder.setEncoding(9);
-            localBuilder.setSamplingRate(16000);
-            break;
+        SessionParams.Builder builder = new SessionParams.Builder();
+        Settings speechSettings = mVss.getSettings();
+        builder.setSpokenBcp47Locale(speechSettings.getSpokenLocaleBcp47()).setGreco3Grammar(Greco3Grammar.CONTACT_DIALING).setGreco3Mode(Greco3Mode.GRAMMAR).setResendingAudio((resendAudio != null)).setMode(0x2).setProfanityFilterEnabled(speechSettings.isProfanityFilterEnabled()).setAudioInputParams(audioBuilder.build()).setServerEndpointingEnabled(mVss.getGsaConfigFlags().isServerEndpointingEnabled());
+        String serviceOverride = mVss.getSearchConfig().getVoiceActionsS3ServiceOverride();
+        if (!TextUtils.isEmpty(serviceOverride)) {
+            builder.setServiceOverride(serviceOverride);
         }
-    }
-
-    private static void maybeLogException(RecognizeException paramRecognizeException) {
-        if ((paramRecognizeException instanceof Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException)) {
-            Log.i("VoiceSearchController", "No recognizers available.");
-            return;
-        }
-        Log.e("VoiceSearchController", "onError", paramRecognizeException);
+        return builder.build();
     }
 
     private void resendVoiceSearch(Query paramQuery, Listener paramListener) {
@@ -204,6 +192,34 @@ public class VoiceSearchController {
         }
     }
 
+    public static abstract interface Listener {
+        public abstract void onDone();
+
+        public abstract void onError(RecognizeException paramRecognizeException, @Nullable String paramString);
+
+        public abstract void onInitializing();
+
+        public abstract void onMusicDetected();
+
+        public abstract void onNoMatch(NoMatchRecognizeException paramNoMatchRecognizeException, String paramString);
+
+        public abstract void onNoSpeechDetected();
+
+        public abstract void onReadyForSpeech();
+
+        public abstract void onRecognitionResult(CharSequence paramCharSequence, ImmutableList<CharSequence> paramImmutableList, @Nullable SearchResult paramSearchResult);
+
+        public abstract void onRecognizing();
+
+        public abstract void onSpeechDetected();
+
+        public abstract void onTtsAvailable(byte[] paramArrayOfByte);
+
+        public abstract void setFinalRecognizedText(@Nonnull CharSequence paramCharSequence);
+
+        public abstract void updateRecognizedText(String paramString1, String paramString2);
+    }
+
     private class GrammarCompilationCallback
             implements SimpleCallback<Integer> {
         private final VoiceSearchController.Listener mListener;
@@ -219,19 +235,18 @@ public class VoiceSearchController {
             this.mListener.onError(paramRecognizeException, null);
         }
 
-        public void onResult(Integer paramInteger) {
-            VoiceSearchController.this.mThreadCheck.check();
-            if (paramInteger.intValue() == 1) {
-                VoiceSearchController.this.startListening(this.mListener, this.mQuery, true);
-            }
-            do {
+        public void onResult(Integer result) {
+            mThreadCheck.check();
+            if (result.intValue() == 0x1) {
                 return;
-                if (paramInteger.intValue() == 4) {
-                    reportError(new OfflineActionsManager.GrammarCompilationException());
-                    return;
-                }
-            } while (paramInteger.intValue() != 3);
-            reportError(new NetworkRecognizeException("No network connection"));
+            }
+            if (result.intValue() == 0x4) {
+                reportError(new OfflineActionsManager.GrammarCompilationException());
+                return;
+            }
+            if (result.intValue() == 0x3) {
+                reportError(new NetworkRecognizeException("No network connection"));
+            }
         }
     }
 
@@ -263,24 +278,17 @@ public class VoiceSearchController {
         }
 
         public void onDone() {
-            VoiceSearchController.this.mThreadCheck.check();
+            mThreadCheck.check();
             if (!hasCompletedRecognition()) {
                 dispatchNoMatchException();
             }
-            if ((VoiceSearchController.this.mProxyFetchTask != null) && (!VoiceSearchController.this.mProxyFetchTask.isFailedOrComplete())) {
-                Log.e("VoiceSearchController", "Incomplete proxy task: " + VoiceSearchController.this.mProxyFetchTask);
-                VoiceSearchController.this.mProxyFetchTask.cancel();
-                VoiceSearchController.access$502(VoiceSearchController.this, null);
+            if ((mProxyFetchTask != null) && (!mProxyFetchTask.isFailedOrComplete())) {
+                Log.e("VoiceSearchController", "Incomplete proxy task: " + mProxyFetchTask);
+                mProxyFetchTask.cancel();
+                mProxyFetchTask = null;
             }
             TestPlatformLog.log("VOICE_SEARCH_COMPLETE");
-            VoiceSearchController localVoiceSearchController = VoiceSearchController.this;
-            if (!hasCompletedRecognition()) {
-            }
-            for (boolean bool = true; ; bool = false) {
-                localVoiceSearchController.cancelInternal(bool, false);
-                this.mListener.onDone();
-                return;
-            }
+            mListener.onDone();
         }
 
         public void onEndOfSpeech() {
@@ -356,84 +364,50 @@ public class VoiceSearchController {
             }
         }
 
-        public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
-            VoiceSearchController.this.mThreadCheck.check();
-            TestPlatformLog.logResults(paramRecognitionEvent);
-            if (this.mRecognizedText.hasCompletedRecognition()) {
+        public void onRecognitionResult(RecognizerProtos.RecognitionEvent recognitionEvent) {
+            mThreadCheck.check();
+            TestPlatformLog.logResults(recognitionEvent);
+            if (mRecognizedText.hasCompletedRecognition()) {
                 Log.e("VoiceSearchController", "Result after completed recognition.");
-            }
-            do {
-                return;
-                if (paramRecognitionEvent.getEventType() == 0) {
-                    Pair localPair = this.mRecognizedText.updateInProgress(paramRecognitionEvent);
-                    String str1 = (String) localPair.first;
-                    String str2 = (String) localPair.second;
-                    this.mListener.updateRecognizedText(str1, str2);
-                    return;
-                }
-            } while (paramRecognitionEvent.getEventType() != 1);
-            ImmutableList localImmutableList1 = this.mRecognizedText.updateFinal(paramRecognitionEvent);
-            if ((localImmutableList1.isEmpty()) || (TextUtils.isEmpty(((Hypothesis) localImmutableList1.get(0)).getText()))) {
-            }
-            for (int i = 1; ; i = 0) {
-                if ((i == 0) && (!this.mQuery.isFollowOn())) {
-                    VoiceSearchController.this.mVss.getSoundManager().playRecognitionDoneSound();
-                }
-                if (i == 0) {
-                    break;
-                }
-                Log.i("VoiceSearchController", "Empty combined result");
-                VoiceSearchController.this.cancelInternal(true, true);
-                dispatchNoMatchException();
                 return;
             }
-            boolean bool = VoiceSearchController.this.mGsaConfigFlags.isVoiceCorrectionEnabled();
-            HypothesisToSuggestionSpansConverter localHypothesisToSuggestionSpansConverter = VoiceSearchController.this.mVss.getHypothesisToSuggestionSpansConverter();
-            if (bool) {
+            if (recognitionEvent.getEventType() == 0) {
+                Pair<String, String> stableAndUnstable = mRecognizedText.updateInProgress(recognitionEvent);
+                String stable = (String) stableAndUnstable.first;
+                String unstable = (String) stableAndUnstable.second;
+                mListener.updateRecognizedText(stable, unstable);
+                return;
             }
-            ImmutableList.Builder localBuilder;
-            for (SpannedString localSpannedString = SpannedString.valueOf(((Hypothesis) localImmutableList1.get(0)).getText()); ; localSpannedString = localHypothesisToSuggestionSpansConverter.getSuggestionSpannedStringForQuery(this.mRequestId, (Hypothesis) localImmutableList1.get(0))) {
-                this.mListener.setFinalRecognizedText(localSpannedString);
-                localBuilder = ImmutableList.builder();
-                for (int j = 1; j < localImmutableList1.size(); j++) {
-                    localBuilder.add(((Hypothesis) localImmutableList1.get(j)).getText());
+            if (recognitionEvent.getEventType() == 0x1) {
+                ImmutableList<Hypothesis> allHypotheses = mRecognizedText.updateFinal(recognitionEvent);
+                !TextUtils.isEmpty((Hypothesis) allHypotheses.get(0x0).getText()) ?;
+                boolean isEmpty = allHypotheses.isEmpty() ? true : false;
+                if ((!isEmpty) && (!mQuery.isFollowOn())) {
+                    mVss.getSoundManager().playRecognitionDoneSound();
+                    if (isEmpty) {
+                        Log.i("VoiceSearchController", "Empty combined result");
+                        dispatchNoMatchException();
+                        return;
+                    }
+                    boolean isVoiceCorrectionEnabled = mGsaConfigFlags.isVoiceCorrectionEnabled();
+                    HypothesisToSuggestionSpansConverter converter = mVss.getHypothesisToSuggestionSpansConverter();
+                    SpannedString firstResult = isVoiceCorrectionEnabled ? SpannedString.valueOf((Hypothesis) allHypotheses.get(0x0).getText()) : converter.getSuggestionSpannedStringForQuery(mRequestId, (Hypothesis) allHypotheses.get(0x0));
+                    mListener.setFinalRecognizedText(firstResult);
+                    ImmutableList.Builder<CharSequence> otherHypothesesBuilder = ImmutableList.builder();
+                    for (int i = 0x1; i < allHypotheses.size(); i = i + 0x1) {
+                        Hypothesis hypothesis = (Hypothesis) allHypotheses.get(i);
+                        otherHypothesesBuilder.add(hypothesis.getText());
+                    }
+                    ImmutableList<CharSequence> otherHypotheses = otherHypothesesBuilder.build();
+                    Preconditions.checkNotNull(mQuery);
+                    mProxyFetchTask = createFetchTask();
+                    Query q = mQuery.withRecognizedText(firstResult, otherHypotheses, isVoiceCorrectionEnabled);
+                    SearchResult proxiedResult = SearchResult.forSrp(q, mClock.elapsedRealtime(), mRequestId, mProxyFetchTask, mVss.getMainThreadExecutor());
+                    proxiedResult.startFetch();
+                    mListener.onRecognitionResult(firstResult, otherHypotheses, proxiedResult);
                 }
             }
-            ImmutableList localImmutableList2 = localBuilder.build();
-            Preconditions.checkNotNull(this.mQuery);
-            VoiceSearchController.access$502(VoiceSearchController.this, VoiceSearchController.this.createFetchTask());
-            SearchResult localSearchResult = SearchResult.forSrp(this.mQuery.withRecognizedText(localSpannedString, localImmutableList2, bool), VoiceSearchController.this.mClock.elapsedRealtime(), this.mRequestId, VoiceSearchController.this.mProxyFetchTask, VoiceSearchController.this.mVss.getMainThreadExecutor());
-            localSearchResult.startFetch();
-            this.mListener.onRecognitionResult(localSpannedString, localImmutableList2, localSearchResult);
         }
-    }
-
-    public static abstract interface Listener {
-        public abstract void onDone();
-
-        public abstract void onError(RecognizeException paramRecognizeException, @Nullable String paramString);
-
-        public abstract void onInitializing();
-
-        public abstract void onMusicDetected();
-
-        public abstract void onNoMatch(NoMatchRecognizeException paramNoMatchRecognizeException, String paramString);
-
-        public abstract void onNoSpeechDetected();
-
-        public abstract void onReadyForSpeech();
-
-        public abstract void onRecognitionResult(CharSequence paramCharSequence, ImmutableList<CharSequence> paramImmutableList, @Nullable SearchResult paramSearchResult);
-
-        public abstract void onRecognizing();
-
-        public abstract void onSpeechDetected();
-
-        public abstract void onTtsAvailable(byte[] paramArrayOfByte);
-
-        public abstract void setFinalRecognizedText(@Nonnull CharSequence paramCharSequence);
-
-        public abstract void updateRecognizedText(String paramString1, String paramString2);
     }
 }
 

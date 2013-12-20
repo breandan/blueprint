@@ -11,9 +11,9 @@ import java.util.Iterator;
 import javax.annotation.Nullable;
 
 public abstract class Hypothesis {
+    private final String mText;
     @Nullable
     private ImmutableList<Span> mSpans;
-    private final String mText;
 
     private Hypothesis(CharSequence paramCharSequence) {
         this.mText = paramCharSequence.toString();
@@ -90,48 +90,8 @@ public abstract class Hypothesis {
             this.mAlternateSpans = ImmutableList.copyOf(paramIterable);
         }
 
-        private int getOffsetUtf16(byte[] paramArrayOfByte, int paramInt) {
-            int i = 0;
-            int j = 0;
-            for (; ; ) {
-                int k;
-                if ((j < paramInt) && (j < paramArrayOfByte.length)) {
-                    k = 0xFF & paramArrayOfByte[j];
-                    if (k >>> 7 == 0) {
-                        i++;
-                        j++;
-                        continue;
-                    }
-                    if (k >>> 5 != 6) {
-                        break label73;
-                    }
-                    if (j + 1 < paramInt) {
-                        break label64;
-                    }
-                }
-                label64:
-                label73:
-                label99:
-                do {
-                    do {
-                        return i;
-                        j += 2;
-                        i++;
-                        break;
-                        if (k >>> 4 != 14) {
-                            break label99;
-                        }
-                    } while (j + 2 >= paramInt);
-                    j += 3;
-                    i++;
-                    break;
-                    if (k >>> 3 != 30) {
-                        break;
-                    }
-                } while (j + 3 >= paramInt);
-                j += 4;
-                i += 2;
-            }
+        private int getOffsetUtf16(byte[] utf8Bytes, int offsetUtf8) {
+            return offsetUtf8;
         }
 
         private byte[] getTextAsUtf8() {

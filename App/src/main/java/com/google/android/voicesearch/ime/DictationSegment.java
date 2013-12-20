@@ -128,9 +128,9 @@ public class DictationSegment {
 
         public void apply(InputConnection paramInputConnection) {
             if (paramInputConnection == null) {
+                return;
             }
             do {
-                return;
                 if (this.mDeleteBeforeCursor > 0) {
                     paramInputConnection.deleteSurroundingText(this.mDeleteBeforeCursor, 0);
                 }

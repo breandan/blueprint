@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.speech.common.proto.RecognitionContextProto;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import javax.annotation.Nullable;
 
@@ -117,28 +118,25 @@ public class SessionParams {
     }
 
     @Nullable
-    public GstaticConfiguration.EndpointerParams getEndpointerParams(SpeechSettings paramSpeechSettings) {
-        GstaticConfiguration.EndpointerParams localEndpointerParams;
-        switch (this.mMode) {
-            default:
-                localEndpointerParams = paramSpeechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
+    public GstaticConfiguration.EndpointerParams getEndpointerParams(SpeechSettings speechSettings) {
+        GstaticConfiguration.EndpointerParams endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
+        switch (mMode) {
+            case 3:
+                endpointerParams = speechSettings.getConfiguration().getDictation().getEndpointerParams();
+            case 0:
+                endpointerParams = speechSettings.getConfiguration().getIntentApi().getEndpointerParams();
+            case 1:
+                endpointerParams = mStopOnEndOfSpeech ? speechSettings.getConfiguration().getServiceApi().getEndpointerParams() : speechSettings.getConfiguration().getDictation().getEndpointerParams();
+            case 2:
+                endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
         }
-        for (; ; ) {
-            if (!this.mNoSpeechDetectedEnabled) {
-                localEndpointerParams.setNoSpeechDetectedTimeoutMsec(20000);
-            }
-            return localEndpointerParams;
-            localEndpointerParams = paramSpeechSettings.getConfiguration().getDictation().getEndpointerParams();
-            continue;
-            localEndpointerParams = paramSpeechSettings.getConfiguration().getIntentApi().getEndpointerParams();
-            continue;
-            if (this.mStopOnEndOfSpeech) {
-            }
-            for (localEndpointerParams = paramSpeechSettings.getConfiguration().getServiceApi().getEndpointerParams(); ; localEndpointerParams = paramSpeechSettings.getConfiguration().getDictation().getEndpointerParams()) {
-                break;
-            }
-            localEndpointerParams = paramSpeechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
+
+        if (!mNoSpeechDetectedEnabled) {
+            endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
+            endpointerParams.setNoSpeechDetectedTimeoutMsec(0x4e20);
         }
+
+        return endpointerParams;
     }
 
     public Greco3Grammar getGreco3Grammar() {
@@ -280,12 +278,13 @@ public class SessionParams {
                     return "recognizer";
                 case 7:
                     return "sound-search";
+                case 8:
+                    return "sound-search-tv";
             }
-            return "sound-search-tv";
         }
 
         private Supplier<String> createNewRequestId() {
-            Suppliers.memoize(new Supplier() {
+            return Suppliers.memoize(new Supplier() {
                 public String get() {
                     return RequestIdGenerator.INSTANCE.newRequestId();
                 }

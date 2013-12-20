@@ -50,32 +50,22 @@ public class HotwordDetector {
         return new SessionParams.Builder().setAudioInputParams(new AudioInputParams.Builder().setPlayBeepEnabled(false).setReportSoundLevels(false).setUsePreemptibleAudioSource(true).setRequestAudioFocus(false).build()).setMode(6).setGreco3Mode(Greco3Mode.HOTWORD).setUseMusicHotworder(paramBoolean).setSpokenBcp47Locale(paramString).build();
     }
 
-    private void internalStart(boolean paramBoolean) {
-        if (!this.mStarted) {
-        }
-        String str;
-        for (boolean bool1 = true; ; bool1 = false) {
-            Preconditions.checkState(bool1);
-            boolean bool2 = this.mActive;
-            boolean bool3 = false;
-            if (!bool2) {
-                bool3 = true;
+    private void internalStart(boolean useMusicHotworder) {
+        Preconditions.checkState((!mStarted));
+        Preconditions.checkState(!mActive);
+        String locale = mSettings.getSpokenLocaleBcp47();
+        if(!canStartHotword()) {
+            if(mHotwordListener != null) {
+                mHotwordListener.onHotwordDetectorNotStarted();
             }
-            Preconditions.checkState(bool3);
-            str = this.mSettings.getSpokenLocaleBcp47();
-            if (canStartHotword()) {
-                break;
-            }
-            if (this.mHotwordListener != null) {
-                this.mHotwordListener.onHotwordDetectorNotStarted();
-            }
-            this.mHotwordListener = null;
+            mHotwordListener = null;
             return;
         }
-        this.mStarted = true;
-        this.mRecognitionListener = new HotwordDetectorListener();
-        this.mVss.getRecognizer().startListening(createHotwordSessionParams(str, paramBoolean), this.mRecognitionListener, this.mMainThreadExecutor, null);
+        mStarted = true;
+        mRecognitionListener = new HotwordDetector.HotwordDetectorListener();
+        mVss.getRecognizer().startListening(createHotwordSessionParams(locale, useMusicHotworder), mRecognitionListener, mMainThreadExecutor, null);
     }
+
 
     private void internalStop(boolean paramBoolean) {
         Preconditions.checkState(this.mStarted);
