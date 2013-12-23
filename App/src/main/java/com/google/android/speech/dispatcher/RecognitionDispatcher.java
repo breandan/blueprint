@@ -70,7 +70,7 @@ public class RecognitionDispatcher {
         this.mState.moveTo(State.RUNNING);
         this.mRecognitionEngines = paramCollection;
         this.mResultsMerger = this.mSpeechLibFactory.buildResultsMerger(paramSessionParams, this, paramEngineSelector, paramRecognitionEngineCallback, this.mExecutor);
-        RecognitionEngineCallback localRecognitionEngineCallback = (RecognitionEngineCallback) threadChange(this.mExecutor, this.mResultsMerger);
+        RecognitionEngineCallback localRecognitionEngineCallback = threadChange(this.mExecutor, this.mResultsMerger);
         Iterator localIterator = this.mRecognitionEngines.iterator();
         while (localIterator.hasNext()) {
             ((RecognitionEngine) ((Pair) localIterator.next()).second).startRecognition(paramAudioInputStreamFactory, localRecognitionEngineCallback, paramSessionParams);

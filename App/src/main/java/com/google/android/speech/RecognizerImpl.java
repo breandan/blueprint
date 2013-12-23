@@ -48,7 +48,7 @@ public class RecognizerImpl
     }
 
     public static Recognizer create(ExecutorService paramExecutorService, AudioController paramAudioController, SpeechLibFactory paramSpeechLibFactory) {
-        return (Recognizer) threadChange(paramExecutorService, new RecognizerImpl(paramAudioController, new AudioRecorder(), new RecognitionDispatcher(paramExecutorService, paramSpeechLibFactory), paramSpeechLibFactory.buildRecognitionEngineStore(), paramSpeechLibFactory));
+        return threadChange(paramExecutorService, new RecognizerImpl(paramAudioController, new AudioRecorder(), new RecognitionDispatcher(paramExecutorService, paramSpeechLibFactory), paramSpeechLibFactory.buildRecognitionEngineStore(), paramSpeechLibFactory));
     }
 
     private static final <T> T threadChange(Executor paramExecutor, Class<T> paramClass, T paramT) {
@@ -165,7 +165,7 @@ public class RecognizerImpl
         List localList1;
         for (; ; ) {
             this.mRecognitionListener = paramRecognitionEventListener;
-            localRecognitionEventListener = (RecognitionEventListener) threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
+            localRecognitionEventListener = threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
             recordStartRecognitionEvent(paramSessionParams);
             localEngineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
             this.mResponseProcessor = this.mSpeechLibFactory.buildResponseProcessor(getAudioCallback(this.mRecognitionListener), localRecognitionEventListener, paramSessionParams, this.mSpeechLibLogger);
@@ -208,7 +208,7 @@ public class RecognizerImpl
             internalShutdownAudio();
         }
         this.mRecognitionListener = paramRecognitionEventListener;
-        RecognitionEventListener localRecognitionEventListener = (RecognitionEventListener) threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
+        RecognitionEventListener localRecognitionEventListener = threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
         this.mListeningState.checkIn(State.IDLE);
         recordStartRecognitionEvent(paramSessionParams);
         AudioInputStreamFactory local2 = new AudioInputStreamFactory() {

@@ -8,10 +8,16 @@ import com.google.android.speech.exception.RecognizeException;
 import com.google.android.speech.listeners.RecognitionEventListener;
 import com.google.android.speech.logger.SpeechLibLogger;
 import com.google.android.speech.message.S3ResponseProcessor;
+import com.google.audio.ears.proto.EarsService;
 import com.google.audio.ears.proto.EarsService.EarsResultsResponse;
+import com.google.majel.proto.MajelProtos;
 import com.google.majel.proto.MajelProtos.MajelResponse;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.s3.PinholeStream;
 import com.google.speech.s3.PinholeStream.PinholeOutput;
+import com.google.speech.s3.S3;
 import com.google.speech.s3.S3.S3Response;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 public class ResponseProcessor
         implements RecognitionEngineCallback {
@@ -37,22 +43,18 @@ public class ResponseProcessor
         }
     }
 
-    private void handleS3Response(S3.S3Response paramS3Response) {
-        if (paramS3Response.getStatus() == 1) {
-            this.mLogger.logS3ConnectionDone();
-            this.mAudioCallback.shutdownAudio();
+    private void handleS3Response(S3.S3Response s3Response) {
+        if(s3Response.getStatus() == 0x1) {
+            mLogger.logS3ConnectionDone();
+            mAudioCallback.shutdownAudio();
+        } else if(s3Response.getStatus() == 0x2) {
+            mLogger.logS3ConnectionError();
+            mAudioCallback.shutdownAudio();
+        } else if((s3Response.getStatus() == 0) && (s3Response.hasRecognizerEventExtension()) && (s3Response.getRecognizerEventExtension().hasRecognitionEvent()) && (s3Response.getRecognizerEventExtension().getRecognitionEvent().getEventType() == 0x1)) {
+            mLogger.logS3RecognitionCompleted();
+            mAudioCallback.stopAudio();
         }
-        for (; ; ) {
-            this.mS3ResponseProcessor.process(paramS3Response, this.mEventListener);
-            return;
-            if (paramS3Response.getStatus() == 2) {
-                this.mLogger.logS3ConnectionError();
-                this.mAudioCallback.shutdownAudio();
-            } else if ((paramS3Response.getStatus() == 0) && (paramS3Response.hasRecognizerEventExtension()) && (paramS3Response.getRecognizerEventExtension().hasRecognitionEvent()) && (paramS3Response.getRecognizerEventExtension().getRecognitionEvent().getEventType() == 1)) {
-                this.mLogger.logS3RecognitionCompleted();
-                this.mAudioCallback.stopAudio();
-            }
-        }
+        mS3ResponseProcessor.process(s3Response, mEventListener);
     }
 
     public void invalidate() {

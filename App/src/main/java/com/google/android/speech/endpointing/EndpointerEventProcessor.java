@@ -1,5 +1,7 @@
 package com.google.android.speech.endpointing;
 
+import com.google.speech.recognizer.api.RecognizerProtos;
+
 public abstract interface EndpointerEventProcessor {
     public abstract void process(RecognizerProtos.EndpointerEvent paramEndpointerEvent);
 

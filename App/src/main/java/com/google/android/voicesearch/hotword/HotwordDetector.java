@@ -54,8 +54,8 @@ public class HotwordDetector {
         Preconditions.checkState((!mStarted));
         Preconditions.checkState(!mActive);
         String locale = mSettings.getSpokenLocaleBcp47();
-        if(!canStartHotword()) {
-            if(mHotwordListener != null) {
+        if (!canStartHotword()) {
+            if (mHotwordListener != null) {
                 mHotwordListener.onHotwordDetectorNotStarted();
             }
             mHotwordListener = null;
@@ -65,7 +65,6 @@ public class HotwordDetector {
         mRecognitionListener = new HotwordDetector.HotwordDetectorListener();
         mVss.getRecognizer().startListening(createHotwordSessionParams(locale, useMusicHotworder), mRecognitionListener, mMainThreadExecutor, null);
     }
-
 
     private void internalStop(boolean paramBoolean) {
         Preconditions.checkState(this.mStarted);

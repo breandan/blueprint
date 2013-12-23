@@ -2,6 +2,7 @@ package com.google.android.speech;
 
 import com.google.android.speech.callback.Callback;
 import com.google.android.speech.exception.RecognizeException;
+import com.google.speech.s3.S3;
 import com.google.speech.s3.S3.S3Response;
 
 public class RecognitionResponseWrapper

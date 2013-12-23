@@ -4,7 +4,11 @@ import android.util.Log;
 
 import com.google.android.speech.utils.ProtoBufUtils;
 import com.google.common.base.Preconditions;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.s3.S3;
 import com.google.speech.s3.S3.S3Response;
+import com.google.speech.speech.s3.*;
+import com.google.speech.speech.s3.Recognizer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +53,7 @@ public class RecognitionResponse {
     @Nullable
     public <T> T get(int paramInt) {
         if (paramInt == this.mType) {
-            return this.mResponse;
+            return (T) this.mResponse;
         }
         throw new IllegalStateException("Requested type: " + paramInt + ", but was: " + this.mType);
     }
@@ -66,8 +70,9 @@ public class RecognitionResponse {
                 return "EMBEDDED";
             case 2:
                 return "NETWORK";
+            case 3:
+                return "SOUND_SEARCH";
         }
-        return "SOUND_SEARCH";
     }
 
     public int getType() {
