@@ -3,6 +3,7 @@ package com.google.speech.recognizer.api;
 import com.google.protobuf.micro.CodedInputStreamMicro;
 import com.google.protobuf.micro.CodedOutputStreamMicro;
 import com.google.protobuf.micro.MessageMicro;
+import com.google.speech.common.Alternates;
 
 import java.io.IOException;
 

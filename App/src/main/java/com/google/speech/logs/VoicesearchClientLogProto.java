@@ -239,8 +239,10 @@ public final class VoicesearchClientLogProto {
                         }
                     case 0:
                         return this;
+                    case 8:
+                        setStatusCode(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setStatusCode(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -411,8 +413,10 @@ public final class VoicesearchClientLogProto {
                         }
                     case 0:
                         return this;
+                    case 8:
+                        setBugNumber(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setBugNumber(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -1726,8 +1730,10 @@ public final class VoicesearchClientLogProto {
                         }
                     case 0:
                         return this;
+                    case 8:
+                        setContactSelectPosition(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setContactSelectPosition(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -1787,8 +1793,10 @@ public final class VoicesearchClientLogProto {
                         }
                     case 0:
                         return this;
+                    case 8:
+                        setHypothesisIndex(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setHypothesisIndex(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -2701,8 +2709,10 @@ public final class VoicesearchClientLogProto {
                         }
                     case 0:
                         return this;
+                    case 8:
+                        setRecognizerSegmentIndex(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setRecognizerSegmentIndex(paramCodedInputStreamMicro.readInt32());
             }
         }
 

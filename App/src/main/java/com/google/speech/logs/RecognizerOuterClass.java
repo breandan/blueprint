@@ -418,8 +418,10 @@ public final class RecognizerOuterClass {
                             }
                         case 0:
                             return this;
+                        case 13:
+                            addValue(paramCodedInputStreamMicro.readFloat());
+                            break;
                     }
-                    addValue(paramCodedInputStreamMicro.readFloat());
                 }
             }
 
