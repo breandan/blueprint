@@ -86,47 +86,23 @@ public class Greco3EngineManager
         return null;
     }
 
-    private Resources getResourcesInternal(String paramString, Greco3Mode paramGreco3Mode, @Nullable Greco3Grammar paramGreco3Grammar) {
-        boolean bool1 = true;
-        boolean bool2 = bool1;
-        label171:
-        if (paramGreco3Mode == Greco3Mode.GRAMMAR) {
-            Resources localResources1;
-            if (paramGreco3Grammar != null) {
-                break label171;
-                Preconditions.checkArgument(bool2);
-                if (this.mCurrentRecognition == null) {
-                    Preconditions.checkState(bool1);
-                    localResources1 = this.mResourcesByMode.get(paramGreco3Mode);
-                    if (localResources1 == null) {
-                        continue;
-                    }
-                    boolean bool3 = localResources1.isEquivalentTo(paramString, paramGreco3Grammar, paramGreco3Mode);
-                    if (!bool3) {
-                        return
-                    }
-                    return localResources1;
+    private synchronized Resources getResourcesInternal(String locale, Greco3Mode mode, @Nullable Greco3Grammar grammarType) {
+        Preconditions.checkArgument(mode != Greco3Mode.GRAMMAR || grammarType != null);
+        Preconditions.checkState(mCurrentRecognition == null);
+
+        Resources instance = mResourcesByMode.get(mode);
+        if (instance == null) {
+            instance = loadResourcesFor(locale, mode, grammarType);
+            if (instance != null || mode.isEndpointerMode()) {
+                if (instance != null) {
+                    mResourcesByMode.put(mode, instance);
                 }
             } else {
-                bool2 = false;
-                continue;
+                instance = loadResourcesFor("en-US", mode, null);
             }
-            bool1 = false;
-            continue;
-            localResources1.resources.delete();
-            this.mResourcesByMode.remove(paramGreco3Mode);
-            Resources localResources2 = loadResourcesFor(paramString, paramGreco3Mode, paramGreco3Grammar);
-            if ((localResources2 == null) && (paramGreco3Mode.isEndpointerMode())) {
-                localResources2 = loadResourcesFor("en-US", paramGreco3Mode, null);
-            }
-            Object localObject2 = null;
-            if (localResources2 == null) {
-                continue;
-            }
-            this.mResourcesByMode.put(paramGreco3Mode, localResources2);
-            localObject2 = localResources2;
-            continue;
         }
+
+        return instance;
     }
 
     private boolean isUsedLocked(File paramFile) {
@@ -165,14 +141,20 @@ public class Greco3EngineManager
             }
             StopWatch initStopWatch = new StopWatch();
             initStopWatch.start();
-            
+
+            int arraySize = dataPaths.size();
+
+            if (grammarPath != null) {
+                arraySize += 1;
+            }
+
+            String[] pathsArray = new String[arraySize];
+            dataPaths.toArray(pathsArray);
+
             if (grammarPath != null) {
                 pathsArray[(pathsArray.length - 0x1)] = grammarPath;
             }
-            Greco3Mode.GRAMMAR = dataPaths.size()
-            Greco3Mode.GRAMMAR + 0x1, arraySize = Greco3Mode.GRAMMAR = dataPaths.size()
-            Greco3Mode.GRAMMAR + 0x1;
-            String[] pathsArray = new String[arraySize];
+
             dataPaths.toArray(pathsArray);
             Log.i("VS.G3EngineManager", "create_rm: m=" + mode + ",l=" + bcp47Locale);
             Greco3ResourceManager rm = Greco3ResourceManager.create(configFile, pathsArray);
@@ -181,8 +163,9 @@ public class Greco3EngineManager
                 return null;
             }
             Log.i("VS.G3EngineManager", "Brought up new g3 instance :" + configFile + " for: " + bcp47Locale + "in: " + initStopWatch.getElapsedTime() + " ms");
-            return new Greco3EngineManager.Resources(rm, resources.getConfigFile(mode), bcp47Locale, grammarType, mode, this, resources.getLanguageMetadata());
+            return new Greco3EngineManager.Resources(rm, resources.getConfigFile(mode), bcp47Locale, grammarType, mode, pathsArray, resources.getLanguageMetadata());
         }
+
         return null;
     }
 
