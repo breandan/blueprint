@@ -1,7 +1,9 @@
 package com.google.android.speech.embedded;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.os.Build;
 
 import com.google.common.base.Supplier;
 

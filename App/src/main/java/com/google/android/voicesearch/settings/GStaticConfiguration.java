@@ -81,7 +81,7 @@ class GStaticConfiguration {
             return base;
         }
         try {
-            return (GstaticConfiguration.Configuration) (GstaticConfiguration.Configuration) ProtoUtils.copyOf(base).mergeFrom(paramSharedPrefsData.overridenData.toByteArray());
+            return (GstaticConfiguration.Configuration) ProtoUtils.copyOf(base).mergeFrom(paramSharedPrefsData.overridenData.toByteArray());
         } catch (InvalidProtocolBufferMicroException e) {
             return base;
         }
@@ -91,7 +91,7 @@ class GStaticConfiguration {
         if ((!isPreferenceObsolete(paramSharedPrefsData.configTimestamp)) && (paramSharedPrefsData.configData != null)) {
             return false;
         }
-        paramSharedPrefsData.configData = ((GstaticConfiguration.Configuration) Preconditions.checkNotNull(loadBundledConfig(paramResources)));
+        paramSharedPrefsData.configData = Preconditions.checkNotNull(loadBundledConfig(paramResources));
         paramSharedPrefsData.configTimestamp = "2013_10_04_22_22_03";
         return true;
     }

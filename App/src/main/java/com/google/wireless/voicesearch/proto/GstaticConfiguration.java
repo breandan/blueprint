@@ -1019,10 +1019,12 @@ public final class GstaticConfiguration {
                         }
                     case 0:
                         return this;
+                    case 66:
+                        GstaticConfiguration.DebugServer localDebugServer = new GstaticConfiguration.DebugServer();
+                        paramCodedInputStreamMicro.readMessage(localDebugServer);
+                        addDebugServer(localDebugServer);
+                        break;
                 }
-                GstaticConfiguration.DebugServer localDebugServer = new GstaticConfiguration.DebugServer();
-                paramCodedInputStreamMicro.readMessage(localDebugServer);
-                addDebugServer(localDebugServer);
             }
         }
 
@@ -1660,8 +1662,10 @@ public final class GstaticConfiguration {
                         }
                     case 0:
                         return this;
+                    case 8:
+                        setGrammarCompilationFrequencyMs(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setGrammarCompilationFrequencyMs(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -1882,8 +1886,10 @@ public final class GstaticConfiguration {
                         }
                     case 0:
                         return this;
+                    case 10:
+                        setPrivacyUrl(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setPrivacyUrl(paramCodedInputStreamMicro.readString());
             }
         }
 
@@ -3089,8 +3095,10 @@ public final class GstaticConfiguration {
                         }
                     case 0:
                         return this;
+                    case 10:
+                        addEnabledNoiseSuppressors(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                addEnabledNoiseSuppressors(paramCodedInputStreamMicro.readString());
             }
         }
 
@@ -3493,10 +3501,12 @@ public final class GstaticConfiguration {
                         }
                     case 0:
                         return this;
+                    case 10:
+                        GstaticConfiguration.EndpointerParams localEndpointerParams = new GstaticConfiguration.EndpointerParams();
+                        paramCodedInputStreamMicro.readMessage(localEndpointerParams);
+                        setEndpointerParams(localEndpointerParams);
+                        break;
                 }
-                GstaticConfiguration.EndpointerParams localEndpointerParams = new GstaticConfiguration.EndpointerParams();
-                paramCodedInputStreamMicro.readMessage(localEndpointerParams);
-                setEndpointerParams(localEndpointerParams);
             }
         }
 
