@@ -13,16 +13,12 @@ public class ContactsGrammarBuilder
     private final ArrayList<GrammarContact> mGrammarContactList = Lists.newArrayList();
 
     private void calculateWeight() {
-        if (this.mGrammarContactList.isEmpty()) {
-        }
-        for (; ; ) {
+        if(mGrammarContactList.isEmpty()) {
             return;
-            int i = ((GrammarContact) this.mGrammarContactList.get(0)).timesContacted;
-            Iterator localIterator = this.mGrammarContactList.iterator();
-            while (localIterator.hasNext()) {
-                GrammarContact localGrammarContact = (GrammarContact) localIterator.next();
-                localGrammarContact.weight = getWeight(localGrammarContact.timesContacted, i, localGrammarContact.lastTimeContactedElapsed);
-            }
+        }
+        int maxTimesContacted = mGrammarContactList.get(0x0).timesContacted;
+        for(GrammarContact grammarContact : mGrammarContactList) {
+            grammarContact.weight = getWeight((double)grammarContact.timesContacted, (double)maxTimesContacted, (double)grammarContact.lastTimeContactedElapsed);
         }
     }
 

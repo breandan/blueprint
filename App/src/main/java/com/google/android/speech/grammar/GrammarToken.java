@@ -5,8 +5,8 @@ import android.util.Base64;
 import java.util.Formatter;
 
 class GrammarToken {
-    private static final Formatter sFormatter = new Formatter(sSb);
     private static final StringBuilder sSb = new StringBuilder();
+    private static final Formatter sFormatter = new Formatter(sSb);
     private final String token;
     private double weight;
 

@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.shared.util.SpeechLevelSource;
-import com.google.android.speech.audio.AudioProvider;
-import com.google.android.speech.audio.AudioStore;
 import com.google.android.speech.exception.RecognizeException;
 import com.google.android.speech.listeners.RecognitionEventListenerAdapter;
 import com.google.android.speech.utils.SpokenLanguageUtils;
@@ -23,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class IntentApiController {
-    private boolean haveCompletedRecognition = false;
     private final IntentApiActivity mActivity;
-    private IntentApiParams mIntentApiParams;
     private final IntentApiRecognizerController mRecognizerController;
     private final Settings mSettings;
-    private boolean mShowingError;
     private final AudioTrackSoundManager mSoundManager;
     private final SpeechLevelSource mSpeechLevelSource;
+    private boolean haveCompletedRecognition = false;
+    private IntentApiParams mIntentApiParams;
+    private boolean mShowingError;
     private Ui mUi;
 
     public IntentApiController(IntentApiActivity paramIntentApiActivity, Settings paramSettings, SpeechLevelSource paramSpeechLevelSource, AudioTrackSoundManager paramAudioTrackSoundManager, IntentApiRecognizerController paramIntentApiRecognizerController) {
@@ -39,12 +37,6 @@ public class IntentApiController {
         this.mSpeechLevelSource = paramSpeechLevelSource;
         this.mSoundManager = paramAudioTrackSoundManager;
         this.mRecognizerController = paramIntentApiRecognizerController;
-    }
-
-    private void addStoredAudioUriToIntent(Intent paramIntent) {
-        AudioStore.AudioRecording localAudioRecording = this.mRecognizerController.getLastAudio();
-        paramIntent.setData(AudioProvider.insert(this.mActivity, localAudioRecording));
-        paramIntent.setFlags(1);
     }
 
     private boolean checkIncomingIntent() {
@@ -112,9 +104,6 @@ public class IntentApiController {
         localIntent.putExtra("android.speech.extra.RESULTS", localArrayList);
         localIntent.putExtra("android.speech.extra.CONFIDENCE_SCORES", arrayOfFloat);
         localIntent.putExtra("query", (String) localArrayList.get(0));
-        if (this.mIntentApiParams.isReturnAudio()) {
-            addStoredAudioUriToIntent(localIntent);
-        }
         if (this.mIntentApiParams.isAutoScript()) {
             Log.i("IntentApiController", "Recognition results: [" + (String) localArrayList.get(0) + "]");
         }
@@ -128,10 +117,8 @@ public class IntentApiController {
         }
         try {
             this.mIntentApiParams.getPendingIntent().send(this.mActivity, -1, localIntent);
-            return;
         } catch (PendingIntent.CanceledException localCanceledException) {
             Log.e("IntentApiController", "Not possible to start pending intent", localCanceledException);
-            return;
         } finally {
             this.mActivity.finish();
         }
@@ -187,7 +174,6 @@ public class IntentApiController {
                 break;
             }
             this.mRecognizerController.resendAudio(local1, this.mIntentApiParams.getCallingPackage());
-            return;
             if (this.mIntentApiParams.getPrompt() != null) {
                 this.mUi.setPromptText(this.mIntentApiParams.getPrompt());
             } else {

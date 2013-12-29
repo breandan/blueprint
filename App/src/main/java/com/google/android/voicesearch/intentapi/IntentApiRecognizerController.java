@@ -6,6 +6,7 @@ import com.google.android.speech.Recognizer;
 import com.google.android.speech.audio.AudioStore;
 import com.google.android.speech.audio.SingleRecordingAudioStore;
 import com.google.android.speech.embedded.Greco3Mode;
+import com.google.android.speech.embedded.Greco3RecognitionEngine;
 import com.google.android.speech.exception.RecognizeException;
 import com.google.android.speech.listeners.CancellableRecognitionEventListener;
 import com.google.android.speech.listeners.CompositeRecognitionEventListener;
@@ -16,6 +17,7 @@ import com.google.android.speech.test.TestPlatformLog;
 import com.google.android.voicesearch.VoiceSearchServices;
 import com.google.android.voicesearch.logger.EventLogger;
 import com.google.common.base.Preconditions;
+import com.google.speech.recognizer.api.RecognizerProtos;
 
 import java.util.concurrent.Executor;
 
@@ -23,6 +25,7 @@ import javax.annotation.Nullable;
 
 public class IntentApiRecognizerController {
     private final AudioStore mAudioStore;
+    private final VoiceSearchServices mVoiceSearchServices;
     private CancellableRecognitionEventListener mEventListener;
     @Nullable
     private Executor mMainThreadExecutor;
@@ -32,7 +35,6 @@ public class IntentApiRecognizerController {
     private Recognizer mRecognizer;
     private String mSpokenBcp47Locale;
     private Ui mUi;
-    private final VoiceSearchServices mVoiceSearchServices;
 
     public IntentApiRecognizerController(VoiceSearchServices paramVoiceSearchServices) {
         this.mVoiceSearchServices = paramVoiceSearchServices;
@@ -69,25 +71,17 @@ public class IntentApiRecognizerController {
     private void prepareRecognition(SessionParams paramSessionParams, RecognitionEventListener paramRecognitionEventListener) {
         cancelInternal(false);
         this.mRecognitionInProgress = true;
-        CompositeRecognitionEventListener localCompositeRecognitionEventListener;
+        CompositeRecognitionEventListener localCompositeRecognitionEventListener = null;
         if (paramRecognitionEventListener != null) {
             localCompositeRecognitionEventListener = new CompositeRecognitionEventListener();
-            localCompositeRecognitionEventListener.add(new InternalRecognitionEventListener(null));
+            localCompositeRecognitionEventListener.add(new InternalRecognitionEventListener());
             localCompositeRecognitionEventListener.add(paramRecognitionEventListener);
         }
-        for (Object localObject = localCompositeRecognitionEventListener; ; localObject = new InternalRecognitionEventListener(null)) {
-            this.mEventListener = new CancellableRecognitionEventListener((RecognitionEventListener) localObject);
-            return;
-        }
-    }
 
-    public void attachUi(Ui paramUi) {
-        if (this.mUi == null) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            this.mUi = ((Ui) Preconditions.checkNotNull(paramUi));
-            return;
+        if (localCompositeRecognitionEventListener == null) {
+            this.mEventListener = new CancellableRecognitionEventListener(new InternalRecognitionEventListener());
+        } else {
+            this.mEventListener = new CancellableRecognitionEventListener(localCompositeRecognitionEventListener);
         }
     }
 
@@ -95,14 +89,14 @@ public class IntentApiRecognizerController {
         cancelInternal(true);
     }
 
-    public void detachUi(Ui paramUi) {
-        if (paramUi == this.mUi) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            this.mUi = null;
-            return;
-        }
+    public void attachUi(IntentApiRecognizerController.Ui ui) {
+        Preconditions.checkState((mUi == null));
+        mUi = Preconditions.checkNotNull(ui);
+    }
+
+    public void detachUi(IntentApiRecognizerController.Ui ui) {
+        Preconditions.checkState((ui == mUi));
+        mUi = null;
     }
 
     @Nullable
@@ -126,7 +120,7 @@ public class IntentApiRecognizerController {
     }
 
     public void setBcp47Locale(String paramString) {
-        this.mSpokenBcp47Locale = ((String) Preconditions.checkNotNull(paramString));
+        this.mSpokenBcp47Locale = Preconditions.checkNotNull(paramString);
     }
 
     void setLastAudioForTest(String paramString, byte[] paramArrayOfByte, int paramInt) {
@@ -154,6 +148,12 @@ public class IntentApiRecognizerController {
         }
     }
 
+    public static abstract interface Ui {
+        public abstract void showInitializing();
+
+        public abstract void showRecognizing();
+    }
+
     private class InternalRecognitionEventListener
             extends RecognitionEventListenerAdapter {
         private InternalRecognitionEventListener() {
@@ -168,12 +168,9 @@ public class IntentApiRecognizerController {
             if ((paramRecognizeException instanceof Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException)) {
                 Log.i("IntentApiRecognizerController", "No recognizers available.");
             }
-            for (; ; ) {
-                TestPlatformLog.logError(paramRecognizeException.toString());
-                IntentApiRecognizerController.this.cancelInternal(false);
-                return;
-                Log.e("IntentApiRecognizerController", "onError", paramRecognizeException);
-            }
+            TestPlatformLog.logError(paramRecognizeException.toString());
+            IntentApiRecognizerController.this.cancelInternal(false);
+            Log.e("IntentApiRecognizerController", "onError", paramRecognizeException);
         }
 
         public void onNoSpeechDetected() {
@@ -188,12 +185,6 @@ public class IntentApiRecognizerController {
         public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
             TestPlatformLog.logResults(paramRecognitionEvent);
         }
-    }
-
-    public static abstract interface Ui {
-        public abstract void showInitializing();
-
-        public abstract void showRecognizing();
     }
 }
 

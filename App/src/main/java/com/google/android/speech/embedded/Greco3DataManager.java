@@ -25,25 +25,25 @@ import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
 
 public class Greco3DataManager {
+    static final File SYSTEM_DATA_DIR = new File("/system/usr/srec");
     private static final FileFilter DIRECTORY_FILTER = new FileFilter() {
         public boolean accept(File paramAnonymousFile) {
             return paramAnonymousFile.isDirectory();
         }
     };
-    static final File SYSTEM_DATA_DIR = new File("/system/usr/srec");
-    private Map<String, LocaleResourcesImpl> mAvailableLanguages;
+    final List<Runnable> mInitializationCallbacks;
     @Nullable
     private final File mCompiledGrammarRoot;
     private final Context mContext;
     @Nullable
     private final Greco3Preferences mGreco3Prefs;
-    final List<Runnable> mInitializationCallbacks;
-    private int mNumUpdatesInProgress;
-    private PathDeleter mPathDeleter;
     private final ImmutableList<File> mSearchPaths;
     private final int[] mSupportedFormatVersions;
     private final Executor mUiThread;
     private final Executor mUpdateExecutor;
+    private Map<String, LocaleResourcesImpl> mAvailableLanguages;
+    private int mNumUpdatesInProgress;
+    private PathDeleter mPathDeleter;
 
     public Greco3DataManager(Context paramContext, @Nullable Greco3Preferences paramGreco3Preferences, int[] paramArrayOfInt, ImmutableList<File> paramImmutableList, @Nullable File paramFile, Executor paramExecutor1, Executor paramExecutor2) {
         this.mContext = paramContext;
@@ -66,6 +66,18 @@ public class Greco3DataManager {
         this(paramContext, paramGreco3Preferences, paramArrayOfInt, getSearchPathList(arrayOfFile), new File(paramContext.getCacheDir(), "g3_grammars"), paramExecutor1, paramExecutor2);
     }
 
+    private static ImmutableList<File> getSearchPathList(File... paramVarArgs) {
+        ArrayList localArrayList = new ArrayList();
+        int i = paramVarArgs.length;
+        for (int j = 0; j < i; j++) {
+            File localFile = paramVarArgs[j];
+            if (localFile != null) {
+                localArrayList.add(localFile);
+            }
+        }
+        return ImmutableList.copyOf(localArrayList);
+    }
+
     private void doLanguageDelete(GstaticConfiguration.LanguagePack paramLanguagePack, final Runnable paramRunnable) {
         File localFile = getOutputDirForLocale(paramLanguagePack.getBcp47Locale());
         this.mPathDeleter.delete(localFile, true, new Runnable() {
@@ -80,18 +92,6 @@ public class Greco3DataManager {
 
     private File getOutputDirForLocale(String paramString) {
         return new File(this.mContext.getDir("g3_models", 0), paramString);
-    }
-
-    private static ImmutableList<File> getSearchPathList(File... paramVarArgs) {
-        ArrayList localArrayList = new ArrayList();
-        int i = paramVarArgs.length;
-        for (int j = 0; j < i; j++) {
-            File localFile = paramVarArgs[j];
-            if (localFile != null) {
-                localArrayList.add(localFile);
-            }
-        }
-        return ImmutableList.copyOf(localArrayList);
     }
 
     private void handleLocale(File paramFile, Map<String, LocaleResourcesImpl> paramMap) {
@@ -179,53 +179,45 @@ public class Greco3DataManager {
     private void updateGrammars(Map<String, LocaleResourcesImpl> paramMap) {
         File[] arrayOfFile1 = this.mCompiledGrammarRoot.listFiles(DIRECTORY_FILTER);
         if ((arrayOfFile1 == null) || (arrayOfFile1.length == 0)) {
+            return;
         }
         LocaleResourcesImpl localLocaleResourcesImpl;
         File[] arrayOfFile2;
-        label98:
-        for (; ; ) {
-            return;
-            int i = arrayOfFile1.length;
-            for (int j = 0; ; j++) {
-                if (j >= i) {
-                    break label98;
-                }
-                File localFile1 = arrayOfFile1[j];
-                String str1 = localFile1.getName();
-                if (!isValidLocale(str1)) {
-                    break;
-                }
-                localLocaleResourcesImpl = (LocaleResourcesImpl) paramMap.get(str1);
-                if (localLocaleResourcesImpl == null) {
-                    break;
-                }
-                arrayOfFile2 = localFile1.listFiles(DIRECTORY_FILTER);
-                if ((arrayOfFile2 != null) && (arrayOfFile2.length != 0)) {
-                    break label100;
+        int i = arrayOfFile1.length;
+        for (int j = 0; ; j++) {
+            if (j >= i) {
+                break;
+            }
+            File localFile1 = arrayOfFile1[j];
+            String str1 = localFile1.getName();
+            if (!isValidLocale(str1)) {
+                break;
+            }
+            localLocaleResourcesImpl = paramMap.get(str1);
+            if (localLocaleResourcesImpl == null) {
+                break;
+            }
+            arrayOfFile2 = localFile1.listFiles(DIRECTORY_FILTER);
+            if ((arrayOfFile2 != null) && (arrayOfFile2.length != 0)) {
+                int k = arrayOfFile2.length;
+                int m = 0;
+                File localFile2;
+                Greco3Grammar localGreco3Grammar;
+                if (m < k) {
+                    localFile2 = arrayOfFile2[m];
+                    localGreco3Grammar = Greco3Grammar.valueOf(localFile2);
+                    if (localGreco3Grammar != null) {
+                        File[] arrayOfFile3;
+                        do {
+                            m++;
+                            arrayOfFile3 = localFile2.listFiles(DIRECTORY_FILTER);
+                        } while ((arrayOfFile3 == null) || (arrayOfFile3.length == 0));
+                    }
                 }
             }
         }
-        label100:
-        int k = arrayOfFile2.length;
-        int m = 0;
-        label108:
-        File localFile2;
-        Greco3Grammar localGreco3Grammar;
-        if (m < k) {
-            localFile2 = arrayOfFile2[m];
-            localGreco3Grammar = Greco3Grammar.valueOf(localFile2);
-            if (localGreco3Grammar != null) {
-                break label140;
-            }
-        }
+
         label140:
-        File[] arrayOfFile3;
-        do {
-            m++;
-            break label108;
-            break;
-            arrayOfFile3 = localFile2.listFiles(DIRECTORY_FILTER);
-        } while ((arrayOfFile3 == null) || (arrayOfFile3.length == 0));
         String str2 = this.mGreco3Prefs.getCompiledGrammarRevisionId(localGreco3Grammar);
         int n = arrayOfFile3.length;
         int i1 = 0;
@@ -241,8 +233,6 @@ public class Greco3DataManager {
         for (; ; ) {
             i1++;
             break label180;
-            break;
-            label226:
             processGrammar(localFile3, localGreco3Grammar, localLocaleResourcesImpl);
         }
     }
@@ -310,9 +300,9 @@ public class Greco3DataManager {
     }
 
     public synchronized void blockingUpdateResources(boolean paramBoolean) {
-            ExtraPreconditions.checkNotMainThread();
-            updateResourcesLocked(paramBoolean);
-            waitForPendingUpdates();
+        ExtraPreconditions.checkNotMainThread();
+        updateResourcesLocked(paramBoolean);
+        waitForPendingUpdates();
     }
 
     public File createOuputPathForGrammarCache(Greco3Grammar paramGreco3Grammar, String paramString) {
@@ -453,14 +443,14 @@ public class Greco3DataManager {
     }
 
     public synchronized void initialize() {
-            if (!isInitialized()) {
-                updateResourcesLocked(false);
-            }
+        if (!isInitialized()) {
+            updateResourcesLocked(false);
+        }
     }
 
     public synchronized void initialize(Runnable paramRunnable) {
-            addInitializationCallback(paramRunnable);
-            initialize();
+        addInitializationCallback(paramRunnable);
+        initialize();
     }
 
     /* Error */

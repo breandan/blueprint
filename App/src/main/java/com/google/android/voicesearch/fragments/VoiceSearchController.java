@@ -1,6 +1,5 @@
 package com.google.android.voicesearch.fragments;
 
-import android.net.Uri;
 import android.text.SpannedString;
 import android.text.TextUtils;
 import android.util.Log;
@@ -17,7 +16,6 @@ import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.speech.alternates.Hypothesis;
 import com.google.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.google.android.speech.audio.AudioStore;
-import com.google.android.speech.audio.AudioUtils;
 import com.google.android.speech.callback.SimpleCallback;
 import com.google.android.speech.embedded.Greco3Grammar;
 import com.google.android.speech.embedded.Greco3Mode;
@@ -98,17 +96,8 @@ public class VoiceSearchController {
         }
     }
 
-    private SessionParams getSessionParams(AudioStore.AudioRecording resendAudio, boolean isTriggeredFromBluetooth, Uri recordedAudioUri) {
+    private SessionParams getSessionParams(AudioStore.AudioRecording resendAudio) {
         AudioInputParams.Builder audioBuilder = new AudioInputParams.Builder();
-        if (resendAudio != null) {
-            audioBuilder.setSamplingRate(resendAudio.getSampleRate());
-            audioBuilder.setEncoding(AudioUtils.getAmrEncodingForRecording(resendAudio).getRecognizerEncoding());
-        } else if (recordedAudioUri != null) {
-            audioBuilder.setRecordedAudioUri(recordedAudioUri);
-        } else if ((mVss.getGsaConfigFlags().shouldUseAmrWbEncoding()) && (!mVss.getSettings().isBluetoothHeadsetEnabled()) && (!isTriggeredFromBluetooth)) {
-            audioBuilder.setEncoding(0x9);
-            audioBuilder.setSamplingRate(0x3e80);
-        }
         SessionParams.Builder builder = new SessionParams.Builder();
         Settings speechSettings = mVss.getSettings();
         builder.setSpokenBcp47Locale(speechSettings.getSpokenLocaleBcp47()).setGreco3Grammar(Greco3Grammar.CONTACT_DIALING).setGreco3Mode(Greco3Mode.GRAMMAR).setResendingAudio((resendAudio != null)).setMode(0x2).setProfanityFilterEnabled(speechSettings.isProfanityFilterEnabled()).setAudioInputParams(audioBuilder.build()).setServerEndpointingEnabled(mVss.getGsaConfigFlags().isServerEndpointingEnabled());
@@ -125,7 +114,7 @@ public class VoiceSearchController {
             startNewVoiceSearch(paramQuery, paramListener);
             return;
         }
-        SessionParams localSessionParams = getSessionParams(localAudioRecording, paramQuery.isTriggeredFromBluetoothHandsfree(), null);
+        SessionParams localSessionParams = getSessionParams(localAudioRecording);
         this.mRecognitionInProgress = true;
         this.mEventListener = new CancellableRecognitionEventListener(new InternalRecognitionEventListener(localSessionParams.getRequestId(), paramListener, paramQuery));
         paramListener.onRecognizing();
@@ -133,7 +122,7 @@ public class VoiceSearchController {
     }
 
     private void startListening(Listener paramListener, Query paramQuery, boolean paramBoolean) {
-        SessionParams localSessionParams = getSessionParams(null, paramQuery.isTriggeredFromBluetoothHandsfree(), paramQuery.getRecordedAudioUri());
+        SessionParams localSessionParams = getSessionParams(null);
         this.mEventListener = new CancellableRecognitionEventListener(new InternalRecognitionEventListener(localSessionParams.getRequestId(), paramListener, paramQuery));
         this.mVss.getRecognizer().startListening(localSessionParams, this.mEventListener, this.mVss.getMainThreadExecutor(), this.mVss.getVoiceSearchAudioStore());
         if (!paramBoolean) {
@@ -373,14 +362,13 @@ public class VoiceSearchController {
             }
             if (recognitionEvent.getEventType() == 0) {
                 Pair<String, String> stableAndUnstable = mRecognizedText.updateInProgress(recognitionEvent);
-                String stable = (String) stableAndUnstable.first;
-                String unstable = (String) stableAndUnstable.second;
+                String stable = stableAndUnstable.first;
+                String unstable = stableAndUnstable.second;
                 mListener.updateRecognizedText(stable, unstable);
                 return;
             }
             if (recognitionEvent.getEventType() == 0x1) {
                 ImmutableList<Hypothesis> allHypotheses = mRecognizedText.updateFinal(recognitionEvent);
-                !TextUtils.isEmpty((Hypothesis) allHypotheses.get(0x0).getText()) ?;
                 boolean isEmpty = allHypotheses.isEmpty() ? true : false;
                 if ((!isEmpty) && (!mQuery.isFollowOn())) {
                     mVss.getSoundManager().playRecognitionDoneSound();
@@ -391,11 +379,11 @@ public class VoiceSearchController {
                     }
                     boolean isVoiceCorrectionEnabled = mGsaConfigFlags.isVoiceCorrectionEnabled();
                     HypothesisToSuggestionSpansConverter converter = mVss.getHypothesisToSuggestionSpansConverter();
-                    SpannedString firstResult = isVoiceCorrectionEnabled ? SpannedString.valueOf((Hypothesis) allHypotheses.get(0x0).getText()) : converter.getSuggestionSpannedStringForQuery(mRequestId, (Hypothesis) allHypotheses.get(0x0));
+                    SpannedString firstResult = isVoiceCorrectionEnabled ? SpannedString.valueOf(allHypotheses.get(0x0).getText()) : converter.getSuggestionSpannedStringForQuery(mRequestId, (Hypothesis) allHypotheses.get(0x0));
                     mListener.setFinalRecognizedText(firstResult);
                     ImmutableList.Builder<CharSequence> otherHypothesesBuilder = ImmutableList.builder();
                     for (int i = 0x1; i < allHypotheses.size(); i = i + 0x1) {
-                        Hypothesis hypothesis = (Hypothesis) allHypotheses.get(i);
+                        Hypothesis hypothesis = allHypotheses.get(i);
                         otherHypothesesBuilder.add(hypothesis.getText());
                     }
                     ImmutableList<CharSequence> otherHypotheses = otherHypothesesBuilder.build();

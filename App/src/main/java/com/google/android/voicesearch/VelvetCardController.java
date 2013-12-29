@@ -1,7 +1,6 @@
 package com.google.android.voicesearch;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.google.android.search.core.CoreSearchServices;
 import com.google.android.search.core.SearchConfig;
@@ -9,8 +8,6 @@ import com.google.android.search.core.discoursecontext.DiscourseContext;
 import com.google.android.search.core.state.ActionState;
 import com.google.android.search.core.state.VelvetEventBus;
 import com.google.android.search.shared.api.Query;
-import com.google.android.speech.audio.AudioProvider;
-import com.google.android.speech.audio.AudioStore;
 import com.google.android.speech.contacts.ContactLookup;
 import com.google.android.speech.contacts.ContactRetriever;
 import com.google.android.velvet.ActionData;
@@ -24,17 +21,17 @@ import java.util.concurrent.Future;
 
 public class VelvetCardController {
     private static final String TAG = VelvetCardController.class.getSimpleName();
-    private ActionProcessor mActionProcessor;
     private final CardDecisionFactory mCardDecisionFactory;
     private final SearchConfig mConfig;
-    private ContactLookup mContactLookup;
     private final Context mContext;
     private final CoreSearchServices mCoreSearchServices;
     private final Supplier<DiscourseContext> mDiscourseContextSupplier;
     private final VelvetEventBus mEventBus;
-    private ExampleContactHelper mExampleContactHelper;
-    private final Supplier<Future<Uri>> mLastAudioUriSupplier;
+    private final Supplier mLastAudioUriSupplier;
     private final VoiceSearchServices mVoiceSearchServices;
+    private ActionProcessor mActionProcessor;
+    private ContactLookup mContactLookup;
+    private ExampleContactHelper mExampleContactHelper;
 
     public VelvetCardController(CoreSearchServices paramCoreSearchServices, Context paramContext, VoiceSearchServices paramVoiceSearchServices, VelvetEventBus paramVelvetEventBus, SearchConfig paramSearchConfig, Supplier<DiscourseContext> paramSupplier, CardDecisionFactory paramCardDecisionFactory) {
         this.mCoreSearchServices = paramCoreSearchServices;
@@ -45,12 +42,10 @@ public class VelvetCardController {
         this.mDiscourseContextSupplier = paramSupplier;
         this.mCardDecisionFactory = paramCardDecisionFactory;
         this.mLastAudioUriSupplier = new Supplier() {
-            public Future<Uri> get() {
-                VelvetCardController.this.mVoiceSearchServices.getExecutorService().submit(new Callable() {
-                    public Uri call()
-                            throws Exception {
-                        AudioStore.AudioRecording localAudioRecording = VelvetCardController.this.mVoiceSearchServices.getVoiceSearchAudioStore().getLastAudio();
-                        return AudioProvider.insert(VelvetCardController.this.mContext, localAudioRecording);
+            public Future<Object> get() {
+                return VelvetCardController.this.mVoiceSearchServices.getExecutorService().submit(new Callable() {
+                    public Object call() {
+                        return new Object();
                     }
                 });
             }

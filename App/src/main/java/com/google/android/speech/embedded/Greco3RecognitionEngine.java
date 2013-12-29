@@ -140,6 +140,9 @@ public class Greco3RecognitionEngine
             super("Embedded recognizer unavailable");
         }
     }
+    public static final class NoMatchesFromEmbeddedRecognizerException
+            extends NoMatchRecognizeException
+    {}
 }
 
 

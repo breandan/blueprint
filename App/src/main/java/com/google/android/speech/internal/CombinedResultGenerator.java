@@ -4,6 +4,7 @@ import android.text.TextUtils;
 
 import com.google.common.collect.Lists;
 import com.google.protobuf.micro.InvalidProtocolBufferMicroException;
+import com.google.speech.recognizer.api.RecognizerProtos;
 
 import java.util.Iterator;
 import java.util.List;

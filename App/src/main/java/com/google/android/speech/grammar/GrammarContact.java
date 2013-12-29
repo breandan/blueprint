@@ -29,16 +29,17 @@ public class GrammarContact {
         paramMap.put(paramString, new GrammarToken(paramString, paramDouble));
     }
 
-    public void addTokens(Map<String, GrammarToken> paramMap) {
-        String[] arrayOfString = GrammarBuilder.getWords(GrammarBuilder.stripAbnfTokens(this.displayName));
-        if ((arrayOfString == null) || (arrayOfString.length == 0)) {
-        }
-        do {
+    public void addTokens(Map<String, GrammarToken> tokens) {
+        String escapedNamed = GrammarBuilder.stripAbnfTokens(displayName);
+        String[] words = GrammarBuilder.getWords(escapedNamed);
+        if ((words == null) || (words.length == 0)) {
             return;
-            addToken(arrayOfString[0], this.weight, paramMap);
-        } while (arrayOfString.length <= 1);
-        addToken(arrayOfString[(-1 + arrayOfString.length)], this.weight, paramMap);
-        addToken(SPACE_JOINER.join(arrayOfString), this.weight, paramMap);
+        }
+        addToken(words[0x0], weight, tokens);
+        if (words.length > 0x1) {
+            addToken(words[(words.length - 0x1)], weight, tokens);
+            addToken(SPACE_JOINER.join(words), weight, tokens);
+        }
     }
 
     public String toString() {

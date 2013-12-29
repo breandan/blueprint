@@ -41,117 +41,34 @@ public class AudioController {
         this.mLogExtras = paramLogExtras;
     }
 
-    private AudioSource createAudioSource(AudioInputStreamFactory paramAudioInputStreamFactory, AudioInputParams paramAudioInputParams) {
-        int i = paramAudioInputParams.getSamplingRate();
-        int j = MicrophoneInputStreamFactory.getMicrophoneReadSize(paramAudioInputParams.getSamplingRate());
-        if (paramAudioInputParams.shouldReportSoundLevels()) {
-        }
-        for (SpeechLevelSource localSpeechLevelSource = this.mSpeechLevelSource; ; localSpeechLevelSource = null) {
-            return new AudioSource(i, j, 500, 1000, paramAudioInputStreamFactory, localSpeechLevelSource);
-        }
+    private AudioSource createAudioSource(AudioInputStreamFactory inputStreamFactory, AudioInputParams params) {
+        return new AudioSource(params.getSamplingRate(), MicrophoneInputStreamFactory.getMicrophoneReadSize(params.getSamplingRate()), 0x1f4, 0x3e8, inputStreamFactory, params.shouldReportSoundLevels() ? mSpeechLevelSource : null);
     }
 
-    private AudioInputStreamFactory createDefaultRawInputStreamFactoryLocked(AudioInputParams paramAudioInputParams) {
-        boolean bool1;
-        int i;
-        boolean bool2;
-        if ((paramAudioInputParams.usePreemptibleAudioSource()) && (isPreemptibleAudioSourceSupported())) {
-            bool1 = true;
-            i = paramAudioInputParams.getSamplingRate();
-            bool2 = isNoiseSuppressionEnabled(paramAudioInputParams);
-            if (!paramAudioInputParams.isPlayBeepEnabled()) {
-                break label83;
-            }
-        }
-        label83:
-        for (SpeakNowSoundPlayer localSpeakNowSoundPlayer = this.mSoundManager; ; localSpeakNowSoundPlayer = null) {
-            return new VoiceAudioInputStreamFactory(new MicrophoneInputStreamFactory(i, bool2, localSpeakNowSoundPlayer, this.mAudioRouter, this.mLogger, bool1), this.mSettings, this.mContext);
-            bool1 = false;
-            break;
-        }
-    }
-
-    private AudioInputStreamFactory createFactoryForRecordedUri(final Uri paramUri) {
-        new AudioInputStreamFactory() {
-            private int mNumStreamsCreated = 0;
-
-            /* Error */
-            public java.io.InputStream createInputStream()
-                    throws java.io.IOException {
-                // Byte code:
-                //   0: aload_0
-                //   1: monitorenter
-                //   2: aload_0
-                //   3: getfield 28	com/google/android/speech/audio/AudioController$1:mNumStreamsCreated	I
-                //   6: istore_2
-                //   7: aload_0
-                //   8: iload_2
-                //   9: iconst_1
-                //   10: iadd
-                //   11: putfield 28	com/google/android/speech/audio/AudioController$1:mNumStreamsCreated	I
-                //   14: iload_2
-                //   15: ifne +38 -> 53
-                //   18: iconst_1
-                //   19: istore_3
-                //   20: iload_3
-                //   21: invokestatic 38	com/google/common/base/Preconditions:checkState	(Z)V
-                //   24: aload_0
-                //   25: monitorexit
-                //   26: new 40	android/os/ParcelFileDescriptor$AutoCloseInputStream
-                //   29: dup
-                //   30: aload_0
-                //   31: getfield 21	com/google/android/speech/audio/AudioController$1:this$0	Lcom/google/android/speech/audio/AudioController;
-                //   34: invokestatic 44	com/google/android/speech/audio/AudioController:access$000	(Lcom/google/android/speech/audio/AudioController;)Landroid/content/Context;
-                //   37: invokevirtual 50	android/content/Context:getContentResolver	()Landroid/content/ContentResolver;
-                //   40: aload_0
-                //   41: getfield 23	com/google/android/speech/audio/AudioController$1:val$recordedAudioUri	Landroid/net/Uri;
-                //   44: ldc 52
-                //   46: invokevirtual 58	android/content/ContentResolver:openFileDescriptor	(Landroid/net/Uri;Ljava/lang/String;)Landroid/os/ParcelFileDescriptor;
-                //   49: invokespecial 61	android/os/ParcelFileDescriptor$AutoCloseInputStream:<init>	(Landroid/os/ParcelFileDescriptor;)V
-                //   52: areturn
-                //   53: iconst_0
-                //   54: istore_3
-                //   55: goto -35 -> 20
-                //   58: astore_1
-                //   59: aload_0
-                //   60: monitorexit
-                //   61: aload_1
-                //   62: athrow
-                // Local variable table:
-                //   start	length	slot	name	signature
-                //   0	63	0	this	1
-                //   58	4	1	localObject	Object
-                //   6	9	2	i	int
-                //   19	36	3	bool	boolean
-                // Exception table:
-                //   from	to	target	type
-                //   2	14	58	finally
-                //   20	26	58	finally
-                //   59	61	58	finally
-            }
-        };
+    private AudioInputStreamFactory createDefaultRawInputStreamFactoryLocked(AudioInputParams params) {
+        boolean preemptible = (params.usePreemptibleAudioSource()) && (isPreemptibleAudioSourceSupported());
+        MicrophoneInputStreamFactory microphoneInputStreamFactory = new MicrophoneInputStreamFactory(params.getSamplingRate(), isNoiseSuppressionEnabled(params), mSoundManager, mAudioRouter, mLogger, preemptible);
+        return new VoiceAudioInputStreamFactory(microphoneInputStreamFactory, mSettings, mContext);
     }
 
     private AudioInputStreamFactory getRawInputStreamFactoryLocked(AudioInputParams paramAudioInputParams) {
         if (this.mRawInputStreamFactory != null) {
             return this.mRawInputStreamFactory;
         }
-        if (paramAudioInputParams.getRecordedAudioUri() != null) {
-            return createFactoryForRecordedUri(paramAudioInputParams.getRecordedAudioUri());
-        }
         return createDefaultRawInputStreamFactoryLocked(paramAudioInputParams);
     }
 
-    private boolean isNoiseSuppressionEnabled(AudioInputParams paramAudioInputParams) {
-        if (!paramAudioInputParams.isNoiseSuppressionEnabled()) {
-        }
-        do {
+    private boolean isNoiseSuppressionEnabled(AudioInputParams params) {
+        if(!params.isNoiseSuppressionEnabled()) {
             return false;
-            if (this.mNoiseSuppressors == null) {
-                this.mNoiseSuppressors = AudioUtils.getNoiseSuppressors(this.mSettings.getConfiguration().getPlatform());
-            }
-        } while (this.mNoiseSuppressors.size() == 0);
-        return true;
+        }
+        if(mNoiseSuppressors == null) {
+            mNoiseSuppressors = AudioUtils.getNoiseSuppressors(mSettings.getConfiguration().getPlatform());
+        }
+        if(mNoiseSuppressors.size() != 0) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isPreemptibleAudioSourceSupported() {
@@ -171,10 +88,6 @@ public class AudioController {
             this.mAudioSource.setStartTime(paramLong);
             AudioSource localAudioSource = this.mAudioSource;
             return localAudioSource;
-    }
-
-    public synchronized void setRawInputStreamFactory(@Nullable AudioInputStreamFactory paramAudioInputStreamFactory) {
-            this.mRawInputStreamFactory = paramAudioInputStreamFactory;
     }
 
     public synchronized void shutdown() {
@@ -202,18 +115,14 @@ public class AudioController {
         }
     }
 
-    public void stopListening() {
-        try {
-            if (this.mListening) {
-                if (this.mAudioSource != null) {
-                    this.mAudioSource.stopListening();
-                }
-                this.mAudioRouter.onStopListening(this.mAudioInputParams.shouldRequestAudioFocus());
-                this.mSpeechLevelSource.reset();
-                this.mListening = false;
+    public synchronized void stopListening() {
+        if(mListening) {
+            if(mAudioSource != null) {
+                mAudioSource.stopListening();
             }
-            return;
-        } finally {
+            mAudioRouter.onStopListening(mAudioInputParams.shouldRequestAudioFocus());
+            mSpeechLevelSource.reset();
+            mListening = false;
         }
     }
 }

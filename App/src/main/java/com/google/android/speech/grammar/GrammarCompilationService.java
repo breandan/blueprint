@@ -41,16 +41,15 @@ public class GrammarCompilationService
 
     public GrammarCompilationService() {
         super("");
+        MessageDigest digest;
         try {
-            MessageDigest localMessageDigest2 = MessageDigest.getInstance("MD5");
-            localMessageDigest1 = localMessageDigest2;
-        } catch (NoSuchAlgorithmException localNoSuchAlgorithmException) {
-            for (; ; ) {
-                Log.w("VS.GrammarCompilationService", "MD5 message digests not supported.");
-                MessageDigest localMessageDigest1 = null;
-            }
+            digest = MessageDigest.getInstance("MD5");
+        } catch(NoSuchAlgorithmException nsae) {
+            Log.w("VS.GrammarCompilationService", "MD5 message digests not supported.");
+            digest = null;
         }
-        this.mMd5Digest = localMessageDigest1;
+
+        mMd5Digest = digest;
     }
 
     private static String createNewRevisionId() {
@@ -114,15 +113,12 @@ public class GrammarCompilationService
         return false;
     }
 
-    private byte[] getDigestForPath(String paramString) {
-        Object localObject = null;
-        if (paramString != null) {
-        }
-        try {
-            byte[] arrayOfByte = Files.toByteArray(new File(paramString, "digest"));
-            localObject = arrayOfByte;
-            return localObject;
-        } catch (IOException localIOException) {
+    private byte[] getDigestForPath(String absolutePath) {
+        if(absolutePath != null) {
+            try {
+                return Files.toByteArray(new File(absolutePath, "digest"));
+            } catch(IOException ioe) {
+            }
         }
         return null;
     }
@@ -143,21 +139,20 @@ public class GrammarCompilationService
             return bool;
     }
 
-    private static boolean isStaleRevision(String paramString) {
-        if (paramString == null) {
-        }
-        long l;
-        do {
+    private static boolean isStaleRevision(String revisionId) {
+        if(revisionId == null) {
             return true;
-            try {
-                l = Long.parseLong(paramString.substring(1));
-                if (l < 0L) {
-                    throw new IllegalArgumentException("Invalid revisionId:" + paramString + ", negative.");
-                }
-            } catch (NumberFormatException localNumberFormatException) {
-                throw new IllegalArgumentException("Invalid revisionId:" + paramString, localNumberFormatException);
-            }
-        } while (l < System.currentTimeMillis() - 691200000L);
+        }
+        long parsedTime = 0xffffffff;
+        try {
+            parsedTime = Long.parseLong(revisionId.substring(0x1));
+        } catch(NumberFormatException nfe) {
+            throw new IllegalArgumentException("Invalid revisionId:" + revisionId, nfe);
+        }
+        if(parsedTime < 0x0) {
+            throw new IllegalArgumentException("Invalid revisionId:" + revisionId + ", negative.");
+        }
+        boolean localboolean1 = parsedTime < (System.currentTimeMillis() - 0x2932e000);
         return false;
     }
 

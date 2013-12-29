@@ -10,21 +10,26 @@ import java.io.IOException;
 
 public class Greco3ResourceManager
         extends ResourceManager {
-    public static Greco3ResourceManager create(String paramString, String[] paramArrayOfString) {
-        Greco3ResourceManager localGreco3ResourceManager = new Greco3ResourceManager();
-        File localFile = new File(paramString);
-        if (Greco3Mode.isAsciiConfiguration(localFile)) {
-        }
-        byte[] arrayOfByte;
-        for (int i = localGreco3ResourceManager.initFromFile(paramString, paramArrayOfString); i == 0; i = localGreco3ResourceManager.initFromProto(arrayOfByte, paramArrayOfString)) {
-            return localGreco3ResourceManager;
-            arrayOfByte = getFileBytes(localFile);
-            if (arrayOfByte == null) {
-                Log.e("VS.G3ResourceManager", "Error reading g3 config file: " + paramString);
+    public static Greco3ResourceManager create(String configFileName, String[] resourcePaths) {
+        Greco3ResourceManager rm = new Greco3ResourceManager();
+        File configFile = new File(configFileName);
+        int status;
+        if (Greco3Mode.isAsciiConfiguration(configFile)) {
+            status = rm.initFromFile(configFileName, resourcePaths);
+        } else {
+            byte[] fileBytes = getFileBytes(configFile);
+            if (fileBytes == null) {
+                Log.e("VS.G3ResourceManager", "Error reading g3 config file: " + configFileName);
                 return null;
             }
+            status = rm.initFromProto(fileBytes, resourcePaths);
         }
-        Log.e("VS.G3ResourceManager", "Failed to bring up g3, Status code: " + i);
+
+        if (status == 0) {
+            return rm;
+        }
+
+        Log.e("VS.G3ResourceManager", "Failed to bring up g3, Status code: " + status);
         return null;
     }
 

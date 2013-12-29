@@ -6,6 +6,7 @@ import com.google.android.speech.callback.RecognitionEngineCallback;
 import com.google.android.speech.embedded.Greco3Callback;
 import com.google.android.speech.embedded.Greco3Mode;
 import com.google.android.speech.exception.RecognizeException;
+import com.google.speech.recognizer.api.RecognizerProtos;
 
 public class Greco3CallbackImpl
         implements Greco3Callback {

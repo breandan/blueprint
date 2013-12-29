@@ -11,14 +11,11 @@ import com.google.android.search.core.DeviceCapabilityManager;
 import com.google.android.search.core.GsaConfigFlags;
 import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.search.core.SearchConfig;
-import com.google.android.search.core.debug.DebugFeatures;
 import com.google.android.search.core.ears.EarsContentProviderHelper;
-import com.google.android.search.core.ears.SoundSearchController;
 import com.google.android.search.core.google.SearchUrlHelper;
 import com.google.android.shared.util.Clock;
 import com.google.android.shared.util.ConcurrentUtils;
 import com.google.android.shared.util.ExtraPreconditions;
-import com.google.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.google.android.shared.util.SpeechLevelSource;
 import com.google.android.shared.util.Util;
 import com.google.android.speech.Recognizer;
@@ -30,16 +27,12 @@ import com.google.android.speech.audio.AudioStore;
 import com.google.android.speech.audio.SingleRecordingAudioStore;
 import com.google.android.speech.contacts.ContactLookup;
 import com.google.android.speech.contacts.FavoriteContactNamesSupplier;
-import com.google.android.speech.embedded.AndroidPumpkinLoader;
 import com.google.android.speech.embedded.Greco3Container;
 import com.google.android.speech.embedded.OfflineActionsManager;
-import com.google.android.speech.embedded.PumpkinTagger;
-import com.google.android.speech.engine.DefaultRetryPolicy;
 import com.google.android.speech.internal.DefaultCallbackFactory;
 import com.google.android.speech.internal.DefaultModeSelector;
 import com.google.android.speech.logger.SuggestionLogger;
 import com.google.android.speech.network.ConnectionFactory;
-import com.google.android.speech.network.PairHttpConnectionFactory;
 import com.google.android.speech.params.DeviceParams;
 import com.google.android.speech.params.DeviceParamsImpl;
 import com.google.android.speech.params.NetworkRequestProducerParams;
@@ -59,11 +52,8 @@ import com.google.android.voicesearch.hotword.HotwordDetector;
 import com.google.android.voicesearch.ime.VoiceImeSubtypeUpdater;
 import com.google.android.voicesearch.personalization.PersonalizationHelper;
 import com.google.android.voicesearch.settings.Settings;
-import com.google.android.voicesearch.speechservice.s3.ServerInfoSupplier;
 import com.google.android.voicesearch.speechservice.s3.VelvetSpeechLocationHelper;
-import com.google.android.voicesearch.util.AppSelectionHelper;
 import com.google.android.voicesearch.util.LocalTtsManager;
-import com.google.common.base.Supplier;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.PrintWriter;
@@ -144,17 +134,8 @@ public class VoiceSearchServices {
         return new RecognitionEngineParams.MusicDetectorParams(this.mSettings);
     }
 
-    private RecognitionEngineParams.NetworkParams createNetworkParams() {
-        PairHttpConnectionFactory localPairHttpConnectionFactory = new PairHttpConnectionFactory(new ServerInfoSupplier(this.mSettings, this.mCoreSearchServices.getConfig(), this.mCoreSearchServices.getSearchUrlHelper(), DebugFeatures.getInstance()), getConnectionFactory());
-        return new RecognitionEngineParams.NetworkParams(localPairHttpConnectionFactory, localPairHttpConnectionFactory, new DefaultRetryPolicy(new Supplier() {
-            public GstaticConfiguration.NetworkRecognizer get() {
-                return VoiceSearchServices.this.mSettings.getConfiguration().getNetworkRecognizer();
-            }
-        }, this.mCoreSearchServices.getClock()), getNetworkRequestProducerParams());
-    }
-
     private RecognitionEngineParams createRecognitionEngineParams() {
-        return new RecognitionEngineParams(createEmbeddedParams(), createNetworkParams(), createMusicDetectorParams());
+        return new RecognitionEngineParams(createEmbeddedParams(), createMusicDetectorParams());
     }
 
     private Recognizer createRecognizer() {

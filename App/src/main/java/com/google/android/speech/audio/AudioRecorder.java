@@ -18,94 +18,85 @@ public class AudioRecorder {
     private int mStartPos;
 
     private void doStopRecording(boolean paramBoolean) {
-        if (this.mRecordingThread == null) {
+        if (mRecordingThread == null) {
             return;
         }
         if (paramBoolean) {
-            this.mRecordingThread.requestStop();
+            mRecordingThread.requestStop();
         }
-        for (; ; ) {
-            try {
-                this.mRecordingThread.join();
-                if (this.mRecordingThread.isGood()) {
-                    arrayOfByte = this.mRecordingThread.getBuffer();
-                    this.mEndPos = Math.min(this.mRecordingThread.getTotalLength(), this.mEndPos);
-                    if (this.mStartPos >= this.mEndPos) {
-                        arrayOfByte = null;
-                    }
-                    this.mAudioStore.put(this.mRequestId, new AudioStore.AudioRecording(this.mSampleRate, getLastAudio(arrayOfByte)));
-                    this.mAudioStore = null;
-                    this.mRequestId = null;
-                    this.mRecordingThread = null;
-                    return;
-                }
-            } catch (InterruptedException localInterruptedException) {
-                this.mAudioStore = null;
-                this.mRequestId = null;
-                return;
-            }
-            boolean bool = this.mRecordingThread.isOverflown();
-            byte[] arrayOfByte = null;
-            if (bool) {
-                int i = this.mEndPos;
-                int j = this.mMaxFlattenedBufferSize;
-                arrayOfByte = null;
-                if (i <= j) {
-                    arrayOfByte = this.mRecordingThread.getBuffer();
-                }
-            }
+
+        try {
+            mRecordingThread.join();
+        } catch (InterruptedException ie) {
+            mAudioStore = null;
+            mRequestId = null;
+            return;
+        }
+
+        byte[] lastAudio = null;
+        if (mRecordingThread.isGood()) {
+            lastAudio = mRecordingThread.getBuffer();
+            mEndPos = Math.min(mRecordingThread.getTotalLength(), mEndPos);
+        } else if (mRecordingThread.isOverflown() && mEndPos <= mMaxFlattenedBufferSize) {
+            lastAudio = mRecordingThread.getBuffer();
+        }
+
+        if (mStartPos < mEndPos) {
+            mAudioStore.put(mRequestId, new AudioStore.AudioRecording(mSampleRate, getLastAudio(lastAudio)));
+            mAudioStore = null;
+            mRequestId = null;
+            mRecordingThread = null;
+        } else {
+            lastAudio = null;
         }
     }
 
     private byte[] getLastAudio(byte[] paramArrayOfByte) {
-        if ((paramArrayOfByte == null) || ((this.mStartPos == 0) && (this.mEndPos == paramArrayOfByte.length))) {
+        if ((paramArrayOfByte == null) || ((mStartPos == 0) && (mEndPos == paramArrayOfByte.length))) {
             return paramArrayOfByte;
         }
-        return Arrays.copyOfRange(paramArrayOfByte, 2 * (this.mStartPos / 2), this.mEndPos);
+        return Arrays.copyOfRange(paramArrayOfByte, 2 * (mStartPos / 2), mEndPos);
     }
 
     public boolean isRecording() {
-        return this.mRecordingThread != null;
+        return mRecordingThread != null;
     }
 
     public void setRecordingStartTime(long paramLong) {
         boolean bool1 = true;
-        boolean bool2;
-        if (this.mRecordingThread != null) {
-            bool2 = bool1;
+        boolean bool2 = false;
+
+        if (mRecordingThread != null) {
+            Preconditions.checkState(bool1);
+        } else {
             Preconditions.checkState(bool2);
-            if (paramLong < 0L) {
-                break label50;
-            }
         }
-        for (; ; ) {
-            Preconditions.checkArgument(bool1);
-            this.mStartPos = ((int) (paramLong * this.mBytesPerMsec / 1000L));
-            return;
-            bool2 = false;
-            break;
-            label50:
+
+        if (paramLong < 0L) {
             bool1 = false;
         }
+
+        Preconditions.checkArgument(bool1);
+        mStartPos = ((int) (paramLong * mBytesPerMsec / 1000L));
     }
 
     public void startRecording(InputStream paramInputStream, int paramInt1, int paramInt2, AudioStore paramAudioStore, String paramString) {
-        if (this.mRecordingThread == null) {
+        boolean bool = true;
+        if (mRecordingThread != null) {
+            bool = false;
         }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            this.mAudioStore = paramAudioStore;
-            this.mSampleRate = paramInt1;
-            this.mBytesPerMsec = MicrophoneInputStreamFactory.getBytesPerMsec(paramInt1);
-            this.mRequestId = paramString;
-            this.mStartPos = 0;
-            this.mEndPos = 2147483647;
-            int i = 10000 * this.mBytesPerMsec;
-            this.mMaxFlattenedBufferSize = (60000 * this.mBytesPerMsec);
-            this.mRecordingThread = new ClampedLengthRecordingThread(i, this.mMaxFlattenedBufferSize, paramInputStream, paramInt2);
-            this.mRecordingThread.start();
-            return;
-        }
+
+        Preconditions.checkState(bool);
+        mAudioStore = paramAudioStore;
+        mSampleRate = paramInt1;
+        mBytesPerMsec = MicrophoneInputStreamFactory.getBytesPerMsec(paramInt1);
+        mRequestId = paramString;
+        mStartPos = 0;
+        mEndPos = 2147483647;
+        int i = 10000 * mBytesPerMsec;
+        mMaxFlattenedBufferSize = (60000 * mBytesPerMsec);
+        mRecordingThread = new ClampedLengthRecordingThread(i, mMaxFlattenedBufferSize, paramInputStream, paramInt2);
+        mRecordingThread.start();
     }
 
     public void waitForRecording() {
@@ -114,103 +105,85 @@ public class AudioRecorder {
 
     private static class ClampedLengthRecordingThread
             extends Thread {
-        private byte[] mBuf;
         private final InputStream mInput;
         private final int mMaxSize;
         private final int mReadSize;
+        private byte[] mBuf;
         private int mState;
         private int mTotalLength;
 
         ClampedLengthRecordingThread(int paramInt1, int paramInt2, InputStream paramInputStream, int paramInt3) {
-            this.mMaxSize = paramInt2;
-            this.mReadSize = paramInt3;
-            this.mInput = paramInputStream;
-            this.mBuf = new byte[paramInt1];
-            this.mState = 1;
+            mMaxSize = paramInt2;
+            mReadSize = paramInt3;
+            mInput = paramInputStream;
+            mBuf = new byte[paramInt1];
+            mState = 1;
         }
 
         public byte[] getBuffer() {
-            return this.mBuf;
+            return mBuf;
         }
 
         public int getTotalLength() {
-            return this.mTotalLength;
+            return mTotalLength;
         }
 
         public boolean isGood() {
-            return this.mState == 3;
+            return mState == 3;
         }
 
         public boolean isOverflown() {
-            return this.mState == -2;
+            return mState == -2;
         }
 
         public void requestStop() {
-            try {
-                if (this.mState == 1) {
-                    this.mState = 2;
-                    interrupt();
-                }
-                return;
-            } finally {
+            if (mState == 1) {
+                mState = 2;
+                interrupt();
             }
         }
 
         public void run() {
-            int i = 0;
-            int j = 0;
-            try {
-                for (; ; ) {
-                    if (j != -1) {
+            int totalLength = 0;
+            int lastBytesRead = 0;
+            while (true)
+                try {
+                    if (lastBytesRead == -1) {
+                        mTotalLength = totalLength;
+                        mState = 3;
+                        Closeables.closeQuietly(mInput);
+                        return;
                     }
-                    try {
-                        if (this.mState == 2) {
-                            this.mTotalLength = i;
-                            this.mState = 3;
+                    if (mState != 2) {
+                        if (totalLength + lastBytesRead > mMaxSize) {
+                            mTotalLength = mMaxSize;
+                            mState = -2;
+                            Closeables.closeQuietly(mInput);
                             return;
                         }
-                        int m = i + j;
-                        if (m > this.mMaxSize) {
-                            this.mTotalLength = this.mMaxSize;
-                            this.mState = -2;
-                            return;
-                        }
-                        i += j;
-                        if (i < this.mMaxSize) {
-                            int i1 = Math.min(i + this.mReadSize, this.mMaxSize);
-                            if (i1 > this.mBuf.length) {
-                                byte[] arrayOfByte = new byte[Math.min(i1 * 2, this.mMaxSize)];
-                                System.arraycopy(this.mBuf, 0, arrayOfByte, 0, i);
-                                this.mBuf = arrayOfByte;
-                            }
-                            int i2 = i1 - i;
-                            int i3 = this.mInput.read(this.mBuf, i, i2);
-                            j = i3;
-                            continue;
-                        }
-                    } finally {
+                        totalLength += lastBytesRead;
                     }
+                    if (totalLength < mMaxSize) {
+                        int expectedTotalLength = Math.min(totalLength + mReadSize, mMaxSize);
+                        if (expectedTotalLength > mBuf.length) {
+                            byte[] arrayOfByte = new byte[Math.min(expectedTotalLength * 2, mMaxSize)];
+                            System.arraycopy(mBuf, 0, arrayOfByte, 0, totalLength);
+                            mBuf = arrayOfByte;
+                        }
+                        lastBytesRead = mInput.read(mBuf, totalLength, expectedTotalLength - totalLength);
+                    } else {
+                        lastBytesRead = mInput.read(new byte[1]);
+                    }
+                } catch (IOException ioe) {
+                    mTotalLength = totalLength;
+                    int state = mState;
+                    if (state != 2) {
+                        state = -1;
+                    }
+                    mState = state;
+                } finally {
+                    Closeables.closeQuietly(mInput);
                 }
-            } catch (IOException localIOException) {
-                for (; ; ) {
-                    try {
-                        this.mTotalLength = i;
-                        if (this.mState == 2) {
-                        }
-                        for (int k = 3; ; k = -1) {
-                            this.mState = k;
-                            return;
-                            int n = this.mInput.read(new byte[1]);
-                            j = n;
-                            break;
-                        }
-                        localObject1 =finally;
-                    } finally {
-                    }
-                }
-            } finally {
-                Closeables.closeQuietly(this.mInput);
-            }
         }
     }
 }

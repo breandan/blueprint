@@ -3,43 +3,39 @@ package com.google.android.speech.audio;
 import android.util.Log;
 
 import com.google.common.base.Preconditions;
+import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
 public class Tee {
-    private int mBasePos;
     private final byte[] mBuffer;
-    private int mBufferBegin;
-    private int mBufferEnd;
     private final InputStream mDelegate;
-    private boolean mEof;
-    private IOException mException;
     private final int mKeepSize;
     private final InputStream mLeader;
     private final int[] mReadPositions;
     private final int mReadSize;
+    private int mBasePos;
+    private int mBufferBegin;
+    private int mBufferEnd;
+    private boolean mEof;
+    private IOException mException;
     private int mStartMark;
 
-    public Tee(InputStream paramInputStream, int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
-        if (paramInt2 < paramInt3) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkArgument(bool);
-            this.mDelegate = paramInputStream;
-            this.mBuffer = new byte[paramInt3 * paramInt1];
-            this.mKeepSize = (paramInt2 * paramInt1);
-            this.mBufferBegin = 0;
-            this.mBufferEnd = 0;
-            this.mEof = false;
-            this.mReadSize = paramInt1;
-            this.mReadPositions = new int[paramInt4];
-            Arrays.fill(this.mReadPositions, 2147483647);
-            this.mLeader = new TeeLeaderInputStream(this);
-            this.mReadPositions[0] = 0;
-            return;
-        }
+    public Tee(InputStream delegate, int readSizeBytes, int minBuffers, int maxBuffers, int maxSiblings) {
+        Preconditions.checkArgument((minBuffers < maxBuffers));
+        mDelegate = delegate;
+        mBuffer = new byte[(maxBuffers * readSizeBytes)];
+        mKeepSize = (minBuffers * readSizeBytes);
+        mBufferBegin = 0x0;
+        mBufferEnd = 0x0;
+        mEof = false;
+        mReadSize = readSizeBytes;
+        mReadPositions = new int[maxSiblings];
+        Arrays.fill(mReadPositions, 0x7fffffff);
+        mLeader = new Tee.TeeLeaderInputStream(this);
+        mReadPositions[0x0] = 0x0;
     }
 
     private void doRead(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3) {
@@ -60,152 +56,69 @@ public class Tee {
     }
 
     private int findSlowestReaderLocked() {
-        int i = 2147483647;
-        for (int j = 0; j < this.mReadPositions.length; j++) {
-            int k = this.mReadPositions[j];
-            if (k < i) {
-                i = k;
+        int minimum = 0x7fffffff;
+        for(int i = 0x0; i < mReadPositions.length; i = i + 0x1) {
+            int position = mReadPositions[i];
+            if(position < minimum) {
+                minimum = position;
             }
         }
-        if (i <= this.mBufferEnd) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            return i;
+        Preconditions.checkState((minimum <= mBufferEnd));
+        return minimum;
+    }
+
+    private int readFromDelegate(int readPos) throws IOException {
+        int bufLength = mBuffer.length;
+        int fillPos = readPos < bufLength ? readPos : readPos - bufLength;
+        Preconditions.checkArgument(((bufLength - fillPos) >= mReadSize));
+        try {
+            return ByteStreams.read(mDelegate, mBuffer, fillPos, mReadSize);
+        } catch (IOException ioe) {
+            synchronized (this) {
+                mException = ioe;
+                notifyAll();
+            }
+            throw ioe;
         }
     }
 
-    /* Error */
-    private int readFromDelegate(int paramInt)
-            throws IOException {
-        // Byte code:
-        //   0: aload_0
-        //   1: getfield 37	com/google/android/speech/audio/Tee:mBuffer	[B
-        //   4: arraylength
-        //   5: istore_2
-        //   6: iload_1
-        //   7: iload_2
-        //   8: if_icmpge +44 -> 52
-        //   11: iload_1
-        //   12: istore_3
-        //   13: iload_2
-        //   14: iload_3
-        //   15: isub
-        //   16: aload_0
-        //   17: getfield 47	com/google/android/speech/audio/Tee:mReadSize	I
-        //   20: if_icmplt +39 -> 59
-        //   23: iconst_1
-        //   24: istore 4
-        //   26: iload 4
-        //   28: invokestatic 33	com/google/common/base/Preconditions:checkArgument	(Z)V
-        //   31: aload_0
-        //   32: getfield 35	com/google/android/speech/audio/Tee:mDelegate	Ljava/io/InputStream;
-        //   35: aload_0
-        //   36: getfield 37	com/google/android/speech/audio/Tee:mBuffer	[B
-        //   39: iload_3
-        //   40: aload_0
-        //   41: getfield 47	com/google/android/speech/audio/Tee:mReadSize	I
-        //   44: invokestatic 86	com/google/common/io/ByteStreams:read	(Ljava/io/InputStream;[BII)I
-        //   47: istore 7
-        //   49: iload 7
-        //   51: ireturn
-        //   52: iload_1
-        //   53: iload_2
-        //   54: isub
-        //   55: istore_3
-        //   56: goto -43 -> 13
-        //   59: iconst_0
-        //   60: istore 4
-        //   62: goto -36 -> 26
-        //   65: astore 5
-        //   67: aload_0
-        //   68: monitorenter
-        //   69: aload_0
-        //   70: aload 5
-        //   72: putfield 88	com/google/android/speech/audio/Tee:mException	Ljava/io/IOException;
-        //   75: aload_0
-        //   76: invokevirtual 91	java/lang/Object:notifyAll	()V
-        //   79: aload_0
-        //   80: monitorexit
-        //   81: aload 5
-        //   83: athrow
-        //   84: astore 6
-        //   86: aload_0
-        //   87: monitorexit
-        //   88: aload 6
-        //   90: athrow
-        // Local variable table:
-        //   start	length	slot	name	signature
-        //   0	91	0	this	Tee
-        //   0	91	1	paramInt	int
-        //   5	50	2	i	int
-        //   12	44	3	j	int
-        //   24	37	4	bool	boolean
-        //   65	17	5	localIOException	IOException
-        //   84	5	6	localObject	Object
-        //   47	3	7	k	int
-        // Exception table:
-        //   from	to	target	type
-        //   31	49	65	java/io/IOException
-        //   69	81	84	finally
-        //   86	88	84	finally
-    }
-
-    private void rewindBuffersLocked()
-            throws IOException {
-        if (this.mReadPositions[0] >= this.mKeepSize) {
-        }
-        int j;
-        int k;
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkArgument(bool);
-            int i = this.mReadPositions[0] - this.mKeepSize;
-            j = Math.min(findSlowestReaderLocked(), i);
-            k = this.mBuffer.length;
-            if (this.mBufferEnd + this.mReadSize - j > k) {
-                break label191;
+    private void rewindBuffersLocked() throws IOException {
+        Preconditions.checkArgument((mReadPositions[0x0] >= mKeepSize));
+        int preservePos = mReadPositions[0x0] - mKeepSize;
+        int readPosition = Math.min(findSlowestReaderLocked(), preservePos);
+        int bufLength = mBuffer.length;
+        if (((mBufferEnd + mReadSize) - readPosition) <= bufLength) {
+            if (mStartMark < readPosition) {
+                mStartMark = 0x7fffffff;
             }
-            if (this.mStartMark < j) {
-                this.mStartMark = 2147483647;
-            }
-            if (j < k) {
-                break label185;
-            }
-            this.mBasePos = (k + this.mBasePos);
-            if (this.mStartMark != 2147483647) {
-                this.mStartMark -= k;
-            }
-            for (int m = 0; m != this.mReadPositions.length; m++) {
-                if (this.mReadPositions[m] != 2147483647) {
-                    int[] arrayOfInt = this.mReadPositions;
-                    arrayOfInt[m] -= k;
+            if (readPosition >= bufLength) {
+                mBasePos = (mBasePos + bufLength);
+                if (mStartMark != 0x7fffffff) {
+                    mStartMark = (mStartMark - bufLength);
                 }
+                for (int i = 0x0; i != mReadPositions.length; i = i + 0x1) {
+                    if (mReadPositions[i] != 0x7fffffff) {
+                        mReadPositions[i] = (mReadPositions[i] - bufLength);
+                    }
+                }
+                readPosition -= bufLength;
+                mBufferEnd = (mBufferEnd - bufLength);
             }
+            mBufferBegin = readPosition;
         }
-        j -= k;
-        this.mBufferEnd -= k;
-        label185:
-        this.mBufferBegin = j;
-        return;
-        label191:
-        this.mException = new IOException("Buffer overflow, no available space.");
-        throw this.mException;
+        mException = new IOException("Buffer overflow, no available space.");
+        throw mException;
     }
 
     void close() {
         try {
-            this.mDelegate.close();
-        } catch (IOException localIOException) {
-            for (; ; ) {
-                try {
-                    this.mEof = true;
-                    notifyAll();
-                    return;
-                } finally {
-                }
-                localIOException = localIOException;
-                Log.e("Tee", "IOException closing audio track: " + localIOException);
-            }
+            mDelegate.close();
+        } catch (IOException ignored) {
+            Log.e("Tee", "IOException closing audio track: " + ignored);
+        }
+        synchronized (this) {
+            mEof = true;
+            notifyAll();
         }
     }
 
@@ -213,75 +126,67 @@ public class Tee {
         return this.mLeader;
     }
 
-    int readLeader(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
-            throws IOException {
-        int i = this.mBuffer.length;
-        int j = 0;
-        int k = 0;
-        int m = -1;
-        try {
-            if (this.mException != null) {
-                throw this.mException;
+    int readLeader(byte[] bytes, int offset, int count) throws IOException {
+        int bufLength = mBuffer.length;
+        int totalCount = 0x0;
+        int lastCount = 0x0;
+        int NO_DELEGATE_READ = -0x1;
+        int lastDelegateRead = -0x1;
+        synchronized (this) {
+            if (mException != null) {
+                throw mException;
             }
-        } finally {
-        }
-        int n = this.mReadPositions[0];
-        if (n == 2147483647) {
-            if (m != -1) {
-                int i4 = j - k;
-                return i4;
-            }
-            return j;
-        }
-        int i1 = this.mBufferEnd;
-        if (m != -1) {
-            i1 += m;
-            this.mBufferEnd = i1;
-            notifyAll();
-            if (m >= this.mReadSize) {
-                break label283;
-            }
-            this.mEof = true;
-            return j;
-        }
-        for (; ; ) {
-            if (k != 0) {
-                n += k;
-                this.mReadPositions[0] = n;
-            }
-            if (j == paramInt2) {
-                return paramInt2;
-            }
-            if (i1 == n) {
-                if (this.mEof) {
-                    return j;
+            int readPos = mReadPositions[0x0];
+            if (readPos == 0x7fffffff) {
+                if (lastDelegateRead != -0x1) {
+                    return (totalCount - lastCount);
                 }
-                if (i1 + this.mReadSize - this.mBufferBegin > i) {
+                return totalCount;
+            }
+            int bufferEnd = mBufferEnd;
+            if (lastDelegateRead != -0x1) {
+                bufferEnd += lastDelegateRead;
+                mBufferEnd = bufferEnd;
+                notifyAll();
+                if (lastDelegateRead < mReadSize) {
+                    mEof = true;
+                    return totalCount;
+                }
+                lastDelegateRead = -0x1;
+            }
+            if (lastCount != 0) {
+                readPos += lastCount;
+                mReadPositions[0x0] = readPos;
+                lastCount = 0x0;
+            }
+            if (totalCount == count) {
+                return count;
+            }
+            if (bufferEnd == readPos) {
+                if (mEof) {
+                    return totalCount;
+                }
+                if (((mReadSize + bufferEnd) - mBufferBegin) > bufLength) {
                     rewindBuffersLocked();
-                    n = this.mReadPositions[0];
-                    i1 = n;
+                    readPos = mReadPositions[0x0];
+                    bufferEnd = readPos;
                 }
             }
-            if (i1 == n) {
-                m = readFromDelegate(i1);
-                i1 += m;
+            if (bufferEnd == readPos) {
+                lastDelegateRead = readFromDelegate(bufferEnd);
+                bufferEnd += lastDelegateRead;
             }
-            int i2 = i1 - n;
-            int i3 = paramInt2 - j;
-            if (i2 < i3) {
-            }
-            for (k = i2; ; k = i3) {
-                doRead(n, paramArrayOfByte, paramInt1 + j, k);
-                j += k;
-                break;
-            }
-            label283:
-            m = -1;
+            int avail = bufferEnd - readPos;
+            int need = count - totalCount;
+            lastCount = avail < need ? avail : need;
+            doRead(readPos, bytes, (offset + totalCount), lastCount);
+            totalCount += lastCount;
         }
+
+        return totalCount;
     }
 
-    int readSecondary(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3)
-            throws IOException {
+    int readSecondary(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3) throws IOException {
         int i = 0;
         int j = 0;
         try {
@@ -331,43 +236,38 @@ public class Tee {
         }
     }
 
-    void synchronized remove(int paramInt) {
-            this.mReadPositions[paramInt] = 2147483647;
+    public synchronized void remove(int paramInt) {
+        this.mReadPositions[paramInt] = 2147483647;
     }
 
-    public void setStartAtDelegatePos(long paramLong) {
-        for (; ; ) {
-            try {
-                if (this.mBasePos + this.mBufferBegin > paramLong) {
-                    this.mStartMark = 2147483647;
-                    return;
-                }
-                if (this.mBasePos + this.mBufferEnd < paramLong) {
-                    this.mStartMark = 2147483647;
-                } else {
-                    this.mStartMark = ((int) (paramLong - this.mBasePos));
-                }
-            } finally {
-            }
+    public synchronized void setStartAtDelegatePos(long delegatePos) {
+        if ((long) (mBasePos + mBufferBegin) > delegatePos) {
+            mStartMark = 0x7fffffff;
+            return;
         }
+        if ((long) (mBasePos + mBufferEnd) < delegatePos) {
+            mStartMark = 0x7fffffff;
+            return;
+        }
+        mStartMark = (int) (delegatePos - (long) mBasePos);
     }
 
-    public InputStream split()
-            throws IOException {
-        try {
-            if (this.mStartMark == 2147483647) {
-                throw new IOException("No splits possible, buffers rewound.");
+    public synchronized InputStream split() throws IOException {
+        if (mStartMark == 0x7fffffff) {
+            throw new IOException("No splits possible, buffers rewound.");
+        }
+
+        for (int i = 1; i != mReadPositions.length && mReadPositions[i] != 0x7fffffff; i++) {
+            if (i == mReadPositions.length) {
+                throw new IOException("No splits possible, too many siblings.");
+            } else {
+                mReadPositions[i] = mStartMark;
+                Tee.TeeSecondaryInputStream tis = new Tee.TeeSecondaryInputStream(this, i);
+                return tis;
             }
-        } finally {
         }
-        for (int i = 1; (i != this.mReadPositions.length) && (this.mReadPositions[i] != 2147483647); i++) {
-        }
-        if (i == this.mReadPositions.length) {
-            throw new IOException("No splits possible, too many siblings.");
-        }
-        TeeSecondaryInputStream localTeeSecondaryInputStream = new TeeSecondaryInputStream(this, i);
-        this.mReadPositions[i] = this.mStartMark;
-        return localTeeSecondaryInputStream;
+
+        return null;
     }
 
     private static class TeeLeaderInputStream
@@ -399,8 +299,8 @@ public class Tee {
 
     private static class TeeSecondaryInputStream
             extends InputStream {
-        private Tee mSharedStream;
         private final int mStreamId;
+        private Tee mSharedStream;
 
         TeeSecondaryInputStream(Tee paramTee, int paramInt) {
             this.mSharedStream = paramTee;
@@ -408,10 +308,10 @@ public class Tee {
         }
 
         public synchronized void close() {
-                if (this.mSharedStream != null) {
-                    this.mSharedStream.remove(this.mStreamId);
-                    this.mSharedStream = null;
-                }
+            if (this.mSharedStream != null) {
+                this.mSharedStream.remove(this.mStreamId);
+                this.mSharedStream = null;
+            }
         }
 
         public int read() {

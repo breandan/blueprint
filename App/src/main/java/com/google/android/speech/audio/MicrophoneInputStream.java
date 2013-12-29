@@ -118,33 +118,28 @@ public class MicrophoneInputStream
     }
 
     public int read(byte[] b, int offset, int length) throws IOException {
-        int i;
-        synchronized (this.mLock) {
-            if (this.mClosed) {
-                return -1;
+        synchronized (mLock) {
+            if (mClosed) {
+                return -0x1;
             }
-            AudioRecord localAudioRecord = ensureStartedLocked();
-            i = localAudioRecord.read(b, offset, length);
+            AudioRecord record = ensureStartedLocked();
+            int rtn = record.read(b, offset, length);
+            synchronized (mLock) {
+                if (mClosed) {
+                    return -0x1;
+                }
+            }
+            if (rtn < -0x1) {
+                if (rtn == -0x3) {
+                    throw new IOException("not open");
+                }
+                if (rtn == -0x2) {
+                    throw new IOException("Bad offset/length arguments for buffer");
+                }
+                throw new IOException("Unexpected error code: " + rtn);
+            }
+            return rtn;
         }
-        synchronized (this.mLock) {
-            if (this.mClosed) {
-                return -1;
-                localObject2 =finally;
-                throw localObject2;
-            }
-            if (i >= -1) {
-                break label148;
-            }
-            if (i == -3) {
-                throw new IOException("not open");
-            }
-        }
-        if (i == -2) {
-            throw new IOException("Bad offset/length arguments for buffer");
-        }
-        throw new IOException("Unexpected error code: " + i);
-        label148:
-        return i;
     }
 
     protected void releaseNoiseSuppressor() {

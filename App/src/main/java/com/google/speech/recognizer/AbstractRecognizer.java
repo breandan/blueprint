@@ -8,7 +8,6 @@ import com.google.speech.recognizer.api.RecognizerSessionParamsProto;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,13 +19,13 @@ public abstract class AbstractRecognizer {
     private InputStream reader;
     private ResourceManager rm;
 
+    protected static native void nativeInit();
+
     private native int nativeCancel(long paramLong);
 
     private native long nativeConstruct();
 
     private native void nativeDelete(long paramLong);
-
-    protected static native void nativeInit();
 
     private native int nativeInitFromFile(long paramLong1, long paramLong2, String paramString);
 
@@ -51,7 +50,7 @@ public abstract class AbstractRecognizer {
     }
 
     public void delete() {
-        if(nativeObj != 0) {
+        if (nativeObj != 0) {
             nativeDelete(nativeObj);
             nativeObj = 0;
         }
@@ -61,33 +60,49 @@ public abstract class AbstractRecognizer {
         delete();
     }
 
-    protected void handleAudioLevelEvent(byte[] paramArrayOfByte)
-            throws InvalidProtocolBufferMicroException {
-        RecognizerProtos.AudioLevelEvent localAudioLevelEvent = new RecognizerProtos.AudioLevelEvent();
-        localAudioLevelEvent.mergeFrom(paramArrayOfByte);
-        Iterator localIterator = this.callbacks.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognizerCallback) localIterator.next()).handleAudioLevelEvent(localAudioLevelEvent);
+    public NativeRecognizer.NativeRecognitionResult run(RecognizerSessionParamsProto.RecognizerSessionParams sessionParams) {
+        validate();
+        byte[] resultBytes = nativeRun(nativeObj, sessionParams.toByteArray());
+        try {
+            return NativeRecognizer.NativeRecognitionResult.parseFrom(resultBytes);
+        } catch (InvalidProtocolBufferMicroException ex) {
+            logger.log(Level.SEVERE, "bad protocol buffer from recognizer jni");
+        }
+        return new NativeRecognizer.NativeRecognitionResult().setStatus(0x2);
+    }
+
+    protected int read(byte[] buffer) throws IOException {
+        if (buffer.length == 0) {
+            throw new IOException("illegal zero length buffer");
+        }
+        int result = reader.read(buffer);
+        if (result == -0x1) {
+            return result;
+        }
+        return result;
+    }
+
+    protected void handleRecognitionEvent(byte[] bytes) throws InvalidProtocolBufferMicroException {
+        RecognizerProtos.RecognitionEvent event = new RecognizerProtos.RecognitionEvent();
+        event.mergeFrom(bytes);
+        for (RecognizerCallback cb : callbacks) {
+            cb.handleRecognitionEvent(event);
         }
     }
 
-    protected void handleEndpointerEvent(byte[] paramArrayOfByte)
-            throws InvalidProtocolBufferMicroException {
-        RecognizerProtos.EndpointerEvent localEndpointerEvent = new RecognizerProtos.EndpointerEvent();
-        localEndpointerEvent.mergeFrom(paramArrayOfByte);
-        Iterator localIterator = this.callbacks.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognizerCallback) localIterator.next()).handleEndpointerEvent(localEndpointerEvent);
+    protected void handleEndpointerEvent(byte[] bytes) throws InvalidProtocolBufferMicroException {
+        RecognizerProtos.EndpointerEvent event = new RecognizerProtos.EndpointerEvent();
+        event.mergeFrom(bytes);
+        for (RecognizerCallback cb : callbacks) {
+            cb.handleEndpointerEvent(event);
         }
     }
 
-    protected void handleRecognitionEvent(byte[] paramArrayOfByte)
-            throws InvalidProtocolBufferMicroException {
-        RecognizerProtos.RecognitionEvent localRecognitionEvent = new RecognizerProtos.RecognitionEvent();
-        localRecognitionEvent.mergeFrom(paramArrayOfByte);
-        Iterator localIterator = this.callbacks.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognizerCallback) localIterator.next()).handleRecognitionEvent(localRecognitionEvent);
+    protected void handleAudioLevelEvent(byte[] bytes) throws InvalidProtocolBufferMicroException {
+        RecognizerProtos.AudioLevelEvent event = new RecognizerProtos.AudioLevelEvent();
+        event.mergeFrom(bytes);
+        for (RecognizerCallback cb : callbacks) {
+            cb.handleAudioLevelEvent(event);
         }
     }
 
@@ -101,30 +116,6 @@ public abstract class AbstractRecognizer {
         validate();
         this.rm = paramResourceManager;
         return nativeInitFromProto(this.nativeObj, paramResourceManager.getNativeObject(), paramArrayOfByte);
-    }
-
-    protected int read(byte[] paramArrayOfByte)
-            throws IOException {
-        if (paramArrayOfByte.length == 0) {
-            throw new IOException("illegal zero length buffer");
-        }
-        int i = this.reader.read(paramArrayOfByte);
-        if (i == -1) {
-            i = 0;
-        }
-        return i;
-    }
-
-    public NativeRecognizer.NativeRecognitionResult run(RecognizerSessionParamsProto.RecognizerSessionParams paramRecognizerSessionParams) {
-        validate();
-        byte[] arrayOfByte = nativeRun(this.nativeObj, paramRecognizerSessionParams.toByteArray());
-        try {
-            NativeRecognizer.NativeRecognitionResult localNativeRecognitionResult = NativeRecognizer.NativeRecognitionResult.parseFrom(arrayOfByte);
-            return localNativeRecognitionResult;
-        } catch (InvalidProtocolBufferMicroException localInvalidProtocolBufferMicroException) {
-            logger.log(Level.SEVERE, "bad protocol buffer from recognizer jni");
-        }
-        return new NativeRecognizer.NativeRecognitionResult().setStatus(2);
     }
 
     public int setAudioReader(InputStream paramInputStream) {

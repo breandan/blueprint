@@ -2,10 +2,12 @@ package com.google.android.speech.grammar;
 
 import android.content.ContentResolver;
 import android.database.Cursor;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 import com.google.android.search.core.SearchConfig;
 import com.google.android.speech.contacts.ContactRetriever;
+import com.google.android.velvet.util.Cursors;
 import com.google.common.collect.Lists;
 
 import java.util.List;

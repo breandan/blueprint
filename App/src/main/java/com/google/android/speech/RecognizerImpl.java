@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 
 import javax.annotation.Nullable;
 
+
 public class RecognizerImpl
         implements Recognizer {
     private final AudioController mAudioController;
@@ -149,42 +150,39 @@ public class RecognizerImpl
 
     public void startListening(SessionParams paramSessionParams, RecognitionEventListener paramRecognitionEventListener, Executor paramExecutor, @Nullable AudioStore paramAudioStore) {
         AudioInputParams localAudioInputParams = paramSessionParams.getAudioInputParams();
-        boolean bool = this.mListeningState.notIn(State.IDLE);
-        int i = 0;
-        if (bool) {
+        boolean i = false;
+
+        if (this.mListeningState.notIn(State.IDLE)) {
             if (!localAudioInputParams.hasStreamRewindTime()) {
-                break label152;
+                Log.w("RecognizerImpl", "Multiple recognitions in progress, the first will be cancelled.");
+                internalShutdownAudio();
+                this.mListeningState.checkIn(State.IDLE);
             }
-            i = 1;
+            i = true;
             this.mRecognitionDispatcher.cancel();
             this.mResponseProcessor.invalidate();
             this.mResponseProcessor = null;
         }
+
         RecognitionEventListener localRecognitionEventListener;
         EngineSelector localEngineSelector;
         List localList1;
-        for (; ; ) {
-            this.mRecognitionListener = paramRecognitionEventListener;
-            localRecognitionEventListener = threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
-            recordStartRecognitionEvent(paramSessionParams);
-            localEngineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
-            this.mResponseProcessor = this.mSpeechLibFactory.buildResponseProcessor(getAudioCallback(this.mRecognitionListener), localRecognitionEventListener, paramSessionParams, this.mSpeechLibLogger);
-            localList1 = localEngineSelector.getEngineList();
-            if (!localList1.isEmpty()) {
-                break;
-            }
+
+        this.mRecognitionListener = paramRecognitionEventListener;
+        localRecognitionEventListener = threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
+        recordStartRecognitionEvent(paramSessionParams);
+        localEngineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
+        this.mResponseProcessor = this.mSpeechLibFactory.buildResponseProcessor(getAudioCallback(this.mRecognitionListener), localRecognitionEventListener, paramSessionParams, this.mSpeechLibLogger);
+        localList1 = localEngineSelector.getEngineList();
+        if (localList1.isEmpty()) {
             localRecognitionEventListener.onError(new NoEnginesRecognizeException());
             return;
-            label152:
-            Log.w("RecognizerImpl", "Multiple recognitions in progress, the first will be cancelled.");
-            internalShutdownAudio();
-            this.mListeningState.checkIn(State.IDLE);
-            i = 0;
         }
-        if (i != 0) {
-        }
-        for (AudioInputStreamFactory localAudioInputStreamFactory = this.mAudioController.rewindInputStreamFactory(localAudioInputParams.getStreamRewindTime()); ; localAudioInputStreamFactory = this.mAudioController.createInputStreamFactory(localAudioInputParams)) {
+
+        if (i) {
+            AudioInputStreamFactory localAudioInputStreamFactory = this.mAudioController.createInputStreamFactory(localAudioInputParams);
             if (paramAudioStore != null) {
+                this.mAudioController.rewindInputStreamFactory(localAudioInputParams.getStreamRewindTime());
             }
             try {
                 int j = localAudioInputParams.getSamplingRate();
@@ -195,7 +193,6 @@ public class RecognizerImpl
                 List localList2 = this.mEngineStore.getEngines(localList1);
                 ResponseProcessor localResponseProcessor = this.mResponseProcessor;
                 localRecognitionDispatcher.startRecognition(localList2, localAudioInputStreamFactory, paramSessionParams, localEngineSelector, localResponseProcessor);
-                return;
             } catch (IOException localIOException) {
                 localRecognitionEventListener.onError(new AudioRecognizeException("Unable to start the audio recording", localIOException));
             }

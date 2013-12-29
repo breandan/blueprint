@@ -13,11 +13,9 @@ import javax.annotation.Nullable;
 public class RecognitionEngineParams {
     private final EmbeddedParams mEmbeddedParams;
     private final MusicDetectorParams mMusicDetectorParams;
-    private final NetworkParams mNetworkParams;
 
-    public RecognitionEngineParams(EmbeddedParams paramEmbeddedParams, NetworkParams paramNetworkParams, MusicDetectorParams paramMusicDetectorParams) {
+    public RecognitionEngineParams(EmbeddedParams paramEmbeddedParams, MusicDetectorParams paramMusicDetectorParams) {
         this.mEmbeddedParams = paramEmbeddedParams;
-        this.mNetworkParams = paramNetworkParams;
         this.mMusicDetectorParams = paramMusicDetectorParams;
     }
 
@@ -27,10 +25,6 @@ public class RecognitionEngineParams {
 
     public MusicDetectorParams getMusicDetectorParams() {
         return this.mMusicDetectorParams;
-    }
-
-    public NetworkParams getNetworkParams() {
-        return this.mNetworkParams;
     }
 
     public static class EmbeddedParams {
@@ -86,37 +80,6 @@ public class RecognitionEngineParams {
 
         public SpeechSettings getSettings() {
             return this.mSettings;
-        }
-    }
-
-    public static class NetworkParams {
-        @Nullable
-        private final S3ConnectionFactory mFallbackConnectionFactory;
-        private final NetworkRequestProducerParams mNetworkRequestProducerParams;
-        private final S3ConnectionFactory mPrimaryConnectionFactory;
-        private final RetryPolicy mRetryPolicy;
-
-        public NetworkParams(S3ConnectionFactory paramS3ConnectionFactory1, @Nullable S3ConnectionFactory paramS3ConnectionFactory2, RetryPolicy paramRetryPolicy, NetworkRequestProducerParams paramNetworkRequestProducerParams) {
-            this.mPrimaryConnectionFactory = paramS3ConnectionFactory1;
-            this.mFallbackConnectionFactory = paramS3ConnectionFactory2;
-            this.mRetryPolicy = paramRetryPolicy;
-            this.mNetworkRequestProducerParams = paramNetworkRequestProducerParams;
-        }
-
-        public S3ConnectionFactory getFallbackConnectionFactory() {
-            return this.mFallbackConnectionFactory;
-        }
-
-        public NetworkRequestProducerParams getNetworkRequestProducerParams() {
-            return this.mNetworkRequestProducerParams;
-        }
-
-        public S3ConnectionFactory getPrimaryConnectionFactory() {
-            return this.mPrimaryConnectionFactory;
-        }
-
-        public RetryPolicy getRetryPolicy() {
-            return this.mRetryPolicy;
         }
     }
 }

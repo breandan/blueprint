@@ -49,7 +49,7 @@ public abstract class AbstractGrammarCompiler {
 
     public synchronized boolean initFromFile(String paramString, String[] paramArrayOfString) {
             assertValidState();
-            boolean bool = nativeInitFromFile(this.nativeObj, paramString, paramArrayOfString);
+            return nativeInitFromFile(this.nativeObj, paramString, paramArrayOfString);
     }
 
     public synchronized boolean initFromProto(byte[] paramArrayOfByte, String[] paramArrayOfString) {

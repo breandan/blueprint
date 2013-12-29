@@ -3,8 +3,8 @@ package com.google.android.speech.audio;
 import com.google.android.shared.util.SpeechLevelSource;
 
 public class SpeechLevelGenerator {
-    private float mNoiseLevel;
     private final SpeechLevelSource mSpeechLevelSource;
+    private float mNoiseLevel;
 
     public SpeechLevelGenerator(SpeechLevelSource paramSpeechLevelSource) {
         this.mSpeechLevelSource = paramSpeechLevelSource;
@@ -35,18 +35,18 @@ public class SpeechLevelGenerator {
         return -2.0F + 12.0F * (paramInt / 100.0F);
     }
 
-    public void update(byte[] paramArrayOfByte, int paramInt1, int paramInt2) {
-        float f1 = calculateRms(paramArrayOfByte, paramInt1, paramInt2);
-        if (this.mNoiseLevel < f1) {
+    public void update(byte[] bytes, int offset, int count) {
+        float rms = calculateRms(bytes, offset, count);
+        if (mNoiseLevel < rms) {
+            mNoiseLevel = ((0x3f7fbe77 * mNoiseLevel) + (0x3a83126f * rms));
+        } else {
+            mNoiseLevel = ((0x3f733333 * mNoiseLevel) + (0x3d4ccccd * rms));
         }
-        for (this.mNoiseLevel = (0.999F * this.mNoiseLevel + 0.001F * f1); ; this.mNoiseLevel = (0.95F * this.mNoiseLevel + 0.05F * f1)) {
-            float f2 = -120.0F;
-            if ((this.mNoiseLevel > 0.0D) && (f1 / this.mNoiseLevel > 1.0E-006D)) {
-                f2 = 10.0F * (float) Math.log10(f1 / this.mNoiseLevel);
-            }
-            this.mSpeechLevelSource.setSpeechLevel(convertRmsDbToVolume(f2));
-            return;
+        float snr = -120.0f;
+        if (((double) mNoiseLevel > 0.0) && ((double) (rms / mNoiseLevel) > 0.0)) {
+            snr = 10.0f * (float) Math.log10((double) (rms / mNoiseLevel));
         }
+        mSpeechLevelSource.setSpeechLevel(convertRmsDbToVolume(snr));
     }
 }
 
