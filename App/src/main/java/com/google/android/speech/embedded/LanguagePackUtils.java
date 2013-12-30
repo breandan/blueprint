@@ -18,7 +18,7 @@ public class LanguagePackUtils {
     public static GstaticConfiguration.LanguagePack findById(String paramString, List<GstaticConfiguration.LanguagePack> paramList) {
         int i = paramList.size();
         for (int j = 0; j < i; j++) {
-            GstaticConfiguration.LanguagePack localLanguagePack = (GstaticConfiguration.LanguagePack) paramList.get(j);
+            GstaticConfiguration.LanguagePack localLanguagePack = paramList.get(j);
             if (localLanguagePack.getLanguagePackId().equals(paramString)) {
                 return localLanguagePack;
             }

@@ -11,9 +11,11 @@ import com.google.android.search.shared.api.Query;
 import com.google.android.search.shared.api.RecognitionUi;
 import com.google.android.speech.Recognizer;
 import com.google.android.speech.alternates.Hypothesis;
+import com.google.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.google.android.speech.callback.SimpleCallback;
 import com.google.android.speech.embedded.Greco3Grammar;
 import com.google.android.speech.embedded.Greco3Mode;
+import com.google.android.speech.embedded.Greco3RecognitionEngine;
 import com.google.android.speech.embedded.OfflineActionsManager;
 import com.google.android.speech.exception.NetworkRecognizeException;
 import com.google.android.speech.exception.RecognizeException;
@@ -21,6 +23,7 @@ import com.google.android.speech.listeners.CancellableRecognitionEventListener;
 import com.google.android.speech.listeners.CompositeRecognitionEventListener;
 import com.google.android.speech.listeners.RecognitionEventListener;
 import com.google.android.speech.listeners.RecognitionEventListenerAdapter;
+import com.google.android.speech.params.AudioInputParams;
 import com.google.android.speech.params.SessionParams;
 import com.google.android.speech.test.TestPlatformLog;
 import com.google.android.speech.utils.NetworkInformation;
@@ -32,8 +35,9 @@ import com.google.android.voicesearch.settings.Settings;
 import com.google.android.voicesearch.util.PhoneActionUtils;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.majel.proto.MajelProtos.MajelResponse;
-import com.google.speech.s3.PinholeStream.PinholeOutput;
+import com.google.majel.proto.MajelProtos;
+import com.google.speech.recognizer.api.RecognizerProtos;
+import com.google.speech.s3.PinholeStream;
 
 import java.util.concurrent.Executor;
 
@@ -51,6 +55,7 @@ public class HandsFreeRecognizerController {
         public void updateRecognizedText(String paramAnonymousString1, String paramAnonymousString2) {
         }
     };
+    private final VoiceSearchServices mVoiceSearchServices;
     private CancellableRecognitionEventListener mEventListener;
     private int mFlags;
     @Nullable
@@ -69,11 +74,22 @@ public class HandsFreeRecognizerController {
     private RecognitionUi mUi;
     @Nullable
     private Executor mUiThreadExecutor;
-    private final VoiceSearchServices mVoiceSearchServices;
 
     HandsFreeRecognizerController(VoiceSearchServices paramVoiceSearchServices) {
         this.mVoiceSearchServices = paramVoiceSearchServices;
         this.mUi = NO_OP_UI;
+    }
+
+    public static HandsFreeRecognizerController createForVoiceDialer(VoiceSearchServices paramVoiceSearchServices) {
+        return new HandsFreeRecognizerController(paramVoiceSearchServices);
+    }
+
+    private static void maybeLogException(RecognizeException paramRecognizeException) {
+        if ((paramRecognizeException instanceof Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException)) {
+            Log.i("HandsFreeRecognizerController", "No recognizers available.");
+            return;
+        }
+        Log.e("HandsFreeRecognizerController", "onError", paramRecognizeException);
     }
 
     private void cancelInternal(boolean paramBoolean) {
@@ -93,10 +109,6 @@ public class HandsFreeRecognizerController {
             this.mOfflineActionsManager.detach(this.mGrammarCompilationCallback);
             this.mGrammarCompilationCallback = null;
         }
-    }
-
-    public static HandsFreeRecognizerController createForVoiceDialer(VoiceSearchServices paramVoiceSearchServices) {
-        return new HandsFreeRecognizerController(paramVoiceSearchServices);
     }
 
     private Greco3Grammar getGrammarType(int paramInt) {
@@ -149,27 +161,18 @@ public class HandsFreeRecognizerController {
         }
     }
 
-    private static void maybeLogException(RecognizeException paramRecognizeException) {
-        if ((paramRecognizeException instanceof Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException)) {
-            Log.i("HandsFreeRecognizerController", "No recognizers available.");
-            return;
-        }
-        Log.e("HandsFreeRecognizerController", "onError", paramRecognizeException);
-    }
-
-    private void prepareRecognition(SessionParams paramSessionParams, RecognitionEventListener paramRecognitionEventListener, String paramString) {
+    private void prepareRecognition(SessionParams sessionParams, RecognitionEventListener clientListener, String requestId) {
         cancelInternal(true);
-        this.mMode = paramSessionParams.getMode();
-        this.mRecognitionInProgress = true;
-        CompositeRecognitionEventListener localCompositeRecognitionEventListener;
-        if (paramRecognitionEventListener != null) {
-            localCompositeRecognitionEventListener = new CompositeRecognitionEventListener();
-            localCompositeRecognitionEventListener.add(new InternalRecognitionEventListener(paramString));
-            localCompositeRecognitionEventListener.add(paramRecognitionEventListener);
-        }
-        for (Object localObject = localCompositeRecognitionEventListener; ; localObject = new InternalRecognitionEventListener(paramString)) {
-            this.mEventListener = new CancellableRecognitionEventListener((RecognitionEventListener) localObject);
-            return;
+        mMode = sessionParams.getMode();
+        mRecognitionInProgress = true;
+        if (clientListener != null) {
+            CompositeRecognitionEventListener listeners = new CompositeRecognitionEventListener();
+            listeners.add(new HandsFreeRecognizerController.InternalRecognitionEventListener(requestId));
+            listeners.add(clientListener);
+            CompositeRecognitionEventListener listener = listeners;
+        } else {
+            HandsFreeRecognizerController.InternalRecognitionEventListener listener = new HandsFreeRecognizerController.InternalRecognitionEventListener(requestId);
+            mEventListener = new CancellableRecognitionEventListener(listener);
         }
     }
 
@@ -181,38 +184,26 @@ public class HandsFreeRecognizerController {
         startListening(getSessionParamsBuilder(paramInt, false, null).build(), paramRecognitionEventListener, true);
     }
 
-    private void startListening(final SessionParams paramSessionParams, RecognitionEventListener paramRecognitionEventListener, boolean paramBoolean) {
-        prepareRecognition(paramSessionParams, paramRecognitionEventListener, paramSessionParams.getRequestId());
-        if (isFlagSet(1)) {
-            this.mVoiceSearchServices.getLocalTtsManager().enqueue(this.mSpeakPrompt, new Runnable() {
+    private void startListening(final SessionParams sessionParams, RecognitionEventListener listener, boolean offline) {
+        prepareRecognition(sessionParams, listener, sessionParams.getRequestId());
+        if (isFlagSet(0x1)) {
+            mVoiceSearchServices.getLocalTtsManager().enqueue(mSpeakPrompt, new Runnable() {
                 public void run() {
-                    HandsFreeRecognizerController.this.reallyStartListening(paramSessionParams);
+                    HandsFreeRecognizerController.this.reallyStartListening(sessionParams);
                 }
             });
+        } else {
+            reallyStartListening(sessionParams);
         }
-        for (; ; ) {
-            if (!paramBoolean) {
-                this.mUi.showRecognitionState(3);
-            }
-            return;
-            reallyStartListening(paramSessionParams);
+        if (!offline) {
+            mUi.showRecognitionState(0x3);
         }
     }
 
-    private void startOfflineRecognition(RecognitionEventListener paramRecognitionEventListener, int paramInt) {
-        this.mGrammarCompilationCallback = new GrammarCompilationCallback(paramRecognitionEventListener, paramInt);
-        if (SessionParams.isVoiceDialerSearch(paramInt)) {
-        }
-        for (String str = "en-US"; ; str = this.mVoiceSearchServices.getSettings().getSpokenLocaleBcp47()) {
-            OfflineActionsManager localOfflineActionsManager = this.mOfflineActionsManager;
-            GrammarCompilationCallback localGrammarCompilationCallback = this.mGrammarCompilationCallback;
-            Greco3Grammar[] arrayOfGreco3Grammar = new Greco3Grammar[2];
-            arrayOfGreco3Grammar[0] = Greco3Grammar.CONTACT_DIALING;
-            arrayOfGreco3Grammar[1] = Greco3Grammar.HANDS_FREE_COMMANDS;
-            localOfflineActionsManager.startOfflineDataCheck(localGrammarCompilationCallback, str, arrayOfGreco3Grammar);
-            this.mUi.showRecognitionState(1);
-            return;
-        }
+    private void startOfflineRecognition(RecognitionEventListener resultsListener, int recognizerMode) {
+        mGrammarCompilationCallback = new HandsFreeRecognizerController.GrammarCompilationCallback(resultsListener, recognizerMode);
+        mOfflineActionsManager.startOfflineDataCheck(mGrammarCompilationCallback, SessionParams.isVoiceDialerSearch(recognizerMode) ? "en-US" : mVoiceSearchServices.getSettings().getSpokenLocaleBcp47(), new Greco3Grammar[]{Greco3Grammar.CONTACT_DIALING, Greco3Grammar.HANDS_FREE_COMMANDS});
+        mUi.showRecognitionState(0x1);
     }
 
     private void startRecognition(@Nullable RecognitionEventListener paramRecognitionEventListener, int paramInt, @Nonnull Query paramQuery) {
@@ -226,14 +217,9 @@ public class HandsFreeRecognizerController {
         startListening(getSessionParamsBuilder(paramInt, false, paramQuery.getRecordedAudioUri()).build(), paramRecognitionEventListener, false);
     }
 
-    public void attachUi(RecognitionUi paramRecognitionUi) {
-        if (this.mUi == NO_OP_UI) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            this.mUi = ((RecognitionUi) Preconditions.checkNotNull(paramRecognitionUi));
-            return;
-        }
+    public void attachUi(RecognitionUi ui) {
+        Preconditions.checkState(mUi == NO_OP_UI);
+        mUi = Preconditions.checkNotNull(ui);
     }
 
     public void cancel() {
@@ -244,13 +230,8 @@ public class HandsFreeRecognizerController {
     }
 
     public void detachUi(RecognitionUi paramRecognitionUi) {
-        if ((paramRecognitionUi == this.mUi) || (this.mUi == NO_OP_UI)) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            this.mUi = NO_OP_UI;
-            return;
-        }
+        Preconditions.checkState((paramRecognitionUi == this.mUi) || (this.mUi == NO_OP_UI));
+        this.mUi = NO_OP_UI;
     }
 
     public void startCommandRecognitionNoUi(@Nullable RecognitionEventListener paramRecognitionEventListener, int paramInt, String paramString) {
@@ -262,7 +243,7 @@ public class HandsFreeRecognizerController {
     }
 
     public void startHandsFreeContactRecognition(@Nonnull RecognitionEventListener paramRecognitionEventListener) {
-        startRecognition((RecognitionEventListener) Preconditions.checkNotNull(paramRecognitionEventListener), 4, Query.EMPTY);
+        startRecognition(Preconditions.checkNotNull(paramRecognitionEventListener), 4, Query.EMPTY);
     }
 
     private class GrammarCompilationCallback
@@ -281,25 +262,24 @@ public class HandsFreeRecognizerController {
             }
         }
 
-        public void onResult(Integer paramInteger) {
-            if (paramInteger.intValue() == 1) {
-                HandsFreeRecognizerController.this.startEmbeddedRecognitionInternal(this.mRecognizerMode, this.mResultsListener);
-            }
-            do {
+        public void onResult(Integer result) {
+            if (result.intValue() == 0x1) {
                 return;
-                if (paramInteger.intValue() == 4) {
-                    reportError(new OfflineActionsManager.GrammarCompilationException());
-                    return;
-                }
-            } while (paramInteger.intValue() != 3);
-            reportError(new NetworkRecognizeException("No network connection"));
+            }
+            if (result.intValue() == 0x4) {
+                reportError(new OfflineActionsManager.GrammarCompilationException());
+                return;
+            }
+            if (result.intValue() == 0x3) {
+                reportError(new NetworkRecognizeException("No network connection"));
+            }
         }
     }
 
     private class InternalRecognitionEventListener
             extends RecognitionEventListenerAdapter {
-        private S3FetchTask mProxyFetchTask;
         private final RecognizedText mRecognizedText = new RecognizedText();
+        private S3FetchTask mProxyFetchTask;
         private String mRequestId;
 
         public InternalRecognitionEventListener(String paramString) {
@@ -396,45 +376,37 @@ public class HandsFreeRecognizerController {
             }
         }
 
-        public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
-            int i = 1;
-            TestPlatformLog.logResults(paramRecognitionEvent);
-            if (this.mRecognizedText.hasCompletedRecognition()) {
+        public void onRecognitionResult(RecognizerProtos.RecognitionEvent recognitionEvent) {
+            TestPlatformLog.logResults(recognitionEvent);
+            if (mRecognizedText.hasCompletedRecognition()) {
                 Log.e("HandsFreeRecognizerController", "Result after completed recognition.");
-            }
-            do {
                 return;
-                if (paramRecognitionEvent.getEventType() == 0) {
-                    Pair localPair = this.mRecognizedText.updateInProgress(paramRecognitionEvent);
-                    String str1 = (String) localPair.first;
-                    String str2 = (String) localPair.second;
-                    HandsFreeRecognizerController.this.mUi.updateRecognizedText(str1, str2);
+            }
+            if (recognitionEvent.getEventType() == 0) {
+                Pair<String, String> stableAndUnstable = mRecognizedText.updateInProgress(recognitionEvent);
+                String stable = stableAndUnstable.first;
+                String unstable = stableAndUnstable.second;
+                mUi.updateRecognizedText(stable, unstable);
+                return;
+            }
+            if (recognitionEvent.getEventType() == 0x1) {
+                ImmutableList<Hypothesis> allHypotheses = mRecognizedText.updateFinal(recognitionEvent);
+                if (allHypotheses.isEmpty()) {
+                    Log.i("HandsFreeRecognizerController", "Empty combined result");
+                    dispatchNoMatchException();
                     return;
                 }
-            } while (paramRecognitionEvent.getEventType() != i);
-            ImmutableList localImmutableList = this.mRecognizedText.updateFinal(paramRecognitionEvent);
-            if ((localImmutableList.isEmpty()) || (TextUtils.isEmpty(((Hypothesis) localImmutableList.get(0)).getText()))) {
-            }
-            for (; ; ) {
-                if ((!HandsFreeRecognizerController.this.isFlagSet(4)) && (i != 0)) {
-                    HandsFreeRecognizerController.this.mSoundManager.playNoInputSound();
+                HypothesisToSuggestionSpansConverter converter = mVoiceSearchServices.getHypothesisToSuggestionSpansConverter();
+                SpannedString firstResult = converter.getSuggestionSpannedStringForQuery(mRequestId, allHypotheses.get(0x0));
+                mUi.setFinalRecognizedText(firstResult);
+                ImmutableList.Builder<CharSequence> otherHypothesesBuilder = ImmutableList.builder();
+                for (int i = 0x1; i < allHypotheses.size(); i = i + 0x1) {
+                    Hypothesis hypothesis = allHypotheses.get(i);
+                    otherHypothesesBuilder.add(hypothesis.getText());
                 }
-                if (i == 0) {
-                    break;
-                }
-                Log.i("HandsFreeRecognizerController", "Empty combined result");
-                dispatchNoMatchException();
-                return;
-                i = 0;
+                ImmutableList<CharSequence> otherHypotheses = otherHypothesesBuilder.build();
+                mProxyFetchTask = null;
             }
-            SpannedString localSpannedString = HandsFreeRecognizerController.this.mVoiceSearchServices.getHypothesisToSuggestionSpansConverter().getSuggestionSpannedStringForQuery(this.mRequestId, (Hypothesis) localImmutableList.get(0));
-            HandsFreeRecognizerController.this.mUi.setFinalRecognizedText(localSpannedString);
-            ImmutableList.Builder localBuilder = ImmutableList.builder();
-            for (int j = 1; j < localImmutableList.size(); j++) {
-                localBuilder.add(((Hypothesis) localImmutableList.get(j)).getText());
-            }
-            localBuilder.build();
-            this.mProxyFetchTask = null;
         }
     }
 }

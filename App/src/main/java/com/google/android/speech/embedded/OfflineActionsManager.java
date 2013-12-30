@@ -10,18 +10,19 @@ import com.google.android.speech.exception.EmbeddedRecognizeException;
 import com.google.android.speech.grammar.GrammarCompilationService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.Set;
 import java.util.concurrent.Executor;
 
 public class OfflineActionsManager {
-    private volatile SimpleCallback<Integer> mCallback;
     private final Set<Greco3Grammar> mCompilingGrammars = Sets.newHashSet();
     private final Context mContext;
-    private String mGrammarCompilationLocale;
     private final Greco3DataManager mGreco3DataManager;
     private final Executor mMainThread;
     private final SpeechSettings mSettings;
+    private volatile SimpleCallback<Integer> mCallback;
+    private String mGrammarCompilationLocale;
 
     public OfflineActionsManager(Context paramContext, Greco3DataManager paramGreco3DataManager, SpeechSettings paramSpeechSettings, Executor paramExecutor) {
         this.mContext = paramContext;
@@ -35,7 +36,7 @@ public class OfflineActionsManager {
     }
 
     private Runnable createInitGrammarCallback(final Greco3Grammar... paramVarArgs) {
-        new Runnable() {
+        return new Runnable() {
             public void run() {
                 OfflineActionsManager.this.initGrammars(paramVarArgs);
             }
@@ -48,7 +49,7 @@ public class OfflineActionsManager {
                 synchronized (OfflineActionsManager.this) {
                     if (OfflineActionsManager.this.mCallback != null) {
                         OfflineActionsManager.this.mCallback.onResult(Integer.valueOf(paramInt));
-                        OfflineActionsManager.access$102(OfflineActionsManager.this, null);
+                        mCallback = null;
                     }
                     return;
                 }
@@ -56,14 +57,14 @@ public class OfflineActionsManager {
         });
     }
 
-    private long getGrammarCompilationFrequency(Greco3Grammar paramGreco3Grammar) {
-        if (paramGreco3Grammar == Greco3Grammar.CONTACT_DIALING) {
-            GstaticConfiguration.Configuration localConfiguration = this.mSettings.getConfiguration();
-            if ((localConfiguration.hasEmbeddedRecognizer()) && (localConfiguration.getEmbeddedRecognizer().hasGrammarCompilationFrequencyMs())) {
-                return localConfiguration.getEmbeddedRecognizer().getGrammarCompilationFrequencyMs();
+    private long getGrammarCompilationFrequency(Greco3Grammar greco3Grammar) {
+        if (greco3Grammar == Greco3Grammar.CONTACT_DIALING) {
+            GstaticConfiguration.Configuration config = mSettings.getConfiguration();
+            if ((config.hasEmbeddedRecognizer()) && (config.getEmbeddedRecognizer().hasGrammarCompilationFrequencyMs())) {
+                return (long) config.getEmbeddedRecognizer().getGrammarCompilationFrequencyMs();
             }
         }
-        return -1L;
+        return 0xffffffff;
     }
 
     private boolean hasCompiledGrammar(Greco3Grammar paramGreco3Grammar) {
@@ -84,17 +85,11 @@ public class OfflineActionsManager {
     }
 
     private void initGrammars(Greco3Grammar... paramVarArgs) {
-        for (; ; ) {
-            int j;
+        for (int j = 0; j < paramVarArgs.length; j++) {
             try {
                 SimpleCallback localSimpleCallback = this.mCallback;
                 if (localSimpleCallback == null) {
                     return;
-                }
-                int i = paramVarArgs.length;
-                j = 0;
-                if (j >= i) {
-                    break label104;
                 }
                 Greco3Grammar localGreco3Grammar = paramVarArgs[j];
                 switch (initGrammar(localGreco3Grammar)) {
@@ -102,15 +97,13 @@ public class OfflineActionsManager {
                         this.mCompilingGrammars.add(localGreco3Grammar);
                 }
             } finally {
-            }
-            this.mCallback.onResult(Integer.valueOf(3));
-            continue;
-            label104:
-            if (this.mCompilingGrammars.isEmpty()) {
-                this.mCallback.onResult(Integer.valueOf(1));
+                this.mCallback.onResult(Integer.valueOf(3));
                 continue;
-                j++;
             }
+        }
+
+        if (this.mCompilingGrammars.isEmpty()) {
+            this.mCallback.onResult(Integer.valueOf(1));
         }
     }
 
@@ -131,25 +124,10 @@ public class OfflineActionsManager {
         GrammarCompilationService.startCompilationForLocale(this.mContext, this.mGrammarCompilationLocale, paramGreco3Grammar);
     }
 
-    public void detach(SimpleCallback<Integer> paramSimpleCallback) {
-        label45:
-        for (; ; ) {
-            try {
-                ExtraPreconditions.checkMainThread();
-                if (paramSimpleCallback != this.mCallback) {
-                    if (this.mCallback == null) {
-                        break label45;
-                        Preconditions.checkState(bool);
-                        this.mCallback = null;
-                    } else {
-                        bool = false;
-                        continue;
-                    }
-                }
-                boolean bool = true;
-            } finally {
-            }
-        }
+    public synchronized void detach(SimpleCallback<Integer> paramSimpleCallback) {
+        ExtraPreconditions.checkMainThread();
+        Preconditions.checkState((paramSimpleCallback != this.mCallback) || (this.mCallback == null));
+        this.mCallback = null;
     }
 
     public void maybeScheduleGrammarCompilation() {
@@ -222,7 +200,7 @@ public class OfflineActionsManager {
         private static final long serialVersionUID = 1482752135755739456L;
 
         public GrammarCompilationException() {
-            super();
+            super("Grammar compilation exception");
         }
     }
 }

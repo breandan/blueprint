@@ -31,8 +31,20 @@ public final class GstaticConfiguration {
             return this.enableCalendarEventAttendees_;
         }
 
+        public ActionFeatureFlags setEnableCalendarEventAttendees(boolean paramBoolean) {
+            this.hasEnableCalendarEventAttendees = true;
+            this.enableCalendarEventAttendees_ = paramBoolean;
+            return this;
+        }
+
         public boolean getEnableCapabilityHomeControl() {
             return this.enableCapabilityHomeControl_;
+        }
+
+        public ActionFeatureFlags setEnableCapabilityHomeControl(boolean paramBoolean) {
+            this.hasEnableCapabilityHomeControl = true;
+            this.enableCapabilityHomeControl_ = paramBoolean;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -75,18 +87,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public ActionFeatureFlags setEnableCalendarEventAttendees(boolean paramBoolean) {
-            this.hasEnableCalendarEventAttendees = true;
-            this.enableCalendarEventAttendees_ = paramBoolean;
-            return this;
-        }
-
-        public ActionFeatureFlags setEnableCapabilityHomeControl(boolean paramBoolean) {
-            this.hasEnableCapabilityHomeControl = true;
-            this.enableCapabilityHomeControl_ = paramBoolean;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasEnableCalendarEventAttendees()) {
@@ -110,8 +110,20 @@ public final class GstaticConfiguration {
             return this.authTokenInvalidateBeforeUsePeriodMsec_;
         }
 
+        public Authentication setAuthTokenInvalidateBeforeUsePeriodMsec(int paramInt) {
+            this.hasAuthTokenInvalidateBeforeUsePeriodMsec = true;
+            this.authTokenInvalidateBeforeUsePeriodMsec_ = paramInt;
+            return this;
+        }
+
         public int getAuthTokenProactivelyInvalidatePeriodMsec() {
             return this.authTokenProactivelyInvalidatePeriodMsec_;
+        }
+
+        public Authentication setAuthTokenProactivelyInvalidatePeriodMsec(int paramInt) {
+            this.hasAuthTokenProactivelyInvalidatePeriodMsec = true;
+            this.authTokenProactivelyInvalidatePeriodMsec_ = paramInt;
+            return this;
         }
 
         public int getCachedSize() {
@@ -161,18 +173,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public Authentication setAuthTokenInvalidateBeforeUsePeriodMsec(int paramInt) {
-            this.hasAuthTokenInvalidateBeforeUsePeriodMsec = true;
-            this.authTokenInvalidateBeforeUsePeriodMsec_ = paramInt;
-            return this;
-        }
-
-        public Authentication setAuthTokenProactivelyInvalidatePeriodMsec(int paramInt) {
-            this.hasAuthTokenProactivelyInvalidatePeriodMsec = true;
-            this.authTokenProactivelyInvalidatePeriodMsec_ = paramInt;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasAuthTokenInvalidateBeforeUsePeriodMsec()) {
@@ -203,8 +203,20 @@ public final class GstaticConfiguration {
             return this.connectionTimeoutMs_;
         }
 
+        public Bluetooth setConnectionTimeoutMs(int paramInt) {
+            this.hasConnectionTimeoutMs = true;
+            this.connectionTimeoutMs_ = paramInt;
+            return this;
+        }
+
         public int getScoConnectionTimeoutMs() {
             return this.scoConnectionTimeoutMs_;
+        }
+
+        public Bluetooth setScoConnectionTimeoutMs(int paramInt) {
+            this.hasScoConnectionTimeoutMs = true;
+            this.scoConnectionTimeoutMs_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -245,18 +257,6 @@ public final class GstaticConfiguration {
                 }
                 setScoConnectionTimeoutMs(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public Bluetooth setConnectionTimeoutMs(int paramInt) {
-            this.hasConnectionTimeoutMs = true;
-            this.connectionTimeoutMs_ = paramInt;
-            return this;
-        }
-
-        public Bluetooth setScoConnectionTimeoutMs(int paramInt) {
-            this.hasScoConnectionTimeoutMs = true;
-            this.scoConnectionTimeoutMs_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -357,12 +357,39 @@ public final class GstaticConfiguration {
             return this.actionFeatureFlags_;
         }
 
+        public Configuration setActionFeatureFlags(GstaticConfiguration.ActionFeatureFlags paramActionFeatureFlags) {
+            if (paramActionFeatureFlags == null) {
+                throw new NullPointerException();
+            }
+            this.hasActionFeatureFlags = true;
+            this.actionFeatureFlags_ = paramActionFeatureFlags;
+            return this;
+        }
+
         public GstaticConfiguration.Authentication getAuth() {
             return this.auth_;
         }
 
+        public Configuration setAuth(GstaticConfiguration.Authentication paramAuthentication) {
+            if (paramAuthentication == null) {
+                throw new NullPointerException();
+            }
+            this.hasAuth = true;
+            this.auth_ = paramAuthentication;
+            return this;
+        }
+
         public GstaticConfiguration.Bluetooth getBluetooth() {
             return this.bluetooth_;
+        }
+
+        public Configuration setBluetooth(GstaticConfiguration.Bluetooth paramBluetooth) {
+            if (paramBluetooth == null) {
+                throw new NullPointerException();
+            }
+            this.hasBluetooth = true;
+            this.bluetooth_ = paramBluetooth;
+            return this;
         }
 
         public int getCachedSize() {
@@ -376,8 +403,26 @@ public final class GstaticConfiguration {
             return this.debug_;
         }
 
+        public Configuration setDebug(GstaticConfiguration.Debug paramDebug) {
+            if (paramDebug == null) {
+                throw new NullPointerException();
+            }
+            this.hasDebug = true;
+            this.debug_ = paramDebug;
+            return this;
+        }
+
         public GstaticConfiguration.Dictation getDictation() {
             return this.dictation_;
+        }
+
+        public Configuration setDictation(GstaticConfiguration.Dictation paramDictation) {
+            if (paramDictation == null) {
+                throw new NullPointerException();
+            }
+            this.hasDictation = true;
+            this.dictation_ = paramDictation;
+            return this;
         }
 
         public List<GstaticConfiguration.LanguagePack> getEmbeddedRecognitionResourcesList() {
@@ -388,20 +433,62 @@ public final class GstaticConfiguration {
             return this.embeddedRecognizer_;
         }
 
+        public Configuration setEmbeddedRecognizer(GstaticConfiguration.EmbeddedRecognizer paramEmbeddedRecognizer) {
+            if (paramEmbeddedRecognizer == null) {
+                throw new NullPointerException();
+            }
+            this.hasEmbeddedRecognizer = true;
+            this.embeddedRecognizer_ = paramEmbeddedRecognizer;
+            return this;
+        }
+
         public GstaticConfiguration.EndpointerParams getEndpointerParams() {
             return this.endpointerParams_;
+        }
+
+        public Configuration setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
+            if (paramEndpointerParams == null) {
+                throw new NullPointerException();
+            }
+            this.hasEndpointerParams = true;
+            this.endpointerParams_ = paramEndpointerParams;
+            return this;
         }
 
         public GstaticConfiguration.Help getHelp() {
             return this.help_;
         }
 
+        public Configuration setHelp(GstaticConfiguration.Help paramHelp) {
+            if (paramHelp == null) {
+                throw new NullPointerException();
+            }
+            this.hasHelp = true;
+            this.help_ = paramHelp;
+            return this;
+        }
+
         public String getId() {
             return this.id_;
         }
 
+        public Configuration setId(String paramString) {
+            this.hasId = true;
+            this.id_ = paramString;
+            return this;
+        }
+
         public GstaticConfiguration.IntentApi getIntentApi() {
             return this.intentApi_;
+        }
+
+        public Configuration setIntentApi(GstaticConfiguration.IntentApi paramIntentApi) {
+            if (paramIntentApi == null) {
+                throw new NullPointerException();
+            }
+            this.hasIntentApi = true;
+            this.intentApi_ = paramIntentApi;
+            return this;
         }
 
         public GstaticConfiguration.Language getLanguages(int paramInt) {
@@ -424,16 +511,52 @@ public final class GstaticConfiguration {
             return this.networkRecognizer_;
         }
 
+        public Configuration setNetworkRecognizer(GstaticConfiguration.NetworkRecognizer paramNetworkRecognizer) {
+            if (paramNetworkRecognizer == null) {
+                throw new NullPointerException();
+            }
+            this.hasNetworkRecognizer = true;
+            this.networkRecognizer_ = paramNetworkRecognizer;
+            return this;
+        }
+
         public GstaticConfiguration.PairHttpServerInfo getPairHttpServerInfo() {
             return this.pairHttpServerInfo_;
+        }
+
+        public Configuration setPairHttpServerInfo(GstaticConfiguration.PairHttpServerInfo paramPairHttpServerInfo) {
+            if (paramPairHttpServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasPairHttpServerInfo = true;
+            this.pairHttpServerInfo_ = paramPairHttpServerInfo;
+            return this;
         }
 
         public GstaticConfiguration.Personalization getPersonalization() {
             return this.personalization_;
         }
 
+        public Configuration setPersonalization(GstaticConfiguration.Personalization paramPersonalization) {
+            if (paramPersonalization == null) {
+                throw new NullPointerException();
+            }
+            this.hasPersonalization = true;
+            this.personalization_ = paramPersonalization;
+            return this;
+        }
+
         public GstaticConfiguration.Platform getPlatform() {
             return this.platform_;
+        }
+
+        public Configuration setPlatform(GstaticConfiguration.Platform paramPlatform) {
+            if (paramPlatform == null) {
+                throw new NullPointerException();
+            }
+            this.hasPlatform = true;
+            this.platform_ = paramPlatform;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -516,20 +639,65 @@ public final class GstaticConfiguration {
             return this.serviceApi_;
         }
 
+        public Configuration setServiceApi(GstaticConfiguration.ServiceApi paramServiceApi) {
+            if (paramServiceApi == null) {
+                throw new NullPointerException();
+            }
+            this.hasServiceApi = true;
+            this.serviceApi_ = paramServiceApi;
+            return this;
+        }
+
         public GstaticConfiguration.HttpServerInfo getSingleHttpServerInfo() {
             return this.singleHttpServerInfo_;
+        }
+
+        public Configuration setSingleHttpServerInfo(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
+            if (paramHttpServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasSingleHttpServerInfo = true;
+            this.singleHttpServerInfo_ = paramHttpServerInfo;
+            return this;
         }
 
         public GstaticConfiguration.SoundSearch getSoundSearch() {
             return this.soundSearch_;
         }
 
+        public Configuration setSoundSearch(GstaticConfiguration.SoundSearch paramSoundSearch) {
+            if (paramSoundSearch == null) {
+                throw new NullPointerException();
+            }
+            this.hasSoundSearch = true;
+            this.soundSearch_ = paramSoundSearch;
+            return this;
+        }
+
         public GstaticConfiguration.ServerInfo getTcpServerInfo() {
             return this.tcpServerInfo_;
         }
 
+        public Configuration setTcpServerInfo(GstaticConfiguration.ServerInfo paramServerInfo) {
+            if (paramServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasTcpServerInfo = true;
+            this.tcpServerInfo_ = paramServerInfo;
+            return this;
+        }
+
         public GstaticConfiguration.VoiceSearch getVoiceSearch() {
             return this.voiceSearch_;
+        }
+
+        public Configuration setVoiceSearch(GstaticConfiguration.VoiceSearch paramVoiceSearch) {
+            if (paramVoiceSearch == null) {
+                throw new NullPointerException();
+            }
+            this.hasVoiceSearch = true;
+            this.voiceSearch_ = paramVoiceSearch;
+            return this;
         }
 
         public boolean hasActionFeatureFlags() {
@@ -729,174 +897,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public Configuration setActionFeatureFlags(GstaticConfiguration.ActionFeatureFlags paramActionFeatureFlags) {
-            if (paramActionFeatureFlags == null) {
-                throw new NullPointerException();
-            }
-            this.hasActionFeatureFlags = true;
-            this.actionFeatureFlags_ = paramActionFeatureFlags;
-            return this;
-        }
-
-        public Configuration setAuth(GstaticConfiguration.Authentication paramAuthentication) {
-            if (paramAuthentication == null) {
-                throw new NullPointerException();
-            }
-            this.hasAuth = true;
-            this.auth_ = paramAuthentication;
-            return this;
-        }
-
-        public Configuration setBluetooth(GstaticConfiguration.Bluetooth paramBluetooth) {
-            if (paramBluetooth == null) {
-                throw new NullPointerException();
-            }
-            this.hasBluetooth = true;
-            this.bluetooth_ = paramBluetooth;
-            return this;
-        }
-
-        public Configuration setDebug(GstaticConfiguration.Debug paramDebug) {
-            if (paramDebug == null) {
-                throw new NullPointerException();
-            }
-            this.hasDebug = true;
-            this.debug_ = paramDebug;
-            return this;
-        }
-
-        public Configuration setDictation(GstaticConfiguration.Dictation paramDictation) {
-            if (paramDictation == null) {
-                throw new NullPointerException();
-            }
-            this.hasDictation = true;
-            this.dictation_ = paramDictation;
-            return this;
-        }
-
-        public Configuration setEmbeddedRecognizer(GstaticConfiguration.EmbeddedRecognizer paramEmbeddedRecognizer) {
-            if (paramEmbeddedRecognizer == null) {
-                throw new NullPointerException();
-            }
-            this.hasEmbeddedRecognizer = true;
-            this.embeddedRecognizer_ = paramEmbeddedRecognizer;
-            return this;
-        }
-
-        public Configuration setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
-            if (paramEndpointerParams == null) {
-                throw new NullPointerException();
-            }
-            this.hasEndpointerParams = true;
-            this.endpointerParams_ = paramEndpointerParams;
-            return this;
-        }
-
-        public Configuration setHelp(GstaticConfiguration.Help paramHelp) {
-            if (paramHelp == null) {
-                throw new NullPointerException();
-            }
-            this.hasHelp = true;
-            this.help_ = paramHelp;
-            return this;
-        }
-
-        public Configuration setId(String paramString) {
-            this.hasId = true;
-            this.id_ = paramString;
-            return this;
-        }
-
-        public Configuration setIntentApi(GstaticConfiguration.IntentApi paramIntentApi) {
-            if (paramIntentApi == null) {
-                throw new NullPointerException();
-            }
-            this.hasIntentApi = true;
-            this.intentApi_ = paramIntentApi;
-            return this;
-        }
-
-        public Configuration setNetworkRecognizer(GstaticConfiguration.NetworkRecognizer paramNetworkRecognizer) {
-            if (paramNetworkRecognizer == null) {
-                throw new NullPointerException();
-            }
-            this.hasNetworkRecognizer = true;
-            this.networkRecognizer_ = paramNetworkRecognizer;
-            return this;
-        }
-
-        public Configuration setPairHttpServerInfo(GstaticConfiguration.PairHttpServerInfo paramPairHttpServerInfo) {
-            if (paramPairHttpServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasPairHttpServerInfo = true;
-            this.pairHttpServerInfo_ = paramPairHttpServerInfo;
-            return this;
-        }
-
-        public Configuration setPersonalization(GstaticConfiguration.Personalization paramPersonalization) {
-            if (paramPersonalization == null) {
-                throw new NullPointerException();
-            }
-            this.hasPersonalization = true;
-            this.personalization_ = paramPersonalization;
-            return this;
-        }
-
-        public Configuration setPlatform(GstaticConfiguration.Platform paramPlatform) {
-            if (paramPlatform == null) {
-                throw new NullPointerException();
-            }
-            this.hasPlatform = true;
-            this.platform_ = paramPlatform;
-            return this;
-        }
-
-        public Configuration setServiceApi(GstaticConfiguration.ServiceApi paramServiceApi) {
-            if (paramServiceApi == null) {
-                throw new NullPointerException();
-            }
-            this.hasServiceApi = true;
-            this.serviceApi_ = paramServiceApi;
-            return this;
-        }
-
-        public Configuration setSingleHttpServerInfo(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
-            if (paramHttpServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasSingleHttpServerInfo = true;
-            this.singleHttpServerInfo_ = paramHttpServerInfo;
-            return this;
-        }
-
-        public Configuration setSoundSearch(GstaticConfiguration.SoundSearch paramSoundSearch) {
-            if (paramSoundSearch == null) {
-                throw new NullPointerException();
-            }
-            this.hasSoundSearch = true;
-            this.soundSearch_ = paramSoundSearch;
-            return this;
-        }
-
-        public Configuration setTcpServerInfo(GstaticConfiguration.ServerInfo paramServerInfo) {
-            if (paramServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasTcpServerInfo = true;
-            this.tcpServerInfo_ = paramServerInfo;
-            return this;
-        }
-
-        public Configuration setVoiceSearch(GstaticConfiguration.VoiceSearch paramVoiceSearch) {
-            if (paramVoiceSearch == null) {
-                throw new NullPointerException();
-            }
-            this.hasVoiceSearch = true;
-            this.voiceSearch_ = paramVoiceSearch;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasId()) {
@@ -1060,8 +1060,23 @@ public final class GstaticConfiguration {
             return this.label_;
         }
 
+        public DebugServer setLabel(String paramString) {
+            this.hasLabel = true;
+            this.label_ = paramString;
+            return this;
+        }
+
         public GstaticConfiguration.PairHttpServerInfo getPairHttpServerInfo() {
             return this.pairHttpServerInfo_;
+        }
+
+        public DebugServer setPairHttpServerInfo(GstaticConfiguration.PairHttpServerInfo paramPairHttpServerInfo) {
+            if (paramPairHttpServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasPairHttpServerInfo = true;
+            this.pairHttpServerInfo_ = paramPairHttpServerInfo;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1087,8 +1102,26 @@ public final class GstaticConfiguration {
             return this.singleHttpServerInfo_;
         }
 
+        public DebugServer setSingleHttpServerInfo(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
+            if (paramHttpServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasSingleHttpServerInfo = true;
+            this.singleHttpServerInfo_ = paramHttpServerInfo;
+            return this;
+        }
+
         public GstaticConfiguration.ServerInfo getTcpServerInfo() {
             return this.tcpServerInfo_;
+        }
+
+        public DebugServer setTcpServerInfo(GstaticConfiguration.ServerInfo paramServerInfo) {
+            if (paramServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasTcpServerInfo = true;
+            this.tcpServerInfo_ = paramServerInfo;
+            return this;
         }
 
         public boolean hasLabel() {
@@ -1136,39 +1169,6 @@ public final class GstaticConfiguration {
                 paramCodedInputStreamMicro.readMessage(localPairHttpServerInfo);
                 setPairHttpServerInfo(localPairHttpServerInfo);
             }
-        }
-
-        public DebugServer setLabel(String paramString) {
-            this.hasLabel = true;
-            this.label_ = paramString;
-            return this;
-        }
-
-        public DebugServer setPairHttpServerInfo(GstaticConfiguration.PairHttpServerInfo paramPairHttpServerInfo) {
-            if (paramPairHttpServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasPairHttpServerInfo = true;
-            this.pairHttpServerInfo_ = paramPairHttpServerInfo;
-            return this;
-        }
-
-        public DebugServer setSingleHttpServerInfo(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
-            if (paramHttpServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasSingleHttpServerInfo = true;
-            this.singleHttpServerInfo_ = paramHttpServerInfo;
-            return this;
-        }
-
-        public DebugServer setTcpServerInfo(GstaticConfiguration.ServerInfo paramServerInfo) {
-            if (paramServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasTcpServerInfo = true;
-            this.tcpServerInfo_ = paramServerInfo;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1225,6 +1225,12 @@ public final class GstaticConfiguration {
             return this.bcp47Locale_;
         }
 
+        public Dialect setBcp47Locale(String paramString) {
+            this.hasBcp47Locale = true;
+            this.bcp47Locale_ = paramString;
+            return this;
+        }
+
         public int getCachedSize() {
             if (this.cachedSize < 0) {
                 getSerializedSize();
@@ -1236,6 +1242,12 @@ public final class GstaticConfiguration {
             return this.displayName_;
         }
 
+        public Dialect setDisplayName(String paramString) {
+            this.hasDisplayName = true;
+            this.displayName_ = paramString;
+            return this;
+        }
+
         public List<Integer> getHelpActionsList() {
             return this.helpActions_;
         }
@@ -1244,12 +1256,24 @@ public final class GstaticConfiguration {
             return this.imeSupported_;
         }
 
+        public Dialect setImeSupported(boolean paramBoolean) {
+            this.hasImeSupported = true;
+            this.imeSupported_ = paramBoolean;
+            return this;
+        }
+
         public List<String> getJavaLocalesList() {
             return this.javaLocales_;
         }
 
         public String getMainJavaLocale() {
             return this.mainJavaLocale_;
+        }
+
+        public Dialect setMainJavaLocale(String paramString) {
+            this.hasMainJavaLocale = true;
+            this.mainJavaLocale_ = paramString;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1330,30 +1354,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public Dialect setBcp47Locale(String paramString) {
-            this.hasBcp47Locale = true;
-            this.bcp47Locale_ = paramString;
-            return this;
-        }
-
-        public Dialect setDisplayName(String paramString) {
-            this.hasDisplayName = true;
-            this.displayName_ = paramString;
-            return this;
-        }
-
-        public Dialect setImeSupported(boolean paramBoolean) {
-            this.hasImeSupported = true;
-            this.imeSupported_ = paramBoolean;
-            return this;
-        }
-
-        public Dialect setMainJavaLocale(String paramString) {
-            this.hasMainJavaLocale = true;
-            this.mainJavaLocale_ = paramString;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasDisplayName()) {
@@ -1410,32 +1410,83 @@ public final class GstaticConfiguration {
             return this.delayBetweenCommittingNewTextMsec_;
         }
 
+        public Dictation setDelayBetweenCommittingNewTextMsec(int paramInt) {
+            this.hasDelayBetweenCommittingNewTextMsec = true;
+            this.delayBetweenCommittingNewTextMsec_ = paramInt;
+            return this;
+        }
+
         public int getEmbeddedRecognizerFallbackTimeout() {
             return this.embeddedRecognizerFallbackTimeout_;
+        }
+
+        public Dictation setEmbeddedRecognizerFallbackTimeout(int paramInt) {
+            this.hasEmbeddedRecognizerFallbackTimeout = true;
+            this.embeddedRecognizerFallbackTimeout_ = paramInt;
+            return this;
         }
 
         public GstaticConfiguration.EndpointerParams getEndpointerParams() {
             return this.endpointerParams_;
         }
 
+        public Dictation setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
+            if (paramEndpointerParams == null) {
+                throw new NullPointerException();
+            }
+            this.hasEndpointerParams = true;
+            this.endpointerParams_ = paramEndpointerParams;
+            return this;
+        }
+
         public int getLogEditDistanceMaxContiguousChars() {
             return this.logEditDistanceMaxContiguousChars_;
+        }
+
+        public Dictation setLogEditDistanceMaxContiguousChars(int paramInt) {
+            this.hasLogEditDistanceMaxContiguousChars = true;
+            this.logEditDistanceMaxContiguousChars_ = paramInt;
+            return this;
         }
 
         public int getLogEditDistanceMaxNewCharsPerc() {
             return this.logEditDistanceMaxNewCharsPerc_;
         }
 
+        public Dictation setLogEditDistanceMaxNewCharsPerc(int paramInt) {
+            this.hasLogEditDistanceMaxNewCharsPerc = true;
+            this.logEditDistanceMaxNewCharsPerc_ = paramInt;
+            return this;
+        }
+
         public int getMaxSpanLength() {
             return this.maxSpanLength_;
+        }
+
+        public Dictation setMaxSpanLength(int paramInt) {
+            this.hasMaxSpanLength = true;
+            this.maxSpanLength_ = paramInt;
+            return this;
         }
 
         public int getMaxTotalSpanLength() {
             return this.maxTotalSpanLength_;
         }
 
+        public Dictation setMaxTotalSpanLength(int paramInt) {
+            this.hasMaxTotalSpanLength = true;
+            this.maxTotalSpanLength_ = paramInt;
+            return this;
+        }
+
         public float getPartialResultMinConfidence() {
             return this.partialResultMinConfidence_;
+        }
+
+        public Dictation setPartialResultMinConfidence(float paramFloat) {
+            this.hasPartialResultMinConfidence = true;
+            this.partialResultMinConfidence_ = paramFloat;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1540,57 +1591,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public Dictation setDelayBetweenCommittingNewTextMsec(int paramInt) {
-            this.hasDelayBetweenCommittingNewTextMsec = true;
-            this.delayBetweenCommittingNewTextMsec_ = paramInt;
-            return this;
-        }
-
-        public Dictation setEmbeddedRecognizerFallbackTimeout(int paramInt) {
-            this.hasEmbeddedRecognizerFallbackTimeout = true;
-            this.embeddedRecognizerFallbackTimeout_ = paramInt;
-            return this;
-        }
-
-        public Dictation setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
-            if (paramEndpointerParams == null) {
-                throw new NullPointerException();
-            }
-            this.hasEndpointerParams = true;
-            this.endpointerParams_ = paramEndpointerParams;
-            return this;
-        }
-
-        public Dictation setLogEditDistanceMaxContiguousChars(int paramInt) {
-            this.hasLogEditDistanceMaxContiguousChars = true;
-            this.logEditDistanceMaxContiguousChars_ = paramInt;
-            return this;
-        }
-
-        public Dictation setLogEditDistanceMaxNewCharsPerc(int paramInt) {
-            this.hasLogEditDistanceMaxNewCharsPerc = true;
-            this.logEditDistanceMaxNewCharsPerc_ = paramInt;
-            return this;
-        }
-
-        public Dictation setMaxSpanLength(int paramInt) {
-            this.hasMaxSpanLength = true;
-            this.maxSpanLength_ = paramInt;
-            return this;
-        }
-
-        public Dictation setMaxTotalSpanLength(int paramInt) {
-            this.hasMaxTotalSpanLength = true;
-            this.maxTotalSpanLength_ = paramInt;
-            return this;
-        }
-
-        public Dictation setPartialResultMinConfidence(float paramFloat) {
-            this.hasPartialResultMinConfidence = true;
-            this.partialResultMinConfidence_ = paramFloat;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasMaxSpanLength()) {
@@ -1637,6 +1637,12 @@ public final class GstaticConfiguration {
             return this.grammarCompilationFrequencyMs_;
         }
 
+        public EmbeddedRecognizer setGrammarCompilationFrequencyMs(int paramInt) {
+            this.hasGrammarCompilationFrequencyMs = true;
+            this.grammarCompilationFrequencyMs_ = paramInt;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasGrammarCompilationFrequencyMs();
             int i = 0;
@@ -1667,12 +1673,6 @@ public final class GstaticConfiguration {
                         break;
                 }
             }
-        }
-
-        public EmbeddedRecognizer setGrammarCompilationFrequencyMs(int paramInt) {
-            this.hasGrammarCompilationFrequencyMs = true;
-            this.grammarCompilationFrequencyMs_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1708,16 +1708,40 @@ public final class GstaticConfiguration {
             return this.completeSilenceMsec_;
         }
 
+        public EndpointerParams setCompleteSilenceMsec(int paramInt) {
+            this.hasCompleteSilenceMsec = true;
+            this.completeSilenceMsec_ = paramInt;
+            return this;
+        }
+
         public int getExtraSilenceAfterEndOfSpeechMsec() {
             return this.extraSilenceAfterEndOfSpeechMsec_;
+        }
+
+        public EndpointerParams setExtraSilenceAfterEndOfSpeechMsec(int paramInt) {
+            this.hasExtraSilenceAfterEndOfSpeechMsec = true;
+            this.extraSilenceAfterEndOfSpeechMsec_ = paramInt;
+            return this;
         }
 
         public int getNoSpeechDetectedTimeoutMsec() {
             return this.noSpeechDetectedTimeoutMsec_;
         }
 
+        public EndpointerParams setNoSpeechDetectedTimeoutMsec(int paramInt) {
+            this.hasNoSpeechDetectedTimeoutMsec = true;
+            this.noSpeechDetectedTimeoutMsec_ = paramInt;
+            return this;
+        }
+
         public int getPossiblyCompleteSilenceMsec() {
             return this.possiblyCompleteSilenceMsec_;
+        }
+
+        public EndpointerParams setPossiblyCompleteSilenceMsec(int paramInt) {
+            this.hasPossiblyCompleteSilenceMsec = true;
+            this.possiblyCompleteSilenceMsec_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1744,6 +1768,12 @@ public final class GstaticConfiguration {
 
         public int getSpeechMinimumLengthMsec() {
             return this.speechMinimumLengthMsec_;
+        }
+
+        public EndpointerParams setSpeechMinimumLengthMsec(int paramInt) {
+            this.hasSpeechMinimumLengthMsec = true;
+            this.speechMinimumLengthMsec_ = paramInt;
+            return this;
         }
 
         public boolean hasCompleteSilenceMsec() {
@@ -1794,36 +1824,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public EndpointerParams setCompleteSilenceMsec(int paramInt) {
-            this.hasCompleteSilenceMsec = true;
-            this.completeSilenceMsec_ = paramInt;
-            return this;
-        }
-
-        public EndpointerParams setExtraSilenceAfterEndOfSpeechMsec(int paramInt) {
-            this.hasExtraSilenceAfterEndOfSpeechMsec = true;
-            this.extraSilenceAfterEndOfSpeechMsec_ = paramInt;
-            return this;
-        }
-
-        public EndpointerParams setNoSpeechDetectedTimeoutMsec(int paramInt) {
-            this.hasNoSpeechDetectedTimeoutMsec = true;
-            this.noSpeechDetectedTimeoutMsec_ = paramInt;
-            return this;
-        }
-
-        public EndpointerParams setPossiblyCompleteSilenceMsec(int paramInt) {
-            this.hasPossiblyCompleteSilenceMsec = true;
-            this.possiblyCompleteSilenceMsec_ = paramInt;
-            return this;
-        }
-
-        public EndpointerParams setSpeechMinimumLengthMsec(int paramInt) {
-            this.hasSpeechMinimumLengthMsec = true;
-            this.speechMinimumLengthMsec_ = paramInt;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasCompleteSilenceMsec()) {
@@ -1861,6 +1861,12 @@ public final class GstaticConfiguration {
             return this.privacyUrl_;
         }
 
+        public Help setPrivacyUrl(String paramString) {
+            this.hasPrivacyUrl = true;
+            this.privacyUrl_ = paramString;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasPrivacyUrl();
             int i = 0;
@@ -1891,12 +1897,6 @@ public final class GstaticConfiguration {
                         break;
                 }
             }
-        }
-
-        public Help setPrivacyUrl(String paramString) {
-            this.hasPrivacyUrl = true;
-            this.privacyUrl_ = paramString;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1960,16 +1960,40 @@ public final class GstaticConfiguration {
             return this.chunkSize_;
         }
 
+        public HttpServerInfo setChunkSize(int paramInt) {
+            this.hasChunkSize = true;
+            this.chunkSize_ = paramInt;
+            return this;
+        }
+
         public int getConnectionTimeoutMsec() {
             return this.connectionTimeoutMsec_;
+        }
+
+        public HttpServerInfo setConnectionTimeoutMsec(int paramInt) {
+            this.hasConnectionTimeoutMsec = true;
+            this.connectionTimeoutMsec_ = paramInt;
+            return this;
         }
 
         public boolean getDisableCompression() {
             return this.disableCompression_;
         }
 
+        public HttpServerInfo setDisableCompression(boolean paramBoolean) {
+            this.hasDisableCompression = true;
+            this.disableCompression_ = paramBoolean;
+            return this;
+        }
+
         public String getHeader() {
             return this.header_;
+        }
+
+        public HttpServerInfo setHeader(String paramString) {
+            this.hasHeader = true;
+            this.header_ = paramString;
+            return this;
         }
 
         public List<String> getHttpHeaderKeyList() {
@@ -1984,8 +2008,20 @@ public final class GstaticConfiguration {
             return this.readTimeoutMsec_;
         }
 
+        public HttpServerInfo setReadTimeoutMsec(int paramInt) {
+            this.hasReadTimeoutMsec = true;
+            this.readTimeoutMsec_ = paramInt;
+            return this;
+        }
+
         public boolean getReplaceHostWithTld() {
             return this.replaceHostWithTld_;
+        }
+
+        public HttpServerInfo setReplaceHostWithTld(boolean paramBoolean) {
+            this.hasReplaceHostWithTld = true;
+            this.replaceHostWithTld_ = paramBoolean;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2030,6 +2066,12 @@ public final class GstaticConfiguration {
 
         public String getUrl() {
             return this.url_;
+        }
+
+        public HttpServerInfo setUrl(String paramString) {
+            this.hasUrl = true;
+            this.url_ = paramString;
+            return this;
         }
 
         public boolean hasChunkSize() {
@@ -2100,48 +2142,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public HttpServerInfo setChunkSize(int paramInt) {
-            this.hasChunkSize = true;
-            this.chunkSize_ = paramInt;
-            return this;
-        }
-
-        public HttpServerInfo setConnectionTimeoutMsec(int paramInt) {
-            this.hasConnectionTimeoutMsec = true;
-            this.connectionTimeoutMsec_ = paramInt;
-            return this;
-        }
-
-        public HttpServerInfo setDisableCompression(boolean paramBoolean) {
-            this.hasDisableCompression = true;
-            this.disableCompression_ = paramBoolean;
-            return this;
-        }
-
-        public HttpServerInfo setHeader(String paramString) {
-            this.hasHeader = true;
-            this.header_ = paramString;
-            return this;
-        }
-
-        public HttpServerInfo setReadTimeoutMsec(int paramInt) {
-            this.hasReadTimeoutMsec = true;
-            this.readTimeoutMsec_ = paramInt;
-            return this;
-        }
-
-        public HttpServerInfo setReplaceHostWithTld(boolean paramBoolean) {
-            this.hasReplaceHostWithTld = true;
-            this.replaceHostWithTld_ = paramBoolean;
-            return this;
-        }
-
-        public HttpServerInfo setUrl(String paramString) {
-            this.hasUrl = true;
-            this.url_ = paramString;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasUrl()) {
@@ -2195,8 +2195,23 @@ public final class GstaticConfiguration {
             return this.endpointerParams_;
         }
 
+        public IntentApi setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
+            if (paramEndpointerParams == null) {
+                throw new NullPointerException();
+            }
+            this.hasEndpointerParams = true;
+            this.endpointerParams_ = paramEndpointerParams;
+            return this;
+        }
+
         public int getMaxNbest() {
             return this.maxNbest_;
+        }
+
+        public IntentApi setMaxNbest(int paramInt) {
+            this.hasMaxNbest = true;
+            this.maxNbest_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2239,21 +2254,6 @@ public final class GstaticConfiguration {
                 paramCodedInputStreamMicro.readMessage(localEndpointerParams);
                 setEndpointerParams(localEndpointerParams);
             }
-        }
-
-        public IntentApi setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
-            if (paramEndpointerParams == null) {
-                throw new NullPointerException();
-            }
-            this.hasEndpointerParams = true;
-            this.endpointerParams_ = paramEndpointerParams;
-            return this;
-        }
-
-        public IntentApi setMaxNbest(int paramInt) {
-            this.hasMaxNbest = true;
-            this.maxNbest_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2308,6 +2308,12 @@ public final class GstaticConfiguration {
             return this.displayName_;
         }
 
+        public Language setDisplayName(String paramString) {
+            this.hasDisplayName = true;
+            this.displayName_ = paramString;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasDisplayName();
             int i = 0;
@@ -2347,12 +2353,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public Language setDisplayName(String paramString) {
-            this.hasDisplayName = true;
-            this.displayName_ = paramString;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasDisplayName()) {
@@ -2387,6 +2387,11 @@ public final class GstaticConfiguration {
         private int sizeKb_ = 0;
         private int version_ = 0;
 
+        public static LanguagePack parseFrom(CodedInputStreamMicro paramCodedInputStreamMicro)
+                throws IOException {
+            return new LanguagePack().mergeFrom(paramCodedInputStreamMicro);
+        }
+
         public LanguagePack addCompatibleBcp47Locales(String paramString) {
             if (paramString == null) {
                 throw new NullPointerException();
@@ -2410,6 +2415,12 @@ public final class GstaticConfiguration {
             return this.bcp47Locale_;
         }
 
+        public LanguagePack setBcp47Locale(String paramString) {
+            this.hasBcp47Locale = true;
+            this.bcp47Locale_ = paramString;
+            return this;
+        }
+
         public int getCachedSize() {
             if (this.cachedSize < 0) {
                 getSerializedSize();
@@ -2425,8 +2436,20 @@ public final class GstaticConfiguration {
             return this.downloadUrl_;
         }
 
+        public LanguagePack setDownloadUrl(String paramString) {
+            this.hasDownloadUrl = true;
+            this.downloadUrl_ = paramString;
+            return this;
+        }
+
         public int getHotwordQuality() {
             return this.hotwordQuality_;
+        }
+
+        public LanguagePack setHotwordQuality(int paramInt) {
+            this.hasHotwordQuality = true;
+            this.hotwordQuality_ = paramInt;
+            return this;
         }
 
         public int getLanguagePackFormatVersion(int paramInt) {
@@ -2445,12 +2468,30 @@ public final class GstaticConfiguration {
             return this.languagePackId_;
         }
 
+        public LanguagePack setLanguagePackId(String paramString) {
+            this.hasLanguagePackId = true;
+            this.languagePackId_ = paramString;
+            return this;
+        }
+
         public String getManifestUrl() {
             return this.manifestUrl_;
         }
 
+        public LanguagePack setManifestUrl(String paramString) {
+            this.hasManifestUrl = true;
+            this.manifestUrl_ = paramString;
+            return this;
+        }
+
         public int getMinimumDeviceClass() {
             return this.minimumDeviceClass_;
+        }
+
+        public LanguagePack setMinimumDeviceClass(int paramInt) {
+            this.hasMinimumDeviceClass = true;
+            this.minimumDeviceClass_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2500,8 +2541,20 @@ public final class GstaticConfiguration {
             return this.sizeKb_;
         }
 
+        public LanguagePack setSizeKb(int paramInt) {
+            this.hasSizeKb = true;
+            this.sizeKb_ = paramInt;
+            return this;
+        }
+
         public int getVersion() {
             return this.version_;
+        }
+
+        public LanguagePack setVersion(int paramInt) {
+            this.hasVersion = true;
+            this.version_ = paramInt;
+            return this;
         }
 
         public boolean hasBcp47Locale() {
@@ -2579,54 +2632,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public LanguagePack setBcp47Locale(String paramString) {
-            this.hasBcp47Locale = true;
-            this.bcp47Locale_ = paramString;
-            return this;
-        }
-
-        public LanguagePack setDownloadUrl(String paramString) {
-            this.hasDownloadUrl = true;
-            this.downloadUrl_ = paramString;
-            return this;
-        }
-
-        public LanguagePack setHotwordQuality(int paramInt) {
-            this.hasHotwordQuality = true;
-            this.hotwordQuality_ = paramInt;
-            return this;
-        }
-
-        public LanguagePack setLanguagePackId(String paramString) {
-            this.hasLanguagePackId = true;
-            this.languagePackId_ = paramString;
-            return this;
-        }
-
-        public LanguagePack setManifestUrl(String paramString) {
-            this.hasManifestUrl = true;
-            this.manifestUrl_ = paramString;
-            return this;
-        }
-
-        public LanguagePack setMinimumDeviceClass(int paramInt) {
-            this.hasMinimumDeviceClass = true;
-            this.minimumDeviceClass_ = paramInt;
-            return this;
-        }
-
-        public LanguagePack setSizeKb(int paramInt) {
-            this.hasSizeKb = true;
-            this.sizeKb_ = paramInt;
-            return this;
-        }
-
-        public LanguagePack setVersion(int paramInt) {
-            this.hasVersion = true;
-            this.version_ = paramInt;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasBcp47Locale()) {
@@ -2693,6 +2698,12 @@ public final class GstaticConfiguration {
             return this.javaLocale_;
         }
 
+        public LocalizedResources setJavaLocale(String paramString) {
+            this.hasJavaLocale = true;
+            this.javaLocale_ = paramString;
+            return this;
+        }
+
         public List<GstaticConfiguration.Resource> getResourcesList() {
             return this.resources_;
         }
@@ -2736,12 +2747,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public LocalizedResources setJavaLocale(String paramString) {
-            this.hasJavaLocale = true;
-            this.javaLocale_ = paramString;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasJavaLocale()) {
@@ -2773,8 +2778,20 @@ public final class GstaticConfiguration {
             return this.maxRetries_;
         }
 
+        public NetworkRecognizer setMaxRetries(int paramInt) {
+            this.hasMaxRetries = true;
+            this.maxRetries_ = paramInt;
+            return this;
+        }
+
         public int getMaxRetryTimeoutMsec() {
             return this.maxRetryTimeoutMsec_;
+        }
+
+        public NetworkRecognizer setMaxRetryTimeoutMsec(int paramInt) {
+            this.hasMaxRetryTimeoutMsec = true;
+            this.maxRetryTimeoutMsec_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2817,18 +2834,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public NetworkRecognizer setMaxRetries(int paramInt) {
-            this.hasMaxRetries = true;
-            this.maxRetries_ = paramInt;
-            return this;
-        }
-
-        public NetworkRecognizer setMaxRetryTimeoutMsec(int paramInt) {
-            this.hasMaxRetryTimeoutMsec = true;
-            this.maxRetryTimeoutMsec_ = paramInt;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasMaxRetries()) {
@@ -2859,6 +2864,15 @@ public final class GstaticConfiguration {
             return this.down_;
         }
 
+        public PairHttpServerInfo setDown(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
+            if (paramHttpServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasDown = true;
+            this.down_ = paramHttpServerInfo;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasDown();
             int i = 0;
@@ -2874,6 +2888,15 @@ public final class GstaticConfiguration {
 
         public GstaticConfiguration.HttpServerInfo getUp() {
             return this.up_;
+        }
+
+        public PairHttpServerInfo setUp(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
+            if (paramHttpServerInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasUp = true;
+            this.up_ = paramHttpServerInfo;
+            return this;
         }
 
         public boolean hasDown() {
@@ -2905,24 +2928,6 @@ public final class GstaticConfiguration {
                 paramCodedInputStreamMicro.readMessage(localHttpServerInfo1);
                 setUp(localHttpServerInfo1);
             }
-        }
-
-        public PairHttpServerInfo setDown(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
-            if (paramHttpServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasDown = true;
-            this.down_ = paramHttpServerInfo;
-            return this;
-        }
-
-        public PairHttpServerInfo setUp(GstaticConfiguration.HttpServerInfo paramHttpServerInfo) {
-            if (paramHttpServerInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasUp = true;
-            this.up_ = paramHttpServerInfo;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2964,12 +2969,24 @@ public final class GstaticConfiguration {
             return this.dashboardUrl_;
         }
 
+        public Personalization setDashboardUrl(String paramString) {
+            this.hasDashboardUrl = true;
+            this.dashboardUrl_ = paramString;
+            return this;
+        }
+
         public List<Integer> getMccCountryCodesList() {
             return this.mccCountryCodes_;
         }
 
         public String getMoreInfoUrl() {
             return this.moreInfoUrl_;
+        }
+
+        public Personalization setMoreInfoUrl(String paramString) {
+            this.hasMoreInfoUrl = true;
+            this.moreInfoUrl_ = paramString;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -3017,18 +3034,6 @@ public final class GstaticConfiguration {
                 }
                 setMoreInfoUrl(paramCodedInputStreamMicro.readString());
             }
-        }
-
-        public Personalization setDashboardUrl(String paramString) {
-            this.hasDashboardUrl = true;
-            this.dashboardUrl_ = paramString;
-            return this;
-        }
-
-        public Personalization setMoreInfoUrl(String paramString) {
-            this.hasMoreInfoUrl = true;
-            this.moreInfoUrl_ = paramString;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -3130,6 +3135,12 @@ public final class GstaticConfiguration {
             return this.key_;
         }
 
+        public Resource setKey(String paramString) {
+            this.hasKey = true;
+            this.key_ = paramString;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasKey();
             int i = 0;
@@ -3145,6 +3156,12 @@ public final class GstaticConfiguration {
 
         public String getValue() {
             return this.value_;
+        }
+
+        public Resource setValue(String paramString) {
+            this.hasValue = true;
+            this.value_ = paramString;
+            return this;
         }
 
         public boolean hasKey() {
@@ -3172,18 +3189,6 @@ public final class GstaticConfiguration {
                 }
                 setValue(paramCodedInputStreamMicro.readString());
             }
-        }
-
-        public Resource setKey(String paramString) {
-            this.hasKey = true;
-            this.key_ = paramString;
-            return this;
-        }
-
-        public Resource setValue(String paramString) {
-            this.hasValue = true;
-            this.value_ = paramString;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -3241,28 +3246,70 @@ public final class GstaticConfiguration {
             return this.connectionTimeoutMsec_;
         }
 
+        public ServerInfo setConnectionTimeoutMsec(int paramInt) {
+            this.hasConnectionTimeoutMsec = true;
+            this.connectionTimeoutMsec_ = paramInt;
+            return this;
+        }
+
         public String getHeader() {
             return this.header_;
+        }
+
+        public ServerInfo setHeader(String paramString) {
+            this.hasHeader = true;
+            this.header_ = paramString;
+            return this;
         }
 
         public String getHost() {
             return this.host_;
         }
 
+        public ServerInfo setHost(String paramString) {
+            this.hasHost = true;
+            this.host_ = paramString;
+            return this;
+        }
+
         public int getInBufferSize() {
             return this.inBufferSize_;
+        }
+
+        public ServerInfo setInBufferSize(int paramInt) {
+            this.hasInBufferSize = true;
+            this.inBufferSize_ = paramInt;
+            return this;
         }
 
         public int getOpenConnectionTimeoutMsec() {
             return this.openConnectionTimeoutMsec_;
         }
 
+        public ServerInfo setOpenConnectionTimeoutMsec(int paramInt) {
+            this.hasOpenConnectionTimeoutMsec = true;
+            this.openConnectionTimeoutMsec_ = paramInt;
+            return this;
+        }
+
         public int getOutBufferSize() {
             return this.outBufferSize_;
         }
 
+        public ServerInfo setOutBufferSize(int paramInt) {
+            this.hasOutBufferSize = true;
+            this.outBufferSize_ = paramInt;
+            return this;
+        }
+
         public int getPort() {
             return this.port_;
+        }
+
+        public ServerInfo setPort(int paramInt) {
+            this.hasPort = true;
+            this.port_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -3304,6 +3351,12 @@ public final class GstaticConfiguration {
 
         public boolean getUseSsl() {
             return this.useSsl_;
+        }
+
+        public ServerInfo setUseSsl(boolean paramBoolean) {
+            this.hasUseSsl = true;
+            this.useSsl_ = paramBoolean;
+            return this;
         }
 
         public boolean hasConnectionTimeoutMsec() {
@@ -3378,54 +3431,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public ServerInfo setConnectionTimeoutMsec(int paramInt) {
-            this.hasConnectionTimeoutMsec = true;
-            this.connectionTimeoutMsec_ = paramInt;
-            return this;
-        }
-
-        public ServerInfo setHeader(String paramString) {
-            this.hasHeader = true;
-            this.header_ = paramString;
-            return this;
-        }
-
-        public ServerInfo setHost(String paramString) {
-            this.hasHost = true;
-            this.host_ = paramString;
-            return this;
-        }
-
-        public ServerInfo setInBufferSize(int paramInt) {
-            this.hasInBufferSize = true;
-            this.inBufferSize_ = paramInt;
-            return this;
-        }
-
-        public ServerInfo setOpenConnectionTimeoutMsec(int paramInt) {
-            this.hasOpenConnectionTimeoutMsec = true;
-            this.openConnectionTimeoutMsec_ = paramInt;
-            return this;
-        }
-
-        public ServerInfo setOutBufferSize(int paramInt) {
-            this.hasOutBufferSize = true;
-            this.outBufferSize_ = paramInt;
-            return this;
-        }
-
-        public ServerInfo setPort(int paramInt) {
-            this.hasPort = true;
-            this.port_ = paramInt;
-            return this;
-        }
-
-        public ServerInfo setUseSsl(boolean paramBoolean) {
-            this.hasUseSsl = true;
-            this.useSsl_ = paramBoolean;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasHost()) {
@@ -3476,6 +3481,15 @@ public final class GstaticConfiguration {
             return this.endpointerParams_;
         }
 
+        public ServiceApi setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
+            if (paramEndpointerParams == null) {
+                throw new NullPointerException();
+            }
+            this.hasEndpointerParams = true;
+            this.endpointerParams_ = paramEndpointerParams;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasEndpointerParams();
             int i = 0;
@@ -3508,15 +3522,6 @@ public final class GstaticConfiguration {
                         break;
                 }
             }
-        }
-
-        public ServiceApi setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
-            if (paramEndpointerParams == null) {
-                throw new NullPointerException();
-            }
-            this.hasEndpointerParams = true;
-            this.endpointerParams_ = paramEndpointerParams;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -3568,16 +3573,40 @@ public final class GstaticConfiguration {
             return this.enableMusicDetector_;
         }
 
+        public SoundSearch setEnableMusicDetector(boolean paramBoolean) {
+            this.hasEnableMusicDetector = true;
+            this.enableMusicDetector_ = paramBoolean;
+            return this;
+        }
+
         public boolean getEnableMusicHotworder() {
             return this.enableMusicHotworder_;
+        }
+
+        public SoundSearch setEnableMusicHotworder(boolean paramBoolean) {
+            this.hasEnableMusicHotworder = true;
+            this.enableMusicHotworder_ = paramBoolean;
+            return this;
         }
 
         public boolean getEnablePreemptiveDetection() {
             return this.enablePreemptiveDetection_;
         }
 
+        public SoundSearch setEnablePreemptiveDetection(boolean paramBoolean) {
+            this.hasEnablePreemptiveDetection = true;
+            this.enablePreemptiveDetection_ = paramBoolean;
+            return this;
+        }
+
         public float getMusicDetectorThreshold() {
             return this.musicDetectorThreshold_;
+        }
+
+        public SoundSearch setMusicDetectorThreshold(float paramFloat) {
+            this.hasMusicDetectorThreshold = true;
+            this.musicDetectorThreshold_ = paramFloat;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -3610,6 +3639,12 @@ public final class GstaticConfiguration {
 
         public boolean getStopMusicDetectionOnStartOfSpeech() {
             return this.stopMusicDetectionOnStartOfSpeech_;
+        }
+
+        public SoundSearch setStopMusicDetectionOnStartOfSpeech(boolean paramBoolean) {
+            this.hasStopMusicDetectionOnStartOfSpeech = true;
+            this.stopMusicDetectionOnStartOfSpeech_ = paramBoolean;
+            return this;
         }
 
         public boolean hasEnableMusicDetector() {
@@ -3663,36 +3698,6 @@ public final class GstaticConfiguration {
             }
         }
 
-        public SoundSearch setEnableMusicDetector(boolean paramBoolean) {
-            this.hasEnableMusicDetector = true;
-            this.enableMusicDetector_ = paramBoolean;
-            return this;
-        }
-
-        public SoundSearch setEnableMusicHotworder(boolean paramBoolean) {
-            this.hasEnableMusicHotworder = true;
-            this.enableMusicHotworder_ = paramBoolean;
-            return this;
-        }
-
-        public SoundSearch setEnablePreemptiveDetection(boolean paramBoolean) {
-            this.hasEnablePreemptiveDetection = true;
-            this.enablePreemptiveDetection_ = paramBoolean;
-            return this;
-        }
-
-        public SoundSearch setMusicDetectorThreshold(float paramFloat) {
-            this.hasMusicDetectorThreshold = true;
-            this.musicDetectorThreshold_ = paramFloat;
-            return this;
-        }
-
-        public SoundSearch setStopMusicDetectionOnStartOfSpeech(boolean paramBoolean) {
-            this.hasStopMusicDetectionOnStartOfSpeech = true;
-            this.stopMusicDetectionOnStartOfSpeech_ = paramBoolean;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasEnableMusicDetector()) {
@@ -3731,6 +3736,12 @@ public final class GstaticConfiguration {
             return this.actionCountDownMsec_;
         }
 
+        public VoiceSearch setActionCountDownMsec(int paramInt) {
+            this.hasActionCountDownMsec = true;
+            this.actionCountDownMsec_ = paramInt;
+            return this;
+        }
+
         public int getCachedSize() {
             if (this.cachedSize < 0) {
                 getSerializedSize();
@@ -3742,8 +3753,23 @@ public final class GstaticConfiguration {
             return this.embeddedRecognizerFallbackTimeout_;
         }
 
+        public VoiceSearch setEmbeddedRecognizerFallbackTimeout(int paramInt) {
+            this.hasEmbeddedRecognizerFallbackTimeout = true;
+            this.embeddedRecognizerFallbackTimeout_ = paramInt;
+            return this;
+        }
+
         public GstaticConfiguration.EndpointerParams getEndpointerParams() {
             return this.endpointerParams_;
+        }
+
+        public VoiceSearch setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
+            if (paramEndpointerParams == null) {
+                throw new NullPointerException();
+            }
+            this.hasEndpointerParams = true;
+            this.endpointerParams_ = paramEndpointerParams;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -3796,27 +3822,6 @@ public final class GstaticConfiguration {
                 }
                 setEmbeddedRecognizerFallbackTimeout(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public VoiceSearch setActionCountDownMsec(int paramInt) {
-            this.hasActionCountDownMsec = true;
-            this.actionCountDownMsec_ = paramInt;
-            return this;
-        }
-
-        public VoiceSearch setEmbeddedRecognizerFallbackTimeout(int paramInt) {
-            this.hasEmbeddedRecognizerFallbackTimeout = true;
-            this.embeddedRecognizerFallbackTimeout_ = paramInt;
-            return this;
-        }
-
-        public VoiceSearch setEndpointerParams(GstaticConfiguration.EndpointerParams paramEndpointerParams) {
-            if (paramEndpointerParams == null) {
-                throw new NullPointerException();
-            }
-            this.hasEndpointerParams = true;
-            this.endpointerParams_ = paramEndpointerParams;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)

@@ -5,10 +5,12 @@ import android.util.Log;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.Closeables;
+import com.google.protobuf.micro.CodedInputStreamMicro;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,92 +22,52 @@ import javax.annotation.Nullable;
 
 class LocaleResourcesImpl
         implements Greco3DataManager.LocaleResources {
-    private HashMap<Greco3Mode, String> mConfigPaths;
     private final HashMap<Greco3Mode, ArrayList<File>> mConfigToPathMap = Maps.newHashMap();
     private final HashMap<Greco3Grammar, HashMap<String, String>> mGrammarsToPathsMap = Maps.newHashMap();
-    private GstaticConfiguration.LanguagePack mMostRecentLanguagePack;
     private final HashMap<File, String> mPathToHotwordPromptMap = Maps.newHashMap();
     private final HashMap<File, GstaticConfiguration.LanguagePack> mPathToMetadataMap = Maps.newHashMap();
-    private ArrayList<String> mResourcePaths;
     private final int[] mSupportedFormatVersions;
-    private boolean mSystemPartition;
     private final ArrayList<GrammarInfo> mUnprocessedGrammars;
+    private HashMap<Greco3Mode, String> mConfigPaths;
+    private GstaticConfiguration.LanguagePack mMostRecentLanguagePack;
+    private ArrayList<String> mResourcePaths;
+    private boolean mSystemPartition;
 
     LocaleResourcesImpl(int[] paramArrayOfInt) {
         this.mSupportedFormatVersions = paramArrayOfInt;
         this.mUnprocessedGrammars = new ArrayList();
     }
 
-    private ArrayList<File> getCompatiblePaths() {
-        Object localObject;
-        if ((this.mMostRecentLanguagePack == null) || (!this.mMostRecentLanguagePack.hasLanguagePackId())) {
-            localObject = null;
+    private static GstaticConfiguration.LanguagePack parseMetadata(File metadataFile) {
+        GstaticConfiguration.LanguagePack metadata = null;
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(metadataFile);
+            CodedInputStreamMicro cism = CodedInputStreamMicro.newInstance(fileInputStream);
+            metadata = GstaticConfiguration.LanguagePack.parseFrom(cism);
+            Closeables.closeQuietly(fileInputStream);
+        } catch (FileNotFoundException e) {
+            Closeables.closeQuietly(fileInputStream);
+        } catch (IOException e) {
+            Closeables.closeQuietly(fileInputStream);
         }
-        for (; ; ) {
-            return localObject;
-            localObject = new ArrayList(4);
-            Iterator localIterator = this.mPathToMetadataMap.keySet().iterator();
-            while (localIterator.hasNext()) {
-                File localFile = (File) localIterator.next();
-                if (this.mMostRecentLanguagePack.getLanguagePackId().equals(((GstaticConfiguration.LanguagePack) this.mPathToMetadataMap.get(localFile)).getLanguagePackId())) {
-                    ((ArrayList) localObject).add(localFile);
-                }
-            }
-        }
+
+        return metadata;
     }
 
-    /* Error */
-    private static GstaticConfiguration.LanguagePack parseMetadata(File paramFile) {
-        // Byte code:
-        //   0: aconst_null
-        //   1: astore_1
-        //   2: new 113	java/io/FileInputStream
-        //   5: dup
-        //   6: aload_0
-        //   7: invokespecial 116	java/io/FileInputStream:<init>	(Ljava/io/File;)V
-        //   10: astore_2
-        //   11: aload_2
-        //   12: invokestatic 122	com/google/protobuf/micro/CodedInputStreamMicro:newInstance	(Ljava/io/InputStream;)Lcom/google/protobuf/micro/CodedInputStreamMicro;
-        //   15: invokestatic 126	com/google/wireless/voicesearch/proto/GstaticConfiguration$LanguagePack:parseFrom	(Lcom/google/protobuf/micro/CodedInputStreamMicro;)Lcom/google/wireless/voicesearch/proto/GstaticConfiguration$LanguagePack;
-        //   18: astore 5
-        //   20: aload_2
-        //   21: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   24: aload 5
-        //   26: areturn
-        //   27: astore 6
-        //   29: aload_1
-        //   30: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   33: aconst_null
-        //   34: areturn
-        //   35: astore 4
-        //   37: aload_1
-        //   38: invokestatic 132	com/google/common/io/Closeables:closeQuietly	(Ljava/io/Closeable;)V
-        //   41: aload 4
-        //   43: athrow
-        //   44: astore 4
-        //   46: aload_2
-        //   47: astore_1
-        //   48: goto -11 -> 37
-        //   51: astore_3
-        //   52: aload_2
-        //   53: astore_1
-        //   54: goto -25 -> 29
-        // Local variable table:
-        //   start	length	slot	name	signature
-        //   0	57	0	paramFile	File
-        //   1	53	1	localObject1	Object
-        //   10	43	2	localFileInputStream	java.io.FileInputStream
-        //   51	1	3	localIOException1	java.io.IOException
-        //   35	7	4	localObject2	Object
-        //   44	1	4	localObject3	Object
-        //   18	7	5	localLanguagePack	GstaticConfiguration.LanguagePack
-        //   27	1	6	localIOException2	java.io.IOException
-        // Exception table:
-        //   from	to	target	type
-        //   2	11	27	java/io/IOException
-        //   2	11	35	finally
-        //   11	20	44	finally
-        //   11	20	51	java/io/IOException
+    private ArrayList getCompatiblePaths() {
+        if ((mMostRecentLanguagePack == null) || (!mMostRecentLanguagePack.hasLanguagePackId())) {
+            return null;
+        }
+
+        ArrayList<File> compatible = new ArrayList<>(4);
+        for (File path : mPathToMetadataMap.keySet()) {
+            if (mMostRecentLanguagePack.getLanguagePackId().equals(mPathToMetadataMap.get(path).getLanguagePackId())) {
+                compatible.add(path);
+            }
+        }
+
+        return compatible;
     }
 
     private void processLocaleSource() {
@@ -134,17 +96,18 @@ class LocaleResourcesImpl
             this.mUnprocessedGrammars.add(new GrammarInfo(paramGreco3Grammar, paramString, paramFile1, localLanguagePack));
         }
     }
+
     void addHotwordPrompt(File file) {
-        BufferedReader br = 0x0;
+        BufferedReader br = null;
         try {
             String prompt = br.readLine();
-            if(!TextUtils.isEmpty(prompt)) {
+            if (!TextUtils.isEmpty(prompt)) {
                 mPathToHotwordPromptMap.put(file.getParentFile(), prompt);
             }
-        } catch(FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             Log.e("VS.LocaleResourcesImpl", "Could not open hotword prompt file.", e);
             return;
-        } catch(IOException e) {
+        } catch (IOException e) {
             Log.e("VS.LocaleResourcesImpl", "Could not read hotword prompt file.", e);
             return;
         } finally {
@@ -152,21 +115,22 @@ class LocaleResourcesImpl
         }
     }
 
-    void addMetadata(File paramFile) {
-        GstaticConfiguration.LanguagePack localLanguagePack = parseMetadata(paramFile);
-        if (localLanguagePack == null) {
-            Log.e("VS.LocaleResourcesImpl", "Unparsable metadata : " + paramFile);
-        }
-        do {
+    void addMetadata(File file) {
+        GstaticConfiguration.LanguagePack metadata = parseMetadata(file);
+        if (metadata == null) {
+            Log.e("VS.LocaleResourcesImpl", "Unparsable metadata : " + file);
             return;
-            this.mPathToMetadataMap.put(paramFile.getParentFile(), localLanguagePack);
         }
-        while ((!LanguagePackUtils.isCompatible(localLanguagePack, this.mSupportedFormatVersions, 2147483647)) || ((this.mMostRecentLanguagePack != null) && (localLanguagePack.getVersion() <= this.mMostRecentLanguagePack.getVersion())));
-        this.mMostRecentLanguagePack = localLanguagePack;
+        mPathToMetadataMap.put(file.getParentFile(), metadata);
+        if (LanguagePackUtils.isCompatible(metadata, mSupportedFormatVersions, 0x7fffffff)) {
+            if ((mMostRecentLanguagePack == null) || (metadata.getVersion() > mMostRecentLanguagePack.getVersion())) {
+                mMostRecentLanguagePack = metadata;
+            }
+        }
     }
 
     public String getConfigFile(Greco3Mode paramGreco3Mode) {
-        return (String) this.mConfigPaths.get(paramGreco3Mode);
+        return this.mConfigPaths.get(paramGreco3Mode);
     }
 
     public String getGrammarPath(Greco3Grammar paramGreco3Grammar, String paramString) {
