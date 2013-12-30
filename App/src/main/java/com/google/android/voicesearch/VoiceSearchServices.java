@@ -11,7 +11,6 @@ import com.google.android.search.core.DeviceCapabilityManager;
 import com.google.android.search.core.GsaConfigFlags;
 import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.search.core.SearchConfig;
-import com.google.android.search.core.ears.EarsContentProviderHelper;
 import com.google.android.search.core.google.SearchUrlHelper;
 import com.google.android.shared.util.Clock;
 import com.google.android.shared.util.ConcurrentUtils;
@@ -21,38 +20,26 @@ import com.google.android.shared.util.Util;
 import com.google.android.speech.Recognizer;
 import com.google.android.speech.RecognizerImpl;
 import com.google.android.speech.SpeechLibFactory;
-import com.google.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.google.android.speech.audio.AudioController;
 import com.google.android.speech.audio.AudioStore;
 import com.google.android.speech.audio.SingleRecordingAudioStore;
-import com.google.android.speech.contacts.ContactLookup;
-import com.google.android.speech.contacts.FavoriteContactNamesSupplier;
 import com.google.android.speech.embedded.Greco3Container;
 import com.google.android.speech.embedded.OfflineActionsManager;
 import com.google.android.speech.internal.DefaultCallbackFactory;
 import com.google.android.speech.internal.DefaultModeSelector;
 import com.google.android.speech.logger.SuggestionLogger;
 import com.google.android.speech.network.ConnectionFactory;
-import com.google.android.speech.params.DeviceParams;
-import com.google.android.speech.params.DeviceParamsImpl;
-import com.google.android.speech.params.NetworkRequestProducerParams;
 import com.google.android.speech.params.RecognitionEngineParams;
-import com.google.android.speech.utils.NetworkInformation;
-import com.google.android.velvet.VelvetApplication;
-import com.google.android.velvet.VelvetServices;
 import com.google.android.voicesearch.audio.AudioRouter;
 import com.google.android.voicesearch.audio.AudioRouterImpl;
 import com.google.android.voicesearch.audio.AudioTrackSoundManager;
 import com.google.android.voicesearch.audio.TtsAudioPlayer;
-import com.google.android.voicesearch.bluetooth.BluetoothCarClassifier;
 import com.google.android.voicesearch.bluetooth.BluetoothController;
 import com.google.android.voicesearch.fragments.VoiceSearchController;
 import com.google.android.voicesearch.greco3.languagepack.LanguagePackUpdateController;
 import com.google.android.voicesearch.hotword.HotwordDetector;
 import com.google.android.voicesearch.ime.VoiceImeSubtypeUpdater;
-import com.google.android.voicesearch.personalization.PersonalizationHelper;
 import com.google.android.voicesearch.settings.Settings;
-import com.google.android.voicesearch.speechservice.s3.VelvetSpeechLocationHelper;
 import com.google.android.voicesearch.util.LocalTtsManager;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
@@ -74,20 +61,13 @@ public class VoiceSearchServices {
     private AudioManager mAudioManager;
     private AudioRouter mAudioRouter;
     private AudioStore mAudioStore;
-    private BluetoothCarClassifier mBluetoothCarClassifier;
     private BluetoothController mBluetoothController;
-    private ContactLookup mContactLookup;
-    private DeviceParams mDeviceParams;
-    private EarsContentProviderHelper mEarsProviderHelper;
     private Greco3Container mGreco3Container;
     private HotwordDetector mHotwordDetector;
     private HypothesisToSuggestionSpansConverter mHypothesisToSuggestionSpansConverter;
     private LanguagePackUpdateController mLanguagePackUpdateController;
     private LocalTtsManager mLocalTtsManager;
-    private LogExtras mLogExtras;
-    private NetworkRequestProducerParams mNrpp;
     private OfflineActionsManager mOfflineActionsManager;
-    private PersonalizationHelper mPersonalizationHelper;
     private Recognizer mRecognizer;
     private AudioTrackSoundManager mSoundManager;
     private SpeechLevelSource mSpeechLevelSource;
@@ -122,7 +102,7 @@ public class VoiceSearchServices {
         ExtraPreconditions.ThreadCheck localThreadCheck2 = ExtraPreconditions.createNotSetThreadsCheck(new String[]{"AudioRouter"});
         AudioManager localAudioManager = getAudioManager();
         this.mBluetoothController = new BluetoothController(this.mDeviceCapabilityManager, localAudioManager, this.mContext, localScheduledExecutorService, localThreadCheck1);
-        this.mAudioRouter = new AudioRouterImpl(this.mCoreSearchServices.getClock(), this.mSettings, localAudioManager, localScheduledExecutorService, localThreadCheck1, localThreadCheck2, this.mBluetoothController);
+        this.mAudioRouter = new AudioRouterImpl(this.mSettings, localAudioManager, localScheduledExecutorService, localThreadCheck1, localThreadCheck2, this.mBluetoothController);
         this.mBluetoothController.addListener((AudioRouterImpl) this.mAudioRouter, localScheduledExecutorService);
     }
 
@@ -143,23 +123,9 @@ public class VoiceSearchServices {
         return RecognizerImpl.create(ConcurrentUtils.newSingleThreadExecutor("GrecoExecutor"), getAudioController(), getSpeechLibFactory());
     }
 
-    private DeviceParams getDeviceParams() {
-        if (this.mDeviceParams == null) {
-            this.mDeviceParams = new DeviceParamsImpl(VelvetApplication.getVersionCodeString(), this.mContext, this.mCoreSearchServices.getUserAgentHelper(), this.mCoreSearchServices.getConfig(), this.mCoreSearchServices.getSearchSettings());
-        }
-        return this.mDeviceParams;
-    }
-
-    private LogExtras getLogExtras() {
-        if (this.mLogExtras == null) {
-            this.mLogExtras = new LogExtras(getNetworkInformation());
-        }
-        return this.mLogExtras;
-    }
-
     private SpeechLibFactory getSpeechLibFactory() {
         if (this.mSpeechLibFactory == null) {
-            this.mSpeechLibFactory = new SpeechLibFactoryImpl(getNetworkInformation(), createRecognitionEngineParams(), this.mSettings, this.mScheduledExecutorService, this.mCoreSearchServices.getClock());
+            this.mSpeechLibFactory = new SpeechLibFactoryImpl(createRecognitionEngineParams(), this.mSettings, this.mScheduledExecutorService, this.mCoreSearchServices.getClock());
         }
         return this.mSpeechLibFactory;
     }
@@ -190,9 +156,8 @@ public class VoiceSearchServices {
     }
 
     public AudioController getAudioController() {
-
         if (this.mAudioController == null) {
-            this.mAudioController = new AudioController(this.mContext, this.mSettings, getSpeechLevelSource(), getSoundManager(), getAudioRouter(), getSpeechLibFactory().buildSpeechLibLogger(), getLogExtras());
+            this.mAudioController = new AudioController(this.mContext, this.mSettings, getSpeechLevelSource(), getSoundManager(), getAudioRouter(), getSpeechLibFactory().buildSpeechLibLogger());
         }
         return this.mAudioController;
     }
@@ -209,48 +174,12 @@ public class VoiceSearchServices {
             if (this.mAudioRouter == null) {
                 createAudioRouterLocked();
             }
-            AudioRouter localAudioRouter = this.mAudioRouter;
-            return localAudioRouter;
-        }
-    }
-
-    public BluetoothCarClassifier getBluetoothCarClassifier() {
-        synchronized (this.mCreationLock) {
-            if (this.mBluetoothCarClassifier == null) {
-                this.mBluetoothCarClassifier = new BluetoothCarClassifier();
-            }
-            BluetoothCarClassifier localBluetoothCarClassifier = this.mBluetoothCarClassifier;
-            return localBluetoothCarClassifier;
-        }
-    }
-
-    public BluetoothController getBluetoothController() {
-        synchronized (this.mCreationLock) {
-            if (this.mBluetoothController == null) {
-                createAudioRouterLocked();
-            }
-            BluetoothController localBluetoothController = this.mBluetoothController;
-            return localBluetoothController;
+            return this.mAudioRouter;
         }
     }
 
     public ConnectionFactory getConnectionFactory() {
         return this.mCoreSearchServices.getSpdyConnectionFactory();
-    }
-
-    public ContactLookup getContactLookup() {
-
-        if (this.mContactLookup == null) {
-            this.mContactLookup = ContactLookup.newInstance(this.mContext);
-        }
-        return this.mContactLookup;
-    }
-
-    public EarsContentProviderHelper getEarsProviderHelper() {
-        if (this.mEarsProviderHelper == null) {
-            this.mEarsProviderHelper = new EarsContentProviderHelper(this.mContext.getContentResolver(), this.mContext.getPackageManager());
-        }
-        return this.mEarsProviderHelper;
     }
 
     public ExecutorService getExecutorService() {
@@ -272,7 +201,6 @@ public class VoiceSearchServices {
     }
 
     public HotwordDetector getHotwordDetector() {
-
         if (this.mHotwordDetector == null) {
             this.mHotwordDetector = new HotwordDetector(this, this.mContext, this.mSettings, this.mAsyncServices.getUiThreadExecutor());
         }
@@ -308,31 +236,12 @@ public class VoiceSearchServices {
         return this.mAsyncServices.getUiThreadExecutor();
     }
 
-    public NetworkInformation getNetworkInformation() {
-        return this.mCoreSearchServices.getNetworkInfo();
-    }
-
-    public NetworkRequestProducerParams getNetworkRequestProducerParams() {
-        if (this.mNrpp == null) {
-            this.mNrpp = new NetworkRequestProducerParams(this.mCoreSearchServices.getLoginHelper(), this.mCoreSearchServices.getNetworkInfo(), this.mCoreSearchServices.getPinholeParamsBuilder(), new VelvetSpeechLocationHelper(this.mCoreSearchServices.getLocationSettings(), VelvetServices.get().getLocationOracle()), this.mSettings, getDeviceParams(), new FavoriteContactNamesSupplier(this.mCoreSearchServices.getGsaConfigFlags(), getContactLookup()));
-        }
-        return this.mNrpp;
-    }
-
     public OfflineActionsManager getOfflineActionsManager() {
 
         if (this.mOfflineActionsManager == null) {
             this.mOfflineActionsManager = new OfflineActionsManager(this.mContext, getGreco3Container().getGreco3DataManager(), this.mSettings, this.mAsyncServices.getUiThreadExecutor());
         }
         return this.mOfflineActionsManager;
-    }
-
-    public PersonalizationHelper getPersonalizationHelper() {
-
-        if (this.mPersonalizationHelper == null) {
-            this.mPersonalizationHelper = new PersonalizationHelper(this.mSettings, this.mCoreSearchServices.getLoginHelper(), this.mCoreSearchServices.getNetworkInfo());
-        }
-        return this.mPersonalizationHelper;
     }
 
     public Recognizer getRecognizer() {

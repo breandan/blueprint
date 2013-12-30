@@ -72,7 +72,7 @@ public final class InterpretationProto
     
     public InterpretationProto.Slot getSlot(int paramInt)
     {
-      return (InterpretationProto.Slot)this.slot_.get(paramInt);
+      return this.slot_.get(paramInt);
     }
     
     public int getSlotCount()

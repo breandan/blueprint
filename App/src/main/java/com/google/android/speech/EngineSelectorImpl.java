@@ -8,25 +8,19 @@ import java.util.List;
 
 public class EngineSelectorImpl
         implements EngineSelector {
-    private final boolean mHaveNetworkConnection;
     private final SessionParams mSessionParams;
     private final SpeechSettings mSpeechSettings;
 
-    public EngineSelectorImpl(SessionParams paramSessionParams, SpeechSettings paramSpeechSettings, boolean paramBoolean) {
+    public EngineSelectorImpl(SessionParams paramSessionParams, SpeechSettings paramSpeechSettings) {
         this.mSessionParams = paramSessionParams;
         this.mSpeechSettings = paramSpeechSettings;
-        this.mHaveNetworkConnection = paramBoolean;
     }
 
     private boolean shouldUseEmbeddedRecognitionEngine(boolean paramBoolean) {
-        return true;
+        return paramBoolean;
     }
 
     private boolean shouldUseMusicDetectorRecognitionEngine() {
-        return false;
-    }
-
-    private boolean shouldUseNetworkRecognitionEngine() {
         return false;
     }
 
@@ -34,9 +28,6 @@ public class EngineSelectorImpl
         ArrayList localArrayList = Lists.newArrayListWithExpectedSize(3);
         if (shouldUseEmbeddedRecognitionEngine(true)) {
             localArrayList.add(Integer.valueOf(1));
-        }
-        if (shouldUseNetworkRecognitionEngine()) {
-            localArrayList.add(Integer.valueOf(2));
         }
         if (shouldUseMusicDetectorRecognitionEngine()) {
             localArrayList.add(Integer.valueOf(3));

@@ -1,5 +1,6 @@
 package com.google.android.voicesearch.serviceapi;
 
+import android.speech.RecognitionService;
 import android.util.Log;
 
 import com.google.android.shared.util.ExtraPreconditions;
@@ -46,25 +47,17 @@ public class GoogleRecognitionServiceImpl {
         internalCancel();
     }
 
-    public void startListening(GoogleRecognitionParams paramGoogleRecognitionParams, RecognitionService.Callback paramCallback) {
-        int i = 1;
-        Preconditions.checkNotNull(paramGoogleRecognitionParams);
-        Preconditions.checkNotNull(paramCallback);
-        this.mThreadCheck.check();
-        Log.i("GoogleRecognitionServiceImpl", "#startListening [" + paramGoogleRecognitionParams.getSpokenBcp47Locale() + "]");
-        SessionParams.Builder localBuilder = new SessionParams.Builder().setMode(i);
-        if (!paramGoogleRecognitionParams.isDictationRequested()) {
-        }
-        for (; ; ) {
-            SessionParams localSessionParams = localBuilder.setStopOnEndOfSpeech(i).setSpokenBcp47Locale(paramGoogleRecognitionParams.getSpokenBcp47Locale()).setProfanityFilterEnabled(paramGoogleRecognitionParams.isProfanityFilterEnabled()).setGreco3Mode(Greco3Mode.DICTATION).setTriggerApplication(paramGoogleRecognitionParams.getTriggerApplication()).build();
-            EventLogger.recordClientEvent(55, paramGoogleRecognitionParams.getTriggerApplication());
-            this.mListener = new ListenerAdapter(paramCallback, this.onDoneListener, paramGoogleRecognitionParams.isDictationRequested(), paramGoogleRecognitionParams.isPartialResultsRequested());
-            this.mRecognizer.startListening(localSessionParams, this.mListener, this.mMainThreadExecutor, null);
-            this.mLevelsGenerator.stop();
-            this.mLevelsGenerator.start(this.mListener);
-            return;
-            int j = 0;
-        }
+    public void startListening(GoogleRecognitionParams data, RecognitionService.Callback callback) {
+        Preconditions.checkNotNull(data);
+        Preconditions.checkNotNull(callback);
+        mThreadCheck.check();
+        Log.i("GoogleRecognitionServiceImpl", "#startListening [" + data.getSpokenBcp47Locale() + "]");
+        SessionParams sessionParams = new SessionParams.Builder().setMode(0x1).setStopOnEndOfSpeech((!data.isDictationRequested())).setSpokenBcp47Locale(data.getSpokenBcp47Locale()).setProfanityFilterEnabled(data.isProfanityFilterEnabled()).setGreco3Mode(Greco3Mode.DICTATION).setTriggerApplication(data.getTriggerApplication()).build();
+        EventLogger.recordClientEvent(0x37, data.getTriggerApplication());
+        mListener = new ListenerAdapter(callback, onDoneListener, data.isDictationRequested(), data.isPartialResultsRequested());
+        mRecognizer.startListening(sessionParams, mListener, mMainThreadExecutor, null);
+        mLevelsGenerator.stop();
+        mLevelsGenerator.start(mListener);
     }
 
     public void stopListening() {

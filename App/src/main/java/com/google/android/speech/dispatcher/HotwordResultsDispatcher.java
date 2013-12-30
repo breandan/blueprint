@@ -7,10 +7,10 @@ import com.google.android.speech.exception.RecognizeException;
 
 public class HotwordResultsDispatcher
         implements RecognitionDispatcher.ResultsMerger {
-    private boolean mInvalid = false;
     private final RecognitionDispatcher mRecognitionDispatcher;
     private final RecognitionEngineCallback mRecognitionEngineCallback;
     private final ExtraPreconditions.ThreadCheck mThreadCheck = ExtraPreconditions.createSameThreadCheck();
+    private boolean mInvalid = false;
 
     public HotwordResultsDispatcher(RecognitionDispatcher paramRecognitionDispatcher, RecognitionEngineCallback paramRecognitionEngineCallback) {
         this.mRecognitionDispatcher = paramRecognitionDispatcher;
@@ -22,28 +22,31 @@ public class HotwordResultsDispatcher
         this.mInvalid = true;
     }
 
-    public void onError(RecognizeException paramRecognizeException) {
-        this.mThreadCheck.check();
-        if (this.mInvalid) {
-        }
-        while (paramRecognizeException.getEngine() != 1) {
+    public void onError(RecognizeException exception) {
+        mThreadCheck.check();
+        if (mInvalid) {
             return;
         }
-        this.mRecognitionDispatcher.cancel();
-        this.mRecognitionEngineCallback.onError(paramRecognizeException);
+        if (exception.getEngine() == 0x1) {
+            mRecognitionDispatcher.cancel();
+            mRecognitionEngineCallback.onError(exception);
+        }
     }
 
     public void onProgressUpdate(int paramInt, long paramLong) {
+
     }
 
-    public void onResult(RecognitionResponse paramRecognitionResponse) {
-        this.mThreadCheck.check();
-        if (this.mInvalid) {
-        }
-        while (((paramRecognitionResponse.getEngine() != 1) || (paramRecognitionResponse.getType() != 1)) && (paramRecognitionResponse.getEngine() != 3)) {
+    public void onResult(RecognitionResponse response) {
+        mThreadCheck.check();
+        if (mInvalid) {
             return;
         }
-        this.mRecognitionEngineCallback.onResult(paramRecognitionResponse);
+        if ((response.getEngine() == 0x1) && (response.getType() == 0x1)
+                || response.getEngine() != 0x3) {
+            mRecognitionEngineCallback.onResult(response);
+            return;
+        }
     }
 }
 

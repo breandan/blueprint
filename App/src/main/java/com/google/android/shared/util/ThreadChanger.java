@@ -9,7 +9,7 @@ import java.lang.reflect.Proxy;
 import java.util.concurrent.Executor;
 
 public class ThreadChanger {
-    static final boolean DEBUG;
+    static final boolean DEBUG = false;
 
     private static Throwable addCallerStackTrace(Throwable paramThrowable1, Throwable paramThrowable2) {
         if (paramThrowable2 == null) {
@@ -25,22 +25,20 @@ public class ThreadChanger {
         return paramThrowable1;
     }
 
-    public static final <T> T createNonBlockingThreadChangeProxy(final Executor paramExecutor, Class<T> paramClass, T paramT) {
+    public static final <T> T createNonBlockingThreadChangeProxy(final Executor paramExecutor, Class<T> type, final T delegate) {
         Preconditions.checkNotNull(paramExecutor);
-        Preconditions.checkNotNull(paramClass);
-        Preconditions.checkNotNull(paramT);
+        Preconditions.checkNotNull(type);
+        Preconditions.checkNotNull(delegate);
         InvocationHandler local1 = new InvocationHandler() {
-            public Object invoke(Object paramAnonymousObject, final Method paramAnonymousMethod, final Object[] paramAnonymousArrayOfObject) {
+            public Object invoke(final Object paramAnonymousObject, final Method paramAnonymousMethod, final Object[] paramAnonymousArrayOfObject) {
                 Runnable local1 = new Runnable() {
                     public void run() {
                         try {
-                            paramAnonymousMethod.invoke(ThreadChanger .1.
-                            this.val$delegate, paramAnonymousArrayOfObject);
-                            return;
+                            paramAnonymousMethod.invoke(delegate, paramAnonymousArrayOfObject);
                         } catch (IllegalAccessException localIllegalAccessException) {
                             throw new IllegalStateException(localIllegalAccessException);
                         } catch (InvocationTargetException localInvocationTargetException) {
-                            Throwable localThrowable = ThreadChanger.addCallerStackTrace(localInvocationTargetException.getCause(), this.val$callerThrowable);
+                            Throwable localThrowable = ThreadChanger.addCallerStackTrace(localInvocationTargetException.getCause(), localInvocationTargetException);
                             if ((localThrowable instanceof RuntimeException)) {
                                 throw ((RuntimeException) localThrowable);
                             }
@@ -55,23 +53,13 @@ public class ThreadChanger {
                 return null;
             }
         };
-        return Proxy.newProxyInstance(paramClass.getClassLoader(), new Class[]{paramClass}, local1);
+        return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class[]{type}, local1);
     }
 
     public static <T> T createNonBlockingThreadChangeProxy(Executor paramExecutor, T paramT) {
-        int i = 1;
         Class[] arrayOfClass = paramT.getClass().getInterfaces();
-        if (arrayOfClass.length == i) {
-        }
-        for (; ; ) {
-            Preconditions.checkArgument(i, "Delegate must implement a single interface");
-            return createNonBlockingThreadChangeProxy(paramExecutor, arrayOfClass[0], paramT);
-            int j = 0;
-        }
-    }
-
-    private static Throwable getCallerThrowable() {
-        return null;
+        Preconditions.checkArgument(arrayOfClass.length == 1, "Delegate must implement a single interface");
+        return (T) createNonBlockingThreadChangeProxy(paramExecutor, arrayOfClass[0], paramT);
     }
 
     private static Throwable getOriginalCause(Throwable paramThrowable) {

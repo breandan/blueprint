@@ -25,8 +25,7 @@ public class SpokenLanguageUtils {
                     return dialect.getBcp47Locale();
                 }
                 if (phoneJavaLocale.contains("_")) {
-                    phoneJavaLocale = phoneJavaLocale.substring(0x0, phoneJavaLocale.lastIndexOf(0x5f));
-                    return getDefaultMainSpokenLanguageBcp47(phoneJavaLocale, configuration);
+                    return getDefaultMainSpokenLanguageBcp47(phoneJavaLocale.substring(0x0, phoneJavaLocale.lastIndexOf(0x5f)), configuration);
                 }
             }
         }

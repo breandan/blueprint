@@ -3,36 +3,6 @@ package com.google.android.shared.util;
 import android.text.Annotation;
 
 public class TextUtil {
-    public static String convertUpperCaseToHumanReadable(String paramString, boolean paramBoolean) {
-        return convertUpperCaseToOther(paramString, true, paramBoolean, true);
-    }
-
-    private static String convertUpperCaseToOther(String paramString, boolean paramBoolean1, boolean paramBoolean2, boolean paramBoolean3) {
-        int i = paramString.length();
-        StringBuilder localStringBuilder = new StringBuilder(i);
-        boolean bool = paramBoolean1;
-        int j = 0;
-        if (j < i) {
-            char c = paramString.charAt(j);
-            if (c == '_') {
-                bool = paramBoolean2;
-                if (paramBoolean3) {
-                    localStringBuilder.append(' ');
-                }
-            }
-            for (; ; ) {
-                j++;
-                break;
-                if (bool) {
-                    localStringBuilder.append(c);
-                    bool = false;
-                } else {
-                    localStringBuilder.append(Character.toLowerCase(c));
-                }
-            }
-        }
-        return localStringBuilder.toString();
-    }
 
     public static String createLinkTag(String paramString1, String paramString2) {
         return getStartLinkReplace(paramString2) + paramString1 + "</a>";

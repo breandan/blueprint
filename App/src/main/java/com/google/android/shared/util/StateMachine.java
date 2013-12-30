@@ -2,27 +2,26 @@ package com.google.android.shared.util;
 
 import android.util.Log;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 
 public class StateMachine<T extends Enum<T>> {
-    private T mCurrentState;
     private final boolean mDebug;
     private final HashMultimap<T, T> mLegalTransitions;
     private final boolean mStrictMode;
     private final String mTag;
     private final ExtraPreconditions.ThreadCheck mThreadCheck;
-
-    StateMachine(String paramString, T paramT, boolean paramBoolean1, ExtraPreconditions.ThreadCheck paramThreadCheck, HashMultimap<T, T> paramHashMultimap, boolean paramBoolean2) {
-        this.mLegalTransitions = paramHashMultimap;
-        this.mTag = ((String) Preconditions.checkNotNull(paramString));
-        this.mStrictMode = paramBoolean1;
-        this.mThreadCheck = paramThreadCheck;
-        this.mCurrentState = ((Enum) Preconditions.checkNotNull(paramT));
-        this.mDebug = paramBoolean2;
-    }
+    private T mCurrentState;
 
     private StateMachine(String paramString, T paramT, boolean paramBoolean1, boolean paramBoolean2, HashMultimap<T, T> paramHashMultimap, boolean paramBoolean3) {
+        mTag = paramString;
+        mStrictMode = paramBoolean1;
+        mThreadCheck = ExtraPreconditions.createSameThreadCheck();
+        mDebug = paramBoolean3;
+        mLegalTransitions = paramHashMultimap;
+    }
+
+    public static <T extends Enum<T>> Builder<T> newBuilder(String paramString, T paramT) {
+        return new Builder(paramString, paramT);
     }
 
     private void error(String paramString) {
@@ -30,10 +29,6 @@ public class StateMachine<T extends Enum<T>> {
             throw new IllegalStateException(this.mTag + ":  " + paramString);
         }
         Log.e(this.mTag, paramString);
-    }
-
-    public static <T extends Enum<T>> Builder<T> newBuilder(String paramString, T paramT) {
-        return new Builder(paramString, paramT);
     }
 
     public void checkIn(T paramT) {
@@ -69,12 +64,12 @@ public class StateMachine<T extends Enum<T>> {
     }
 
     public static class Builder<T extends Enum<T>> {
-        private boolean mDebug = false;
         private final T mInitialState;
         private final HashMultimap<T, T> mLegalTransitions = HashMultimap.create();
+        private final String mTag;
+        private boolean mDebug = false;
         private boolean mOneThread = false;
         private boolean mStrictMode = false;
-        private final String mTag;
 
         public Builder(String paramString, T paramT) {
             this.mInitialState = paramT;
@@ -87,7 +82,7 @@ public class StateMachine<T extends Enum<T>> {
         }
 
         public StateMachine<T> build() {
-            return new StateMachine(this.mTag, this.mInitialState, this.mStrictMode, this.mOneThread, this.mLegalTransitions, this.mDebug, null);
+            return new StateMachine(this.mTag, this.mInitialState, this.mStrictMode, this.mOneThread, this.mLegalTransitions, this.mDebug);
         }
 
         public Builder<T> setDebug(boolean paramBoolean) {

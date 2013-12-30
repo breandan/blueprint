@@ -6,15 +6,21 @@ import android.util.Log;
 import com.google.android.speech.utils.SpokenLanguageUtils;
 import com.google.android.voicesearch.settings.Settings;
 import com.google.common.base.Strings;
+import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 public class GoogleRecognitionParams {
-    private final boolean mDictationRequested = initDictationRequested(paramIntent);
-    private final boolean mPartialResultsRequested = initPartialResultsRequested(paramIntent);
-    private final boolean mProfanityFilterEnabled = initProfanityFilterEnabled(paramSettings, paramIntent);
-    private final String mSpokenBcp47Locale = initSpokenBcp47Locale(paramSettings, paramIntent);
-    private final String mTriggerApplication = initTriggerApplication(paramIntent);
+    private final boolean mDictationRequested;
+    private final boolean mPartialResultsRequested;
+    private final boolean mProfanityFilterEnabled;
+    private final String mSpokenBcp47Locale;
+    private final String mTriggerApplication;
 
     public GoogleRecognitionParams(Intent paramIntent, Settings paramSettings) {
+        mDictationRequested = initDictationRequested(paramIntent);
+        mPartialResultsRequested = initPartialResultsRequested(paramIntent);
+        mProfanityFilterEnabled = initProfanityFilterEnabled(paramSettings, paramIntent);
+        mSpokenBcp47Locale = initSpokenBcp47Locale(paramSettings, paramIntent);
+        mTriggerApplication = initTriggerApplication(paramIntent);
     }
 
     private boolean initDictationRequested(Intent paramIntent) {

@@ -29,7 +29,7 @@ public class CombinedResultGenerator {
                 }
             }
         }
-        RecognizerProtos.RecognitionEvent localRecognitionEvent1 = (RecognizerProtos.RecognitionEvent) this.mRecognitionEvents.get(-1 + this.mRecognitionEvents.size());
+        RecognizerProtos.RecognitionEvent localRecognitionEvent1 = this.mRecognitionEvents.get(-1 + this.mRecognitionEvents.size());
         RecognizerProtos.RecognitionEvent localRecognitionEvent2 = new RecognizerProtos.RecognitionEvent();
         try {
             localRecognitionEvent2.mergeFrom(localRecognitionEvent1.toByteArray());
@@ -45,7 +45,7 @@ public class CombinedResultGenerator {
     }
 
     private RecognizerProtos.RecognitionEvent handleSingleRecognitionEvent() {
-        RecognizerProtos.RecognitionEvent localRecognitionEvent = (RecognizerProtos.RecognitionEvent) this.mRecognitionEvents.get(0);
+        RecognizerProtos.RecognitionEvent localRecognitionEvent = this.mRecognitionEvents.get(0);
         if (localRecognitionEvent.hasResult()) {
             localRecognitionEvent.setCombinedResult(localRecognitionEvent.getResult());
         }

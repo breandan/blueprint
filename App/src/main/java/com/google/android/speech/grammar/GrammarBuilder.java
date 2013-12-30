@@ -22,7 +22,7 @@ public abstract class GrammarBuilder {
     }
 
     static String[] getWords(String paramString) {
-        return (String[]) Iterators.toArray(SplitIterator.splitOnWhitespaceOmitEmptyStrings(stripAbnfTokens(paramString)), String.class);
+        return Iterators.toArray(SplitIterator.splitOnWhitespaceOmitEmptyStrings(stripAbnfTokens(paramString)), String.class);
     }
 
     static String stripAbnfTokens(String paramString) {

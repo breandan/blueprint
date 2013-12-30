@@ -18,7 +18,6 @@ import com.google.android.speech.logger.SpeechLibLoggerImpl;
 import com.google.android.speech.message.GsaS3ResponseProcessor;
 import com.google.android.speech.params.RecognitionEngineParams;
 import com.google.android.speech.params.SessionParams;
-import com.google.android.speech.utils.NetworkInformation;
 import com.google.android.voicesearch.greco3.ResultsMergerImpl;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
@@ -29,22 +28,18 @@ public class SpeechLibFactoryImpl
         implements SpeechLibFactory {
     private final Clock mClock;
     private final ExecutorService mLocalExecutorService;
-    private final ExecutorService mMusicExecutorService;
     private final ExecutorService mNetworkExecutorService;
-    private final NetworkInformation mNetworkInformation;
     private final RecognitionEngineParams mRecognitionEngineParams;
     private final ScheduledExecutorService mScheduledExecutorService;
     private final SpeechSettings mSpeechSettings;
 
-    public SpeechLibFactoryImpl(NetworkInformation paramNetworkInformation, RecognitionEngineParams paramRecognitionEngineParams, SpeechSettings paramSpeechSettings, ScheduledExecutorService paramScheduledExecutorService, Clock paramClock) {
-        this.mNetworkInformation = paramNetworkInformation;
+    public SpeechLibFactoryImpl(RecognitionEngineParams paramRecognitionEngineParams, SpeechSettings paramSpeechSettings, ScheduledExecutorService paramScheduledExecutorService, Clock paramClock) {
         this.mRecognitionEngineParams = paramRecognitionEngineParams;
         this.mSpeechSettings = paramSpeechSettings;
         this.mScheduledExecutorService = paramScheduledExecutorService;
         this.mClock = paramClock;
         this.mLocalExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(1, "LocalEngine");
         this.mNetworkExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(1, "NetworkEngine");
-        this.mMusicExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(1, "MusicDetector");
     }
 
     private boolean shouldStopMusicDetectorOnStartOfSpeech() {
@@ -56,11 +51,11 @@ public class SpeechLibFactoryImpl
     }
 
     public EngineSelector buildEngineSelector(SessionParams paramSessionParams) {
-        return new EngineSelectorImpl(paramSessionParams, this.mSpeechSettings, this.mNetworkInformation.isConnected());
+        return new EngineSelectorImpl(paramSessionParams, this.mSpeechSettings);
     }
 
     public RecognitionEngineStore buildRecognitionEngineStore() {
-        return new RecognitionEngineStoreImpl(this.mRecognitionEngineParams, buildSpeechLibLogger(), this.mLocalExecutorService, this.mNetworkExecutorService, this.mMusicExecutorService);
+        return new RecognitionEngineStoreImpl(this.mRecognitionEngineParams, buildSpeechLibLogger(), this.mLocalExecutorService, this.mNetworkExecutorService);
     }
 
     public ResponseProcessor buildResponseProcessor(ResponseProcessor.AudioCallback paramAudioCallback, RecognitionEventListener paramRecognitionEventListener, SessionParams paramSessionParams, SpeechLibLogger paramSpeechLibLogger) {

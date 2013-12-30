@@ -53,15 +53,6 @@ public class RecognitionDispatcher {
         }
     }
 
-    @Nullable
-    ResultsMerger getResultsMerger() {
-        return this.mResultsMerger;
-    }
-
-    boolean isRunning() {
-        return this.mState.isIn(State.RUNNING);
-    }
-
     public void startRecognition(Collection<Pair<Integer, RecognitionEngine>> paramCollection, AudioInputStreamFactory paramAudioInputStreamFactory, SessionParams paramSessionParams, EngineSelector paramEngineSelector, RecognitionEngineCallback paramRecognitionEngineCallback) {
         if (this.mState.isIn(State.RUNNING)) {
             Log.w("RecognitionDispatcher", "Multiple recognitions in progress, the first will be cancelled.");

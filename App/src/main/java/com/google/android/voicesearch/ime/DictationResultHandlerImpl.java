@@ -8,7 +8,6 @@ import android.view.inputmethod.InputConnection;
 
 import com.google.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.google.android.speech.alternates.Hypothesis;
-import com.google.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.google.android.voicesearch.ime.formatter.TextFormatter;
 import com.google.android.voicesearch.settings.Settings;
 import com.google.common.base.Preconditions;
@@ -113,7 +112,7 @@ public class DictationResultHandlerImpl {
         int i = this.mDictationSegments.size();
         DictationSegment localDictationSegment = null;
         if (i > 0) {
-            localDictationSegment = (DictationSegment) this.mDictationSegments.get(-1 + this.mDictationSegments.size());
+            localDictationSegment = this.mDictationSegments.get(-1 + this.mDictationSegments.size());
             if (localDictationSegment.isFinal()) {
                 localDictationSegment = null;
             }

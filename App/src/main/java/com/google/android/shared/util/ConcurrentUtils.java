@@ -18,12 +18,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConcurrentUtils {
-    private static ThreadFactory createBackgroundThreadFactory(String paramString) {
-        new ThreadFactory() {
+    private static ThreadFactory createBackgroundThreadFactory(final String threadName) {
+        return new ThreadFactory() {
             private AtomicInteger counter = new AtomicInteger(0);
 
             public Thread newThread(final Runnable paramAnonymousRunnable) {
-                new Thread(this.val$threadName + "-" + this.counter.incrementAndGet()) {
+                return new Thread(threadName + "-" + this.counter.incrementAndGet()) {
                     public void run() {
                         Process.setThreadPriority(10);
                         paramAnonymousRunnable.run();
@@ -34,89 +34,73 @@ public class ConcurrentUtils {
     }
 
     private static ScheduledExecutorService createLoggingScheduledExecutorService(int paramInt, ThreadFactory paramThreadFactory, final String paramString) {
-        if (paramInt > 0) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkArgument(bool);
-            new ScheduledThreadPoolExecutor(paramInt, paramThreadFactory) {
-                protected void afterExecute(Runnable paramAnonymousRunnable, Throwable paramAnonymousThrowable) {
-                    if ((paramAnonymousThrowable instanceof RuntimeException)) {
-                        Log.w(paramString, "RuntimeException occured", paramAnonymousThrowable);
-                    }
-                    Future localFuture;
-                    if ((paramAnonymousRunnable instanceof Future)) {
-                        localFuture = (Future) paramAnonymousRunnable;
-                    }
+        Preconditions.checkArgument(paramInt > 0);
+        return new ScheduledThreadPoolExecutor(paramInt, paramThreadFactory) {
+            protected void afterExecute(Runnable paramAnonymousRunnable, Throwable paramAnonymousThrowable) {
+                if ((paramAnonymousThrowable instanceof RuntimeException)) {
+                    Log.w(paramString, "RuntimeException occured", paramAnonymousThrowable);
+                }
+                Future localFuture = null;
+                if ((paramAnonymousRunnable instanceof Future)) {
+                    localFuture = (Future) paramAnonymousRunnable;
                     try {
                         localFuture.get();
-                        label37:
                         super.afterExecute(paramAnonymousRunnable, paramAnonymousThrowable);
-                        return;
                     } catch (ExecutionException localExecutionException) {
-                        for (; ; ) {
-                            Log.w(paramString, "ExecutionException occured", localExecutionException.getCause());
-                        }
+                        Log.w(paramString, "ExecutionException occured", localExecutionException.getCause());
                     } catch (InterruptedException localInterruptedException) {
-                        for (; ; ) {
-                            Thread.currentThread().interrupt();
-                        }
+                        Thread.currentThread().interrupt();
                     } catch (CancellationException localCancellationException) {
-                        break label37;
+                        return;
                     }
                 }
-            };
-        }
+            }
+        };
     }
 
     public static ScheduledExecutorService createSafeScheduledExecutorService(int paramInt, String paramString) {
         return createSafeScheduledExecutorService(paramInt, createBackgroundThreadFactory(paramString), false);
     }
 
-    public static ScheduledExecutorService createSafeScheduledExecutorService(int paramInt, ThreadFactory paramThreadFactory, boolean paramBoolean) {
-        if (paramInt > 0) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkArgument(bool);
-            ScheduledThreadPoolExecutor local2 = new ScheduledThreadPoolExecutor(paramInt, paramThreadFactory) {
-                protected void afterExecute(Runnable paramAnonymousRunnable, Throwable paramAnonymousThrowable) {
-                    if ((paramAnonymousThrowable instanceof RuntimeException)) {
-                        throw ((RuntimeException) paramAnonymousThrowable);
-                    }
-                    Future localFuture;
-                    if ((paramAnonymousRunnable instanceof Future)) {
-                        localFuture = (Future) paramAnonymousRunnable;
-                    }
+    public static ScheduledExecutorService createSafeScheduledExecutorService(int coreSize, ThreadFactory factory, boolean allowCoreThreadTimeout) {
+        Preconditions.checkArgument((coreSize > 0));
+        final int MAX_EXPECTED_QUEUE_SIZE = coreSize * 0x2;
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(coreSize, factory) {
+
+            public void execute(Runnable r) {
+                int queueBefore = getQueue().size();
+                super.execute(r);
+                int queueAfter = getQueue().size();
+                if (queueAfter > MAX_EXPECTED_QUEUE_SIZE) {
+                    Log.w("Search.ConcurrentUtils", "Executor queue length is now " + queueAfter + ". Perhaps some tasks are too long, or the pool is too small. [" + Thread.currentThread().getName() + "]");
+                }
+            }
+
+            protected void afterExecute(Runnable r, Throwable t) {
+                if ((t instanceof RuntimeException)) {
+                    Log.w(this.getClass().getName(), "RuntimeException occured", t);
+                }
+                Future localFuture = null;
+                if ((r instanceof Future)) {
+                    localFuture = (Future) r;
                     try {
                         localFuture.get();
-                        label31:
-                        super.afterExecute(paramAnonymousRunnable, paramAnonymousThrowable);
-                        return;
+                        super.afterExecute(r, t);
                     } catch (ExecutionException localExecutionException) {
-                        throw new RuntimeException(localExecutionException);
+                        Log.w(this.getClass().getName(), "ExecutionException occured", localExecutionException.getCause());
                     } catch (InterruptedException localInterruptedException) {
-                        for (; ; ) {
-                            Thread.currentThread().interrupt();
-                        }
+                        Thread.currentThread().interrupt();
                     } catch (CancellationException localCancellationException) {
-                        break label31;
+                        return;
                     }
                 }
-
-                public void execute(Runnable paramAnonymousRunnable) {
-                    getQueue().size();
-                    super.execute(paramAnonymousRunnable);
-                    int i = getQueue().size();
-                    if (i > this.val$MAX_EXPECTED_QUEUE_SIZE) {
-                        Log.w("Search.ConcurrentUtils", "Executor queue length is now " + i + ". Perhaps some tasks are too long, or the pool is too small. [" + Thread.currentThread().getName() + "]");
-                    }
-                }
-            };
-            if (paramBoolean) {
-                local2.setKeepAliveTime(60L, TimeUnit.SECONDS);
-                local2.allowCoreThreadTimeOut(true);
             }
-            return local2;
+        };
+        if (allowCoreThreadTimeout) {
+            executor.setKeepAliveTime(0x3c, TimeUnit.SECONDS);
+            executor.allowCoreThreadTimeOut(true);
         }
+        return executor;
     }
 
     public static ScheduledExecutorService createSingleThreadedScheduledExecutorService(String paramString) {

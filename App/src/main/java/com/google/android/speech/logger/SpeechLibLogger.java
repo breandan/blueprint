@@ -41,11 +41,9 @@ public abstract interface SpeechLibLogger {
 
     public static class LogData {
         public final int audioPath;
-        public final int networkType;
 
-        public LogData(int paramInt1, int paramInt2) {
+        public LogData(int paramInt1) {
             this.audioPath = paramInt1;
-            this.networkType = paramInt2;
         }
     }
 }

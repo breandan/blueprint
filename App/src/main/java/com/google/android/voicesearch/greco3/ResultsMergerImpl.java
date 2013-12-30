@@ -19,7 +19,6 @@ import com.google.common.collect.Lists;
 import com.google.speech.recognizer.api.RecognizerProtos;
 import com.google.speech.s3.S3;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -161,32 +160,19 @@ public class ResultsMergerImpl
         return (this.mSelectedEndpointingEngine == 0) || (this.mSelectedEndpointingEngine == paramInt);
     }
 
-    private void switchTo(State paramState) {
-        boolean bool;
-        if (paramState != State.WAITING) {
-            bool = true;
-            Preconditions.checkArgument(bool);
-            this.mStateMachine.moveTo(paramState);
-            if (paramState == State.USE_SECONDARY) {
-                if (this.mSecondaryException == null) {
-                    break label64;
-                }
-                this.mRecognitionDispatcher.cancel();
-                this.mRecognitionEngineCallback.onError(Preconditions.checkNotNull(this.mPrimaryException));
+    private void switchTo(ResultsMergerImpl.State state) {
+        Preconditions.checkArgument((state != ResultsMergerImpl.State.WAITING));
+        mStateMachine.moveTo(state);
+        if (state == ResultsMergerImpl.State.USE_SECONDARY) {
+            if (mSecondaryException != null) {
+                mRecognitionDispatcher.cancel();
+                mRecognitionEngineCallback.onError(Preconditions.checkNotNull(mPrimaryException));
             }
-        }
-        for (; ; ) {
-            return;
-            bool = false;
-            break;
-            label64:
-            if (!this.mSecondaryEngineResponseQueue.isEmpty()) {
-                maybeLogUsingResultsFrom(this.mSecondaryEngine);
+            if (!mSecondaryEngineResponseQueue.isEmpty()) {
+                maybeLogUsingResultsFrom(mSecondaryEngine);
             }
-            Iterator localIterator = this.mSecondaryEngineResponseQueue.iterator();
-            while (localIterator.hasNext()) {
-                RecognitionResponse localRecognitionResponse = (RecognitionResponse) localIterator.next();
-                this.mRecognitionEngineCallback.onResult(localRecognitionResponse);
+            for (RecognitionResponse response : mSecondaryEngineResponseQueue) {
+                mRecognitionEngineCallback.onResult(response);
             }
         }
     }
@@ -214,11 +200,11 @@ public class ResultsMergerImpl
     public void onError(RecognizeException paramRecognizeException) {
         this.mThreadCheck.check();
         if (this.mInvalid) {
+            return;
         }
         int i;
         do {
             do {
-                return;
                 if ((paramRecognizeException instanceof NetworkRecognizeException)) {
                     this.mLogger.logS3ConnectionError();
                 }
@@ -239,7 +225,6 @@ public class ResultsMergerImpl
                 }
             } while (i != this.mSecondaryEngine);
             this.mSecondaryException = paramRecognizeException;
-            return;
         } while (!this.mStateMachine.isIn(asState(i)));
         this.mRecognitionDispatcher.cancel();
         if (i == this.mSecondaryEngine) {

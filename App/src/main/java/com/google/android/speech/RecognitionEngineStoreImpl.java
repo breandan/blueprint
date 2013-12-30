@@ -20,18 +20,16 @@ public class RecognitionEngineStoreImpl
         implements RecognitionEngineStore {
     private final RecognitionEngineParams mEngineParams;
     private final ExecutorService mLocalExecutorService;
-    private final ExecutorService mMusicExecutorService;
     private final ExecutorService mNetworkExecutorService;
     private final SpeechLibLogger mSpeechLibLogger;
     private RecognitionEngine mEmbeddedRecognitionEngine;
     private RecognitionEngine mMusicDetectorRecognitionEngine;
 
-    public RecognitionEngineStoreImpl(RecognitionEngineParams paramRecognitionEngineParams, SpeechLibLogger paramSpeechLibLogger, ExecutorService paramExecutorService1, ExecutorService paramExecutorService2, ExecutorService paramExecutorService3) {
+    public RecognitionEngineStoreImpl(RecognitionEngineParams paramRecognitionEngineParams, SpeechLibLogger paramSpeechLibLogger, ExecutorService paramExecutorService1, ExecutorService paramExecutorService2) {
         this.mEngineParams = paramRecognitionEngineParams;
         this.mSpeechLibLogger = paramSpeechLibLogger;
         this.mLocalExecutorService = paramExecutorService1;
         this.mNetworkExecutorService = paramExecutorService2;
-        this.mMusicExecutorService = paramExecutorService3;
     }
 
     public static final <T> T log(T paramT) {
@@ -44,14 +42,6 @@ public class RecognitionEngineStoreImpl
             this.mEmbeddedRecognitionEngine = ThreadChanger.createNonBlockingThreadChangeProxy(this.mLocalExecutorService, RecognitionEngine.class, log(new Greco3RecognitionEngine(localEmbeddedParams.getGreco3EngineManager(), localEmbeddedParams.getSamplingRate(), localEmbeddedParams.getBytesPerSample(), localEmbeddedParams.getSpeechSettings(), localEmbeddedParams.getCallbackFactory(), localEmbeddedParams.getModeSelector(), new GrecoEventLoggerFactory(), this.mSpeechLibLogger)));
         }
         return this.mEmbeddedRecognitionEngine;
-    }
-
-    private RecognitionEngine getMusicDetectorEngine() {
-        if (this.mMusicDetectorRecognitionEngine == null) {
-            RecognitionEngineParams.MusicDetectorParams localMusicDetectorParams = this.mEngineParams.getMusicDetectorParams();
-            this.mMusicDetectorRecognitionEngine = ThreadChanger.createNonBlockingThreadChangeProxy(this.mMusicExecutorService, RecognitionEngine.class, log(new MusicDetectorRecognitionEngine(localMusicDetectorParams.getSettings())));
-        }
-        return this.mMusicDetectorRecognitionEngine;
     }
 
     private RecognitionEngine getNetworkEngine() {
@@ -72,8 +62,6 @@ public class RecognitionEngineStoreImpl
                 case 2:
                     localArrayList.add(Pair.create(Integer.valueOf(i), getNetworkEngine()));
                     break;
-                case 3:
-                    localArrayList.add(Pair.create(Integer.valueOf(i), getMusicDetectorEngine()));
             }
         }
         return localArrayList;

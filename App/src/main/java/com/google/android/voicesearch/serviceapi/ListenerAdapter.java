@@ -2,6 +2,7 @@ package com.google.android.voicesearch.serviceapi;
 
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.speech.RecognitionService;
 import android.util.Log;
 import android.util.Pair;
 
@@ -11,10 +12,12 @@ import com.google.android.speech.listeners.RecognitionEventListenerAdapter;
 import com.google.android.speech.utils.RecognizedText;
 import com.google.android.voicesearch.logger.EventLogger;
 import com.google.android.voicesearch.util.ErrorUtils;
-import com.google.common.base.Preconditions;
+import com.google.speech.recognizer.api.RecognizerProtos;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class ListenerAdapter
         extends RecognitionEventListenerAdapter {
@@ -22,13 +25,13 @@ class ListenerAdapter
     private final boolean mDictationRequested;
     private final OnDoneListener mOnDoneListener;
     private final boolean mPartialsRequested;
-    private boolean mRecognitionCompleteReceived;
     private final RecognizedText mRecognizedText;
     private final ExtraPreconditions.ThreadCheck mThreadCheck;
+    private boolean mRecognitionCompleteReceived;
 
     public ListenerAdapter(RecognitionService.Callback paramCallback, OnDoneListener paramOnDoneListener, boolean paramBoolean1, boolean paramBoolean2) {
-        this.mCallback = ((RecognitionService.Callback) Preconditions.checkNotNull(paramCallback));
-        this.mOnDoneListener = ((OnDoneListener) Preconditions.checkNotNull(paramOnDoneListener));
+        this.mCallback = checkNotNull(paramCallback);
+        this.mOnDoneListener = checkNotNull(paramOnDoneListener);
         this.mDictationRequested = paramBoolean1;
         this.mPartialsRequested = paramBoolean2;
         this.mThreadCheck = ExtraPreconditions.createSameThreadCheck();
@@ -51,14 +54,13 @@ class ListenerAdapter
         EventLogger.recordClientEvent(60);
         try {
             this.mCallback.results(localBundle);
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "#result remote callback failed", localRemoteException);
         }
     }
 
     private void processDictationResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
-        Bundle localBundle;
+        Bundle localBundle = null;
         if (paramRecognitionEvent.hasResult()) {
             RecognizerProtos.RecognitionResult localRecognitionResult = paramRecognitionEvent.getResult();
             int i = localRecognitionResult.getHypothesisCount();
@@ -77,7 +79,6 @@ class ListenerAdapter
         }
         try {
             this.mCallback.partialResults(localBundle);
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "#partialResults remote callback failed", localRemoteException);
         }
@@ -91,7 +92,6 @@ class ListenerAdapter
         localBundle.putStringArrayList("results_recognition", localArrayList);
         try {
             this.mCallback.partialResults(localBundle);
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "#partialResults remote callback failed", localRemoteException);
         }
@@ -101,7 +101,6 @@ class ListenerAdapter
         this.mThreadCheck.check();
         try {
             this.mCallback.beginningOfSpeech();
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "beginningOfSpeech callback failed", localRemoteException);
         }
@@ -110,23 +109,19 @@ class ListenerAdapter
     public void onDone() {
         this.mThreadCheck.check();
         if (!this.mRecognitionCompleteReceived) {
-        }
-        try {
-            this.mCallback.error(7);
-            this.mOnDoneListener.onDone();
-            return;
-        } catch (RemoteException localRemoteException) {
-            for (; ; ) {
+            try {
+                this.mCallback.error(7);
+            } catch (RemoteException localRemoteException) {
                 Log.w("ListenerAdapter", "#error remote callback failed", localRemoteException);
             }
         }
+        this.mOnDoneListener.onDone();
     }
 
     public void onEndOfSpeech() {
         this.mThreadCheck.check();
         try {
             this.mCallback.endOfSpeech();
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "endOfSpeech callback failed", localRemoteException);
         }
@@ -134,33 +129,27 @@ class ListenerAdapter
 
     public void onError(RecognizeException paramRecognizeException) {
         this.mThreadCheck.check();
-        Preconditions.checkNotNull(paramRecognizeException);
+        checkNotNull(paramRecognizeException);
         Log.e("ListenerAdapter", "onError", paramRecognizeException);
         try {
             EventLogger.recordClientEvent(59);
             this.mCallback.error(ErrorUtils.getSpeechRecognizerError(paramRecognizeException));
             this.mOnDoneListener.onDone();
-            return;
         } catch (RemoteException localRemoteException) {
-            for (; ; ) {
-                Log.w("ListenerAdapter", "error callback failed", localRemoteException);
-            }
+            Log.w("ListenerAdapter", "error callback failed", localRemoteException);
         }
     }
 
     public void onNoSpeechDetected() {
-        this.mThreadCheck.check();
-        if (!this.mRecognitionCompleteReceived) {
-        }
-        try {
-            this.mCallback.error(6);
-            this.mOnDoneListener.onDone();
-            return;
-        } catch (RemoteException localRemoteException) {
-            for (; ; ) {
-                Log.w("ListenerAdapter", "#error remote callback failed", localRemoteException);
+        mThreadCheck.check();
+        if(!mRecognitionCompleteReceived) {
+            try {
+                mCallback.error(0x6);
+            } catch(RemoteException e) {
+                Log.w("ListenerAdapter", "#error remote callback failed", e);
             }
         }
+        mOnDoneListener.onDone();
     }
 
     public void onReadyForSpeech() {
@@ -168,36 +157,28 @@ class ListenerAdapter
         try {
             Bundle localBundle = new Bundle();
             this.mCallback.readyForSpeech(localBundle);
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "readyForSpeech callback failed", localRemoteException);
         }
     }
 
-    public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
-        this.mThreadCheck.check();
-        if (paramRecognitionEvent.getEventType() == 0) {
-            if (!this.mDictationRequested) {
-                break label58;
+    public void onRecognitionResult(RecognizerProtos.RecognitionEvent recognitionEvent) {
+        mThreadCheck.check();
+        if (recognitionEvent.getEventType() == 0) {
+            if (mDictationRequested) {
+                processDictationResult(recognitionEvent);
+            } else if (mPartialsRequested) {
+                processPartialResult(recognitionEvent);
             }
-            processDictationResult(paramRecognitionEvent);
         }
-        for (; ; ) {
-            if ((paramRecognitionEvent.getEventType() == 1) && (paramRecognitionEvent.hasCombinedResult()) && (paramRecognitionEvent.getCombinedResult().getHypothesisCount() > 0)) {
-                processCombinedResult(paramRecognitionEvent);
-            }
-            return;
-            label58:
-            if (this.mPartialsRequested) {
-                processPartialResult(paramRecognitionEvent);
-            }
+        if ((recognitionEvent.getEventType() == 0x1) && (recognitionEvent.hasCombinedResult()) && (recognitionEvent.getCombinedResult().getHypothesisCount() > 0)) {
+            processCombinedResult(recognitionEvent);
         }
     }
 
     public void sendRmsValue(float paramFloat) {
         try {
             this.mCallback.rmsChanged(paramFloat);
-            return;
         } catch (RemoteException localRemoteException) {
             Log.w("ListenerAdapter", "rmsChanged callback failed", localRemoteException);
         }

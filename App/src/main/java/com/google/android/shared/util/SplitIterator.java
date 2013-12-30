@@ -37,67 +37,60 @@ public class SplitIterator
         findNextTokenWithCharDelimiter((char) this.mDelimiter);
     }
 
-    private void findNextTokenWithCharDelimiter(char paramChar) {
-        int i = this.mSequence.length();
-        while (this.mSearchStart != -1) {
-            int j = this.mSearchStart;
-            for (int k = this.mSearchStart; (k != i) && (this.mSequence.charAt(k) != paramChar); k++) {
+    private void findNextTokenWithCharDelimiter(char delimiter) {
+        int len = mSequence.length();
+        if(mSearchStart != -0x1) {
+            int start = mSearchStart;
+            int end = mSearchStart;
+            while(end != len && mSequence.charAt(end) != delimiter) {
+                end = end + 0x1;
             }
-            if (k == i) {
-            }
-            for (int m = -1; ; m = k + 1) {
-                this.mSearchStart = m;
-                if (!this.mTrim) {
-                    break label132;
+            mSearchStart = end == len ? -0x1 : (end + 0x1);
+            if(mTrim) {
+                start = Whitespace.indexOfNonMatchIn(mSequence, start, end);
+                if(start != -0x1) {
+                    mTokenStart = start;
+                    mTokenEnd = (Whitespace.lastIndexOfNonMatchIn(mSequence, start, end) + 0x1);
+                    return;
                 }
-                int n = Whitespace.indexOfNonMatchIn(this.mSequence, j, k);
-                if (n == -1) {
-                    break;
-                }
-                this.mTokenStart = n;
-                this.mTokenEnd = (1 + Whitespace.lastIndexOfNonMatchIn(this.mSequence, n, k));
-                return;
+                start = end;
             }
-            j = k;
-            label132:
-            if ((j != k) || (!this.mOmitEmpty)) {
-                this.mTokenStart = j;
-                this.mTokenEnd = k;
-                return;
+            if((start != end) || (!mOmitEmpty)) {
+                mTokenStart = start;
+                mTokenEnd = end;
             }
+            return;
         }
-        this.mTokenStart = -1;
+        mTokenStart = -0x1;
     }
 
     private void findNextTokenWithWhitespaceDelimiter() {
-        if (this.mSearchStart == -1) {
-            this.mTokenStart = -1;
-        }
-        int i;
-        do {
+        if(mSearchStart == -0x1) {
+            mTokenStart = -0x1;
             return;
-            i = this.mSequence.length();
-            if (!this.mOmitEmpty) {
-                break;
+        }
+        int len = mSequence.length();
+        if(mOmitEmpty) {
+            mTokenStart = Whitespace.indexOfNonMatchIn(mSequence, mSearchStart, len);
+            if(mTokenStart != -0x1) {
+                mTokenEnd = Whitespace.indexIn(mSequence, (mTokenStart + 0x1), len);
+                if(mTokenEnd != -0x1) {
+                    mSearchStart = (mTokenEnd + 0x1);
+                    return;
+                }
+                mTokenEnd = len;
+                mSearchStart = -0x1;
             }
-            this.mTokenStart = Whitespace.indexOfNonMatchIn(this.mSequence, this.mSearchStart, i);
-        } while (this.mTokenStart == -1);
-        this.mTokenEnd = Whitespace.indexIn(this.mSequence, 1 + this.mTokenStart, i);
-        if (this.mTokenEnd != -1) {
-            this.mSearchStart = (1 + this.mTokenEnd);
             return;
         }
-        this.mTokenEnd = i;
-        this.mSearchStart = -1;
-        return;
-        this.mTokenStart = this.mSearchStart;
-        this.mTokenEnd = Whitespace.indexIn(this.mSequence, this.mSearchStart, i);
-        if (this.mTokenEnd != -1) {
-            this.mSearchStart = (1 + this.mTokenEnd);
+        mTokenStart = mSearchStart;
+        mTokenEnd = Whitespace.indexIn(mSequence, mSearchStart, len);
+        if(mTokenEnd != -0x1) {
+            mSearchStart = (mTokenEnd + 0x1);
             return;
         }
-        this.mTokenEnd = i;
-        this.mSearchStart = -1;
+        mTokenEnd = len;
+        mSearchStart = -0x1;
     }
 
     public static SplitIterator splitOnCharOmitEmptyStrings(CharSequence paramCharSequence, char paramChar) {

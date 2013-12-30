@@ -3,18 +3,15 @@ package com.google.android.voicesearch.audio;
 import android.media.AudioManager;
 import android.util.Log;
 
-import com.google.android.shared.util.Clock;
 import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.shared.util.StopWatch;
 import com.google.android.shared.util.Util;
 import com.google.android.voicesearch.bluetooth.BluetoothController;
 import com.google.android.voicesearch.bluetooth.BluetoothListener;
+import com.google.android.voicesearch.bluetooth.BluetoothShim;
 import com.google.android.voicesearch.settings.Settings;
-import com.google.common.base.Preconditions;
 
 import java.util.concurrent.Executor;
-
-import javax.annotation.Nullable;
 
 public class AudioRouterImpl
         implements AudioRouter, BluetoothListener {
@@ -23,150 +20,27 @@ public class AudioRouterImpl
             Log.i("AudioRouter", "Audio focus change " + paramAnonymousInt);
         }
     };
-    private boolean mAudioFocusObtained = false;
     private final AudioManager mAudioManager;
-    private int mAwaitState = 12;
     private final BluetoothController mBluetoothController;
-    private final Clock mClock;
     private final Executor mExecutor;
     private final ExtraPreconditions.ThreadCheck mExecutorThreadCheck;
     private final Object mLock = new Object();
     private final ExtraPreconditions.ThreadCheck mNotExecutorThreadCheck;
+    private final Settings mSettings;
+    private boolean mAudioFocusObtained = false;
+    private int mAwaitState = 12;
     private int mRoute = 3;
     private AudioRouter.AudioRouteListener mRouteListener = null;
     private boolean mScoFailed = false;
-    private final Settings mSettings;
     private boolean mSynchronizePending = false;
 
-    public AudioRouterImpl(Clock paramClock, Settings paramSettings, AudioManager paramAudioManager, Executor paramExecutor, ExtraPreconditions.ThreadCheck paramThreadCheck1, ExtraPreconditions.ThreadCheck paramThreadCheck2, BluetoothController paramBluetoothController) {
-        this.mClock = paramClock;
+    public AudioRouterImpl(Settings paramSettings, AudioManager paramAudioManager, Executor paramExecutor, ExtraPreconditions.ThreadCheck paramThreadCheck1, ExtraPreconditions.ThreadCheck paramThreadCheck2, BluetoothController paramBluetoothController) {
         this.mSettings = paramSettings;
         this.mAudioManager = paramAudioManager;
         this.mBluetoothController = paramBluetoothController;
         this.mExecutor = paramExecutor;
         this.mExecutorThreadCheck = paramThreadCheck1;
         this.mNotExecutorThreadCheck = paramThreadCheck2;
-    }
-
-    private boolean awaitBluetoothDeviceLocked() {
-        ExtraPreconditions.checkHoldsLock(this.mLock);
-        if (this.mRoute == 0) {
-        }
-        for (long l1 = 1000L; ; l1 = 200L) {
-            long l2 = l1 + this.mClock.uptimeMillis();
-            for (; ; ) {
-                if ((this.mBluetoothController.getDeviceState() != 0) || (l1 <= 0L) || (this.mAwaitState == 11)) {
-                    break label99;
-                }
-                try {
-                    this.mLock.wait(l1);
-                    l1 = l2 - this.mClock.uptimeMillis();
-                } catch (InterruptedException localInterruptedException) {
-                    Log.w("AudioRouter", "Thread was interrupted, aborting await", localInterruptedException);
-                }
-            }
-        }
-        label99:
-        int i;
-        BluetoothShim.BluetoothDevice localBluetoothDevice;
-        do {
-            do {
-                return false;
-            } while (this.mAwaitState == 11);
-            i = this.mBluetoothController.getDeviceState();
-            localBluetoothDevice = this.mBluetoothController.getDevice();
-            if (i == 0) {
-                Log.w("AudioRouter", "Timed out waiting for BT device state");
-                this.mScoFailed = true;
-                return false;
-            }
-        }
-        while ((i == 2) || (localBluetoothDevice == null) || (!shouldUseBluetoothDevice(this.mBluetoothController.getDevice())));
-        return true;
-    }
-
-    private boolean awaitBluetoothRoutingLocked() {
-        boolean bool1 = true;
-        ExtraPreconditions.checkHoldsLock(this.mLock);
-        try {
-            if (this.mAwaitState == 12) {
-            }
-            for (boolean bool2 = bool1; ; bool2 = false) {
-                Preconditions.checkState(bool2, "awaitBluetoothRouting can only be run by one thread concurrently");
-                this.mAwaitState = 10;
-                int i = this.mBluetoothController.getScoState();
-                if (i != 12) {
-                    break;
-                }
-                return bool1;
-            }
-            if (this.mScoFailed) {
-                Log.w("AudioRouter", "SCO connection has failed");
-                int m = this.mRoute;
-                if (m != 0) {
-                }
-                for (; ; ) {
-                    return bool1;
-                    bool1 = false;
-                }
-            }
-            if (!awaitBluetoothDeviceLocked()) {
-                int k = this.mRoute;
-                if (k != 0) {
-                }
-                for (; ; ) {
-                    return bool1;
-                    bool1 = false;
-                }
-            }
-            if (!awaitBluetoothScoConnectionLocked()) {
-                int j = this.mRoute;
-                if (j != 0) {
-                }
-                for (; ; ) {
-                    return bool1;
-                    bool1 = false;
-                }
-            }
-            return bool1;
-        } finally {
-            this.mAwaitState = 12;
-        }
-    }
-
-    private boolean awaitBluetoothScoConnectionLocked() {
-        ExtraPreconditions.checkHoldsLock(this.mLock);
-        long l1 = this.mSettings.getConfiguration().getBluetooth().getScoConnectionTimeoutMs();
-        long l2 = l1 + this.mClock.uptimeMillis();
-        for (; ; ) {
-            if (((this.mBluetoothController.getScoState() == 11) || (this.mSynchronizePending)) && (l1 > 0L) && (this.mAwaitState != 11)) {
-                try {
-                    this.mLock.wait(l1);
-                    l1 = l2 - this.mClock.uptimeMillis();
-                } catch (InterruptedException localInterruptedException) {
-                    Log.w("AudioRouter", "Thread was interrupted, aborting await", localInterruptedException);
-                }
-            }
-        }
-        while (this.mAwaitState == 11) {
-            return false;
-        }
-        int i = this.mBluetoothController.getScoState();
-        if (i == 11) {
-            Log.w("AudioRouter", "SCO connection timed out");
-            this.mScoFailed = true;
-            this.mExecutor.execute(new Runnable() {
-                public void run() {
-                    AudioRouterImpl.this.mBluetoothController.stopSco();
-                }
-            });
-            return false;
-        }
-        if (i == 10) {
-            Log.w("AudioRouter", "SCO connection attempt failed");
-            return false;
-        }
-        return true;
     }
 
     private static final String enumIntToString(int paramInt) {
@@ -194,13 +68,13 @@ public class AudioRouterImpl
         return "[Illegal value]";
     }
 
+    private static boolean isBluetoothRoute(int paramInt) {
+        return (paramInt == 0) || (paramInt == 1);
+    }
+
     private boolean isBluetoothRoute() {
         ExtraPreconditions.checkHoldsLock(this.mLock);
         return isBluetoothRoute(this.mRoute);
-    }
-
-    private static boolean isBluetoothRoute(int paramInt) {
-        return (paramInt == 0) || (paramInt == 1);
     }
 
     private boolean isRouteActive() {
@@ -213,65 +87,60 @@ public class AudioRouterImpl
     }
 
     private void maybeAbandonAudioFocus() {
-        this.mExecutor.execute(new Runnable() {
+        mExecutor.execute(new Runnable() {
+
             public void run() {
-                if (AudioRouterImpl.this.mAudioFocusObtained) {
-                    if (AudioRouterImpl.this.mAudioManager.abandonAudioFocus(AudioRouterImpl.this.mAudioFocusChangeListener) == 1) {
-                        AudioRouterImpl.access$202(AudioRouterImpl.this, false);
+                if (mAudioFocusObtained) {
+                    int result = mAudioManager.abandonAudioFocus(mAudioFocusChangeListener);
+                    if (result == 0x1) {
+                        mAudioFocusObtained = false;
+                        return;
                     }
-                } else {
-                    return;
+                    Log.w("AudioRouter", "Unable to release STREAM_SYSTEM audio focus");
                 }
-                Log.w("AudioRouter", "Unable to release STREAM_SYSTEM audio focus");
             }
         });
     }
 
     private void maybeRequestAudioFocus() {
-        this.mExecutor.execute(new Runnable() {
+        mExecutor.execute(new Runnable() {
             public void run() {
-                if (!AudioRouterImpl.this.mAudioFocusObtained) {
-                    if (Util.SDK_INT < 19) {
-                        break label53;
+                if (!mAudioFocusObtained) {
+                    int focusType = Util.SDK_INT >= 0x13 ? 0x4 : 0x2;
+                    int result = mAudioManager.requestAudioFocus(mAudioFocusChangeListener, 0x1, focusType);
+                    if (result == 0x1) {
+                        mAudioFocusObtained = true;
+                        return;
                     }
+                    Log.w("AudioRouter", "Unable to obtain STREAM_SYSTEM audio focus");
                 }
-                label53:
-                for (int i = 4; AudioRouterImpl.this.mAudioManager.requestAudioFocus(AudioRouterImpl.this.mAudioFocusChangeListener, 1, i) == 1; i = 2) {
-                    AudioRouterImpl.access$202(AudioRouterImpl.this, true);
-                    return;
-                }
-                Log.w("AudioRouter", "Unable to obtain STREAM_SYSTEM audio focus");
             }
         });
     }
 
     private boolean shouldUseBluetoothDevice(BluetoothShim.BluetoothDevice paramBluetoothDevice) {
-        return true;
+        return false;
     }
 
     private void synchronizeBluetoothState() {
-        this.mExecutorThreadCheck.check();
-        for (; ; ) {
-            synchronized (this.mLock) {
-                if (this.mSynchronizePending) {
-                    this.mSynchronizePending = false;
-                    this.mLock.notify();
-                }
-                if (isBluetoothRoute()) {
-                    this.mBluetoothController.ensureInitialized();
-                    if (this.mScoFailed) {
-                        return;
-                    }
-                    if ((this.mBluetoothController.getScoState() == 10) && (this.mBluetoothController.getDeviceState() == 1) && (shouldUseBluetoothDevice(this.mBluetoothController.getDevice()))) {
-                        Log.i("AudioRouter", "BT required, starting SCO");
-                        this.mBluetoothController.startSco();
-                    }
+        mExecutorThreadCheck.check();
+        synchronized (mLock) {
+            if (mSynchronizePending) {
+                mSynchronizePending = false;
+                mLock.notify();
+            }
+            if (isBluetoothRoute()) {
+                mBluetoothController.ensureInitialized();
+                if (mScoFailed) {
                     return;
                 }
-            }
-            if (this.mBluetoothController.getScoState() != 10) {
+                if ((mBluetoothController.getScoState() == 0xa) && (mBluetoothController.getDeviceState() == 0x1) && (shouldUseBluetoothDevice(mBluetoothController.getDevice()))) {
+                    Log.i("AudioRouter", "BT required, starting SCO");
+                    mBluetoothController.startSco();
+                }
+            } else if (mBluetoothController.getScoState() != 0xa) {
                 Log.i("AudioRouter", "BT not required, stopping SCO");
-                this.mBluetoothController.stopSco();
+                mBluetoothController.stopSco();
             }
         }
     }
@@ -280,23 +149,17 @@ public class AudioRouterImpl
         this.mNotExecutorThreadCheck.check();
         ExtraPreconditions.checkNotMainThread();
         StopWatch localStopWatch = new StopWatch().start();
-        Object localObject1 = this.mLock;
         try {
-            boolean bool;
-            if (isBluetoothRoute()) {
-                bool = awaitBluetoothRoutingLocked();
-            }
             try {
                 int k = localStopWatch.getElapsedTime();
                 if (k > 200L) {
                     Log.w("AudioRouter", "awaitRouting took " + k + "ms");
                 }
-                return bool;
             } finally {
-            }
-            int j = localStopWatch.getElapsedTime();
-            if (j > 200L) {
-                Log.w("AudioRouter", "awaitRouting took " + j + "ms");
+                int j = localStopWatch.getElapsedTime();
+                if (j > 200L) {
+                    Log.w("AudioRouter", "awaitRouting took " + j + "ms");
+                }
             }
             return true;
         } finally {
@@ -338,54 +201,43 @@ public class AudioRouterImpl
         }
     }
 
-    public void onDeviceStateChanged(int paramInt1, int paramInt2, @Nullable BluetoothShim.BluetoothDevice paramBluetoothDevice) {
-        this.mExecutorThreadCheck.check();
-        synchronized (this.mLock) {
+    public void onDeviceStateChanged(int prevState, int deviceState, BluetoothShim.BluetoothDevice device) {
+        mExecutorThreadCheck.check();
+        synchronized (mLock) {
             synchronizeBluetoothState();
-            this.mLock.notify();
-            return;
+            mLock.notify();
         }
     }
 
-    public void onScoStateChanged(int paramInt1, int paramInt2) {
-        this.mExecutorThreadCheck.check();
-        synchronized (this.mLock) {
-            if ((isBluetoothRoute()) && (paramInt2 == 10) && (!this.mScoFailed)) {
-                this.mScoFailed = true;
-                if (paramInt1 != 12) {
-                    break label104;
-                }
-                Log.i("AudioRouter", "BT route lost");
-                if (this.mRouteListener != null) {
-                    localAudioRouteListener = this.mRouteListener;
-                    this.mExecutor.execute(new Runnable() {
-                        public void run() {
-                            localAudioRouteListener.onRouteLost();
-                        }
-                    });
+    public void onScoStateChanged(int prevState, int scoState) {
+        mExecutorThreadCheck.check();
+        synchronized (mLock) {
+            if ((isBluetoothRoute()) && (scoState == 0xa) && (!mScoFailed)) {
+                mScoFailed = true;
+                if (prevState == 0xc) {
+                    Log.i("AudioRouter", "BT route lost");
+                    if (mRouteListener != null) {
+                        final AudioRouter.AudioRouteListener listener = mRouteListener;
+                        mExecutor.execute(new Runnable() {
+                            public void run() {
+                                listener.onRouteLost();
+                            }
+                        });
+                    }
+                } else if (prevState == 0xb) {
+                    Log.i("AudioRouter", "BT connection failed");
                 }
             }
-            label104:
-            while (paramInt1 != 11) {
-                final AudioRouter.AudioRouteListener localAudioRouteListener;
-                synchronizeBluetoothState();
-                this.mLock.notify();
-                return;
-            }
-            Log.i("AudioRouter", "BT connection failed");
+            synchronizeBluetoothState();
+            mLock.notify();
         }
     }
 
-    public void onStartListening(boolean paramBoolean) {
-        Object localObject1 = this.mLock;
-        if (paramBoolean) {
-        }
-        try {
-            if (!isRouteActive()) {
+    public void onStartListening(boolean requestAudioFocus) {
+        synchronized (mLock) {
+            if ((requestAudioFocus) && (!isRouteActive())) {
                 maybeRequestAudioFocus();
             }
-            return;
-        } finally {
         }
     }
 
@@ -398,16 +250,11 @@ public class AudioRouterImpl
         }
     }
 
-    public void onStopListening(boolean paramBoolean) {
-        Object localObject1 = this.mLock;
-        if (paramBoolean) {
-        }
-        try {
-            if (!isRouteActive()) {
+    public void onStopListening(boolean releaseAudioFocus) {
+        synchronized (mLock) {
+            if ((releaseAudioFocus) && (!isRouteActive())) {
                 maybeAbandonAudioFocus();
             }
-            return;
-        } finally {
         }
     }
 
@@ -420,38 +267,34 @@ public class AudioRouterImpl
         }
     }
 
-    public void updateRoute(int paramInt, @Nullable AudioRouter.AudioRouteListener paramAudioRouteListener) {
-        if ((paramInt == 1) && (!this.mSettings.isBluetoothHeadsetEnabled())) {
-            paramInt = 2;
+    public void updateRoute(int route, AudioRouter.AudioRouteListener routeListener) {
+        if ((route == 0x1) && (!mSettings.isBluetoothHeadsetEnabled())) {
+            route = 0x2;
         }
-        Object localObject1 = this.mLock;
-        if (paramInt != 3) {
-        }
-        for (; ; ) {
-            try {
+        synchronized (mLock) {
+            if (route != 0x3) {
                 maybeRequestAudioFocus();
-                this.mRouteListener = paramAudioRouteListener;
-                if (paramInt != this.mRoute) {
-                    break label63;
-                }
-                return;
-            } finally {
+            } else {
+                maybeAbandonAudioFocus();
             }
-            maybeAbandonAudioFocus();
-            continue;
-            label63:
-            Log.i("AudioRouter", enumIntToString(this.mRoute) + "->" + enumIntToString(paramInt));
-            int i = this.mRoute;
-            this.mRoute = paramInt;
-            if ((!isBluetoothRoute(i)) && (isBluetoothRoute(paramInt))) {
-                this.mScoFailed = false;
-            }
-            this.mSynchronizePending = true;
-            this.mExecutor.execute(new Runnable() {
-                public void run() {
-                    AudioRouterImpl.this.synchronizeBluetoothState();
+            mRouteListener = routeListener;
+            if (route == mRoute) {
+            } else {
+                Log.i("AudioRouter", enumIntToString(mRoute) + "->" + enumIntToString(route));
+                int prevRoute = mRoute;
+                mRoute = route;
+                if ((!isBluetoothRoute(prevRoute)) && (isBluetoothRoute(route))) {
+                    mScoFailed = false;
+                } else {
+                    mSynchronizePending = true;
+                    mExecutor.execute(new Runnable() {
+
+                        public void run() {
+                            AudioRouterImpl.this.synchronizeBluetoothState();
+                        }
+                    });
                 }
-            });
+            }
         }
     }
 }
