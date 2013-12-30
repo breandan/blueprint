@@ -17,22 +17,18 @@ import javax.annotation.Nullable;
 public class SpokenLanguageUtils {
     private static final Locale DEFAULT_LOCALE = Locale.US;
 
-    public static String getDefaultMainSpokenLanguageBcp47(String paramString, GstaticConfiguration.Configuration paramConfiguration) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
+    public static String getDefaultMainSpokenLanguageBcp47(String phoneJavaLocale, GstaticConfiguration.Configuration configuration) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect dialect : language.getDialectList()) {
+                if (dialect.getJavaLocalesList().contains(phoneJavaLocale)) {
+                    return dialect.getBcp47Locale();
                 }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
+                if (phoneJavaLocale.contains("_")) {
+                    phoneJavaLocale = phoneJavaLocale.substring(0x0, phoneJavaLocale.lastIndexOf(0x5f));
+                    return getDefaultMainSpokenLanguageBcp47(phoneJavaLocale, configuration);
+                }
             }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
-        } while (!localDialect.getJavaLocalesList().contains(paramString));
-        return localDialect.getBcp47Locale();
-        if (paramString.contains("_")) {
-            return getDefaultMainSpokenLanguageBcp47(paramString.substring(0, paramString.lastIndexOf('_')), paramConfiguration);
         }
         return "en-001";
     }
@@ -59,46 +55,25 @@ public class SpokenLanguageUtils {
         return null;
     }
 
-    public static String[] getDialectDisplayName(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Language localLanguage = getLanguageByDisplayName(paramConfiguration, paramString);
-        String[] arrayOfString;
-        if (localLanguage == null) {
-            Log.w("SpokenLanguageUtils", "#getDialectDisplayName - language not found " + paramString);
-            arrayOfString = null;
+    public static CharSequence[] getDisplayNames(GstaticConfiguration.Dialect[] dialects) {
+        CharSequence[] displayNames = new CharSequence[dialects.length];
+        for (int i = 0x0; i < dialects.length; i = i + 0x1) {
+            displayNames[i] = dialects[i].getDisplayName();
         }
-        for (; ; ) {
-            return arrayOfString;
-            arrayOfString = new String[localLanguage.getDialectCount()];
-            for (int i = 0; i < arrayOfString.length; i++) {
-                arrayOfString[i] = localLanguage.getDialect(i).getDisplayName();
-            }
-        }
+        return displayNames;
     }
 
-    public static String getDisplayName(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
+    public static String getDisplayName(GstaticConfiguration.Configuration configuration, String localeBcp47) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect mainLanguage : language.getDialectList()) {
+                if (mainLanguage.getBcp47Locale().equals(localeBcp47)) {
+                    return mainLanguage.getDisplayName();
                 }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
+                Log.e("SpokenLanguageUtils", "No display name for: " + localeBcp47);
             }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
-        } while (!localDialect.getBcp47Locale().equals(paramString));
-        return localDialect.getDisplayName();
-        Log.e("SpokenLanguageUtils", "No display name for: " + paramString);
-        return "";
-    }
-
-    public static CharSequence[] getDisplayNames(GstaticConfiguration.Dialect[] paramArrayOfDialect) {
-        CharSequence[] arrayOfCharSequence = new CharSequence[paramArrayOfDialect.length];
-        for (int i = 0; i < paramArrayOfDialect.length; i++) {
-            arrayOfCharSequence[i] = paramArrayOfDialect[i].getDisplayName();
         }
-        return arrayOfCharSequence;
+        return "";
     }
 
     public static ArrayList<String> getEmbeddedBcp47(GstaticConfiguration.Configuration paramConfiguration) {
@@ -110,31 +85,15 @@ public class SpokenLanguageUtils {
         return localArrayList;
     }
 
-    public static GstaticConfiguration.Language getLanguageByDisplayName(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        Iterator localIterator = paramConfiguration.getLanguagesList().iterator();
-        while (localIterator.hasNext()) {
-            GstaticConfiguration.Language localLanguage = (GstaticConfiguration.Language) localIterator.next();
-            if (localLanguage.getDisplayName().equals(paramString)) {
-                return localLanguage;
+    public static GstaticConfiguration.Dialect getLanguageDialect(GstaticConfiguration.Configuration configuration, String bcp47Locale) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect dialect : language.getDialectList()) {
+                if (dialect.getBcp47Locale().equals(bcp47Locale)) {
+                    return dialect;
+                }
             }
         }
-        return null;
-    }
-
-    public static GstaticConfiguration.Dialect getLanguageDialect(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
-                }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
-            }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
-        } while (!localDialect.getBcp47Locale().equals(paramString));
-        return localDialect;
         return null;
     }
 
@@ -180,24 +139,7 @@ public class SpokenLanguageUtils {
         return paramSpeechSettings.getSpokenLocaleBcp47();
     }
 
-    public static String getSpokenBcp47Locale(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
-                }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
-            }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
-        } while (!localDialect.getJavaLocalesList().contains(paramString));
-        return localDialect.getBcp47Locale();
-        return null;
-    }
-
-    public static String getSpokenBcp47Locale(GstaticConfiguration.Configuration paramConfiguration, String... paramVarArgs) {
+    public static String getSpokenBcp47Locale(GstaticConfiguration.Configuration paramConfiguration, String[] paramVarArgs) {
         int i = paramVarArgs.length;
         for (int j = 0; j < i; j++) {
             String str = getSpokenBcp47Locale(paramConfiguration, paramVarArgs[j]);
@@ -208,37 +150,40 @@ public class SpokenLanguageUtils {
         return null;
     }
 
-    public static GstaticConfiguration.Dialect getSpokenLanguageByBcp47Locale(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
+    public static GstaticConfiguration.Dialect getSpokenLanguageByBcp47Locale(GstaticConfiguration.Configuration configuration, String bcp47Locale) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect dialect : language.getDialectList()) {
+                if (dialect.getBcp47Locale().equals(bcp47Locale)) {
+                    return dialect;
                 }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
             }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
-        } while (!localDialect.getBcp47Locale().equals(paramString));
-        return localDialect;
+        }
         return null;
     }
 
-    public static GstaticConfiguration.Dialect getSpokenLanguageByJavaLocale(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
+    public static String getSpokenBcp47Locale(GstaticConfiguration.Configuration configuration, String javaLocale) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect dialect : language.getDialectList()) {
+                if (dialect.getJavaLocalesList().contains(javaLocale)) {
+                    return dialect.getBcp47Locale();
                 }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
             }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
-        } while (!localDialect.getJavaLocalesList().contains(paramString));
-        return localDialect;
+        }
+        return null;
+    }
+
+    public static GstaticConfiguration.Dialect getSpokenLanguageByJavaLocale(GstaticConfiguration.Configuration configuration, String javaLocale) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect dialect : language.getDialectList()) {
+                if (dialect.getJavaLocalesList().contains(javaLocale)) {
+                    return dialect;
+                }
+            }
+        }
+
         return null;
     }
 
@@ -281,21 +226,15 @@ public class SpokenLanguageUtils {
         return localArrayList;
     }
 
-    public static GstaticConfiguration.Dialect getVoiceImeMainLanguage(GstaticConfiguration.Configuration paramConfiguration, String paramString) {
-        GstaticConfiguration.Dialect localDialect;
-        do {
-            Iterator localIterator1 = paramConfiguration.getLanguagesList().iterator();
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                if (!localIterator1.hasNext()) {
-                    break;
+    public static GstaticConfiguration.Dialect getVoiceImeMainLanguage(GstaticConfiguration.Configuration configuration, String bcp47Locale) {
+        if (configuration.getLanguagesList().iterator().hasNext()) {
+            GstaticConfiguration.Language language = configuration.getLanguagesList().iterator().next();
+            for (GstaticConfiguration.Dialect dialect : language.getDialectList()) {
+                if ((dialect.getImeSupported()) && (dialect.getBcp47Locale().equals(bcp47Locale))) {
+                    return dialect;
                 }
-                localIterator2 = ((GstaticConfiguration.Language) localIterator1.next()).getDialectList().iterator();
             }
-            localDialect = (GstaticConfiguration.Dialect) localIterator2.next();
         }
-        while ((!localDialect.getImeSupported()) || (!localDialect.getBcp47Locale().equals(paramString)));
-        return localDialect;
         return null;
     }
 
@@ -303,15 +242,6 @@ public class SpokenLanguageUtils {
         return !TextUtils.isEmpty(getDisplayName(paramConfiguration, paramString));
     }
 
-    public static boolean updateSpokenLanguage(SpeechSettings paramSpeechSettings, String paramString) {
-        boolean bool1 = isSupportedBcp47Locale(paramSpeechSettings.getConfiguration(), paramString);
-        boolean bool2 = false;
-        if (bool1) {
-            paramSpeechSettings.setSpokenLanguageBcp47(paramString, paramString.equals(getDefaultMainSpokenLanguageBcp47(Locale.getDefault().toString(), paramSpeechSettings.getConfiguration())));
-            bool2 = true;
-        }
-        return bool2;
-    }
 }
 
 

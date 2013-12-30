@@ -58,7 +58,7 @@ public class VoiceImeSubtypeUpdater
 
     private void updateVoiceImeSubtypes(GstaticConfiguration.Configuration paramConfiguration) {
         LinkedList localLinkedList;
-        InputMethodManager localInputMethodManager;
+        InputMethodManager localInputMethodManager = (InputMethodManager) this.mContext.getSystemService("input_method");
         InputMethodInfo localInputMethodInfo;
         do {
             try {
@@ -70,15 +70,15 @@ public class VoiceImeSubtypeUpdater
                     GstaticConfiguration.Dialect localDialect = (GstaticConfiguration.Dialect) localIterator1.next();
                     localLinkedList.add(createInputMethodSubtype(localDialect, localArrayList2.contains(localDialect.getBcp47Locale())));
                 }
-                localInputMethodManager = (InputMethodManager) this.mContext.getSystemService("input_method");
             } catch (Throwable localThrowable) {
                 Log.e("VoiceImeSubtypeUpdater", "Error updating IME subtype: ", localThrowable);
                 return;
             }
-            Iterator localIterator2;
-            while (!localIterator2.hasNext()) {
-                localIterator2 = localInputMethodManager.getInputMethodList().iterator();
-            }
+            Iterator localIterator2 = localInputMethodManager.getInputMethodList().iterator();
+
+            if (!localIterator2.hasNext())
+                return;
+
             localInputMethodInfo = (InputMethodInfo) localIterator2.next();
         } while (!localInputMethodInfo.getPackageName().equals(this.mPackageName));
         localInputMethodManager.setAdditionalInputMethodSubtypes(localInputMethodInfo.getId(), (InputMethodSubtype[]) localLinkedList.toArray(new InputMethodSubtype[localLinkedList.size()]));

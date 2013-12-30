@@ -1,6 +1,7 @@
 package com.google.android.speech.logger;
 
 import com.google.android.voicesearch.logger.EventLogger;
+import com.google.speech.logs.VoicesearchClientLogProto;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;

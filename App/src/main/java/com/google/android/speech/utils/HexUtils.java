@@ -3,47 +3,38 @@ package com.google.android.speech.utils;
 public class HexUtils {
     private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
-    public static String bytesToHex(byte[] paramArrayOfByte) {
-        char[] arrayOfChar = new char[2 * paramArrayOfByte.length];
-        for (int i = 0; i < paramArrayOfByte.length; i++) {
-            int j = paramArrayOfByte[i];
-            int k = HEX_CHARS[(0xF & j >> 4)];
-            int m = HEX_CHARS[(j & 0xF)];
-            arrayOfChar[(i * 2)] = k;
-            arrayOfChar[(1 + i * 2)] = m;
+    public static String bytesToHex(byte[] bytes) {
+        char[] chars = new char[(bytes.length * 0x2)];
+        for(int i = 0x0; i < bytes.length; i = i + 0x1) {
+            byte b = bytes[i];
+            char c1 = HEX_CHARS[((b >> 0x4) & 0xf)];
+            char c2 = HEX_CHARS[(b & 0xf)];
+            chars[(i * 0x2)] = c1;
+            chars[((i * 0x2) + 0x1)] = c2;
         }
-        return new String(arrayOfChar);
+        return new String(chars);
     }
 
-    public static byte[] hexToBytes(CharSequence paramCharSequence) {
-        byte[] arrayOfByte = new byte[(1 + paramCharSequence.length()) / 2];
-        if (paramCharSequence.length() == 0) {
-            return arrayOfByte;
+    public static byte[] hexToBytes(CharSequence str) {
+        byte[] bytes = new byte[((str.length() + 0x1) / 0x2)];
+        if(str.length() == 0) {
+            return bytes;
         }
-        arrayOfByte[0] = 0;
-        int i = paramCharSequence.length() % 2;
-        int j = 0;
-        label39:
-        char c;
-        if (j < paramCharSequence.length()) {
-            c = paramCharSequence.charAt(j);
-            if (!isHex(c)) {
+        bytes[0x0] = 0x0;
+        int nibbleIdx = str.length() % 0x2;
+        for(int i = 0x0; i < str.length(); i = i + 0x1) {
+            char c = str.charAt(i);
+            if(!isHex(c)) {
                 throw new IllegalArgumentException("string contains non-hex chars");
             }
-            if (i % 2 != 0) {
-                break label104;
+            if((nibbleIdx % 0x2) == 0) {
+                bytes[(nibbleIdx >> 0x1)] = (byte)(hexValue(c) << 0x4);
+            } else {
+                bytes[(nibbleIdx >> 0x1)] = (byte)(bytes[(nibbleIdx >> 0x1)] + (byte)hexValue(c));
             }
-            arrayOfByte[(i >> 1)] = ((byte) (hexValue(c) << 4));
+            nibbleIdx = nibbleIdx + 0x1;
         }
-        for (; ; ) {
-            i++;
-            j++;
-            break label39;
-            break;
-            label104:
-            int k = i >> 1;
-            arrayOfByte[k] = ((byte) (arrayOfByte[k] + (byte) hexValue(c)));
-        }
+        return bytes;
     }
 
     private static int hexValue(char paramChar) {

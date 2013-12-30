@@ -1,6 +1,5 @@
 package com.google.android.speech.audio;
 
-import android.os.Build;
 import android.util.Log;
 
 import com.google.android.speech.logger.SpeechLibLogger;
@@ -27,10 +26,6 @@ public class MicrophoneInputStreamFactory
         this.mPreemptible = paramBoolean2;
     }
 
-    private int getAudioRecordBufferSizeBytes() {
-        return 8 * (2 * this.mSampleRateHz);
-    }
-
     public static int getBytesPerMsec(int paramInt) {
         return paramInt * 2 / 1000;
     }
@@ -39,35 +34,35 @@ public class MicrophoneInputStreamFactory
         return 20 * getBytesPerMsec(paramInt);
     }
 
+    private int getAudioRecordBufferSizeBytes() {
+        return 8 * (2 * this.mSampleRateHz);
+    }
+
     public InputStream createInputStream() {
-        if (Build.VERSION.SDK_INT >= 16) {
-        }
-        for (String str = "com.google.android.speech.audio.FullMicrophoneInputStream"; ; str = "com.google.android.speech.audio.MicrophoneInputStream") {
-            try {
-                Class localClass = Class.forName(str);
-                Class[] arrayOfClass = new Class[7];
-                arrayOfClass[0] = Integer.TYPE;
-                arrayOfClass[1] = Integer.TYPE;
-                arrayOfClass[2] = Boolean.TYPE;
-                arrayOfClass[3] = SpeakNowSoundPlayer.class;
-                arrayOfClass[4] = AudioRouter.class;
-                arrayOfClass[5] = SpeechLibLogger.class;
-                arrayOfClass[6] = Boolean.TYPE;
-                Constructor localConstructor = localClass.getConstructor(arrayOfClass);
-                Object[] arrayOfObject = new Object[7];
-                arrayOfObject[0] = Integer.valueOf(this.mSampleRateHz);
-                arrayOfObject[1] = Integer.valueOf(getAudioRecordBufferSizeBytes());
-                arrayOfObject[2] = Boolean.valueOf(this.mNoiseSuppression);
-                arrayOfObject[3] = this.mBeepPlayer;
-                arrayOfObject[4] = this.mAudioRouter;
-                arrayOfObject[5] = this.mSpeechLibLogger;
-                arrayOfObject[6] = Boolean.valueOf(this.mPreemptible);
-                InputStream localInputStream = (InputStream) localConstructor.newInstance(arrayOfObject);
-                return localInputStream;
-            } catch (Exception localException) {
-                Log.e("MicrophoneInputStreamFactory", "Unable to create MicrophoneInputStream", localException);
-                throw new RuntimeException("Unable to create MicrophoneInputStream", localException);
-            }
+        try {
+            Class localClass = FullMicrophoneInputStream.class;
+            Class[] arrayOfClass = new Class[7];
+            arrayOfClass[0] = Integer.TYPE;
+            arrayOfClass[1] = Integer.TYPE;
+            arrayOfClass[2] = Boolean.TYPE;
+            arrayOfClass[3] = SpeakNowSoundPlayer.class;
+            arrayOfClass[4] = AudioRouter.class;
+            arrayOfClass[5] = SpeechLibLogger.class;
+            arrayOfClass[6] = Boolean.TYPE;
+            Constructor localConstructor = localClass.getConstructor(arrayOfClass);
+            Object[] arrayOfObject = new Object[7];
+            arrayOfObject[0] = Integer.valueOf(this.mSampleRateHz);
+            arrayOfObject[1] = Integer.valueOf(getAudioRecordBufferSizeBytes());
+            arrayOfObject[2] = Boolean.valueOf(this.mNoiseSuppression);
+            arrayOfObject[3] = this.mBeepPlayer;
+            arrayOfObject[4] = this.mAudioRouter;
+            arrayOfObject[5] = this.mSpeechLibLogger;
+            arrayOfObject[6] = Boolean.valueOf(this.mPreemptible);
+            InputStream localInputStream = (InputStream) localConstructor.newInstance(arrayOfObject);
+            return localInputStream;
+        } catch (Exception localException) {
+            Log.e("MicrophoneInputStreamFactory", "Unable to create MicrophoneInputStream", localException);
+            throw new RuntimeException("Unable to create MicrophoneInputStream", localException);
         }
     }
 }

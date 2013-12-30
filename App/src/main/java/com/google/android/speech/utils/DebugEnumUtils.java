@@ -255,7 +255,6 @@ public class DebugEnumUtils {
             case 122:
                 return "TOKEN_FETCHED";
         }
-        return "USER_EVENT_GWS_CORRECTION_SELECTED";
     }
 
     public static String getLatencyBreakDownLabel(int paramInt) {
@@ -361,7 +360,6 @@ public class DebugEnumUtils {
             case 53:
                 return "OPEN_MICROPHONE_RECORDING_STARTED";
         }
-        return "OPEN_MICROPHONE_RECORDING_STARTED_SYNCED";
     }
 }
 

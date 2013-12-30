@@ -86,7 +86,6 @@ public class GrammarCompilationService
         if (str2 == null) {
             return false;
         }
-        DebugAudioLogger.maybeDumpGrammar(str2, paramGreco3Grammar, this, this.mSpeechSettings);
         byte[] arrayOfByte2 = digest(str2);
         if ((arrayOfByte2 != null) && (Arrays.equals(arrayOfByte2, arrayOfByte1))) {
             return true;

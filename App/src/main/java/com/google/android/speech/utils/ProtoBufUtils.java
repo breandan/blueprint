@@ -2,7 +2,8 @@ package com.google.android.speech.utils;
 
 import com.google.protobuf.micro.ByteStringMicro;
 import com.google.protobuf.micro.MessageMicro;
-import com.google.speech.s3.S3.AuthToken;
+import com.google.speech.logs.VoicesearchClientLogProto;
+import com.google.speech.s3.S3;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -22,13 +23,12 @@ public class ProtoBufUtils {
                 protoToString(paramStringBuffer, paramString, getFieldName(paramField), (MessageMicro) paramObject);
             }
         }
-        do {
-            return;
+        if (!hasFieldValue(paramMessageMicro, paramField)) {
             if ((paramObject instanceof List)) {
                 fieldsToString(paramStringBuffer, paramString, paramMessageMicro, paramField, (List) paramObject);
                 return;
             }
-        } while (!hasFieldValue(paramMessageMicro, paramField));
+        }
         paramStringBuffer.append(paramString);
         paramStringBuffer.append(getFieldName(paramField));
         paramStringBuffer.append(":");
@@ -111,14 +111,11 @@ public class ProtoBufUtils {
                 Object localObject = localField.get(paramMessageMicro);
                 fieldToString(paramStringBuffer, paramString1 + " ", paramMessageMicro, localField, localObject);
             }
-            return;
         } catch (IllegalArgumentException localIllegalArgumentException) {
             paramStringBuffer.append("Unable to print proto buffer " + localIllegalArgumentException);
             localIllegalArgumentException.printStackTrace();
-            return;
             paramStringBuffer.append(paramString1);
             paramStringBuffer.append("}\n");
-            return;
         } catch (IllegalAccessException localIllegalAccessException) {
             paramStringBuffer.append("Unable to print proto buffer " + localIllegalAccessException);
             localIllegalAccessException.printStackTrace();
@@ -140,9 +137,6 @@ public class ProtoBufUtils {
             str = "null";
         }
         while (OBFUSCATE_FILEDS.contains(getString(paramMessageMicro.getClass(), paramString))) {
-            paramStringBuffer.append(str.substring(0, Math.min(4, str.length())));
-            paramStringBuffer.append("XXXXXXXX");
-            return;
             if ((paramObject instanceof ByteStringMicro)) {
                 str = "bytes[" + ((ByteStringMicro) paramObject).size() + "]";
             } else if ((paramObject instanceof Integer)) {
@@ -150,8 +144,11 @@ public class ProtoBufUtils {
             } else {
                 str = paramObject.toString();
             }
+
+            paramStringBuffer.append(str.substring(0, Math.min(4, str.length())));
+            paramStringBuffer.append("XXXXXXXX");
+            paramStringBuffer.append(str);
         }
-        paramStringBuffer.append(str);
     }
 }
 

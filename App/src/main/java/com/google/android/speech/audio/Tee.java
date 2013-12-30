@@ -57,9 +57,9 @@ public class Tee {
 
     private int findSlowestReaderLocked() {
         int minimum = 0x7fffffff;
-        for(int i = 0x0; i < mReadPositions.length; i = i + 0x1) {
+        for (int i = 0x0; i < mReadPositions.length; i = i + 0x1) {
             int position = mReadPositions[i];
-            if(position < minimum) {
+            if (position < minimum) {
                 minimum = position;
             }
         }
@@ -186,54 +186,50 @@ public class Tee {
         return totalCount;
     }
 
-    int readSecondary(int paramInt1, byte[] paramArrayOfByte, int paramInt2, int paramInt3) throws IOException {
-        int i = 0;
-        int j = 0;
-        try {
-            if (this.mException != null) {
-                throw this.mException;
+    int readSecondary(int streamId, byte[] bytes, int offset, int count) throws IOException {
+        int totalCount = 0x0;
+        int lastCount = 0x0;
+        synchronized (this) {
+            if (mException != null) {
+                throw mException;
             }
-        } finally {
-        }
-        int k = this.mReadPositions[paramInt1];
-        if (k == 2147483647) {
-            return 0;
-        }
-        if (j != 0) {
-            k += j;
-            this.mReadPositions[paramInt1] = k;
-            j = 0;
-        }
-        if (i == paramInt3) {
-            return paramInt3;
-        }
-        int m = this.mBufferEnd;
-        int n;
-        int i1;
-        if (m != k) {
-            n = m - k;
-            i1 = paramInt3 - i;
-            if (n >= i1) {
-                break label198;
+            int readPos = mReadPositions[streamId];
+            if (readPos == 0x7fffffff) {
+                return count;
             }
-        }
-        label198:
-        for (j = n; ; j = i1) {
-            for (; ; ) {
-                doRead(k, paramArrayOfByte, paramInt2 + i, j);
-                i += j;
-                break;
-                if (this.mEof) {
-                    return i;
+            if (lastCount != 0) {
+                readPos += lastCount;
+                mReadPositions[streamId] = readPos;
+                lastCount = 0x0;
+            }
+            if (totalCount == count) {
+                return count;
+            }
+            int bufferEnd = mBufferEnd;
+            if (bufferEnd != readPos) {
+                int avail = bufferEnd - readPos;
+                int need = count - totalCount;
+                if (avail < need) {
+                    lastCount = avail;
+                    doRead(readPos, bytes, (offset + totalCount), lastCount);
+                    totalCount += lastCount;
+                } else {
+                    lastCount = need;
                 }
-                try {
-                    wait();
-                } catch (InterruptedException localInterruptedException) {
-                    Thread.currentThread().interrupt();
-                    throw new IOException("Interrupted waiting for buffers: " + paramInt1);
-                }
+            } else if (mEof) {
+                count = totalCount;
+                return count;
+            }
+
+            try {
+                wait();
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+                throw new IOException("Interrupted waiting for buffers: " + streamId);
             }
         }
+
+        return count;
     }
 
     public synchronized void remove(int paramInt) {

@@ -2,6 +2,7 @@ package com.google.android.speech.utils;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
@@ -9,7 +10,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class NetworkInformation {
-    public static final int[] MISSING_TELEPHONY_RESULT = {-1, -1};
     @Nullable
     private final ConnectivityManager mConnectivityManager;
     @Nullable
@@ -30,127 +30,98 @@ public class NetworkInformation {
     }
 
     public int getConnectionId() {
-        if (this.mConnectivityManager == null) {
+        if (mConnectivityManager == null) {
+            return -0x1;
         }
-        do {
-            return -1;
-            NetworkInfo localNetworkInfo = this.mConnectivityManager.getActiveNetworkInfo();
-            if ((localNetworkInfo == null) || (!localNetworkInfo.isConnected())) {
-                return 0;
-            }
-            if (localNetworkInfo.getType() == 1) {
-                return 1;
-            }
-            if (localNetworkInfo.getType() == 6) {
-                return 19;
-            }
-            if (localNetworkInfo.getType() == 7) {
-                return 17;
-            }
-            if (localNetworkInfo.getType() == 9) {
-                return 18;
-            }
-            if (localNetworkInfo.getType() != 0) {
-                break;
-            }
-        } while (this.mTelephonyManager == null);
-        switch (this.mTelephonyManager.getNetworkType()) {
-            default:
-                return 0;
-            case 7:
-                return 2;
-            case 4:
-                return 3;
-            case 2:
-                return 4;
-            case 14:
-                return 5;
-            case 5:
-                return 6;
-            case 6:
-                return 7;
-            case 12:
-                return 8;
-            case 1:
-                return 9;
-            case 8:
-                return 10;
-            case 10:
-                return 11;
-            case 15:
-                return 12;
-            case 9:
-                return 13;
-            case 11:
-                return 14;
-            case 13:
-                return 15;
+        NetworkInfo networkInfo = mConnectivityManager.getActiveNetworkInfo();
+        if ((networkInfo == null) || (!networkInfo.isConnected())) {
+            return 0x0;
         }
-        return 16;
-        return 0;
-    }
-
-    @Nonnull
-    public String getDeviceCountryCode() {
-        if (this.mTelephonyManager == null) {
-            return "";
+        if (networkInfo.getType() == 0x1) {
+            return 0x1;
         }
-        String str = this.mTelephonyManager.getSimCountryIso();
-        if (TextUtils.isEmpty(str)) {
-            return "";
+        if (networkInfo.getType() == 0x6) {
+            return 0x13;
         }
-        return str.toUpperCase();
-    }
-
-    @Nonnull
-    public int[] getNetworkMccMnc() {
-        if (this.mTelephonyManager == null) {
-            return MISSING_TELEPHONY_RESULT;
+        if (networkInfo.getType() == 0x7) {
+            return 0x11;
         }
-        String str = this.mTelephonyManager.getNetworkOperator();
-        if ((str == null) || (str.length() < 3)) {
-            return MISSING_TELEPHONY_RESULT;
+        if (networkInfo.getType() == 0x9) {
+            return 0x12;
         }
-        int[] arrayOfInt = new int[2];
-        arrayOfInt[0] = tryParse(str.substring(0, 3), -1);
-        arrayOfInt[1] = tryParse(str.substring(3), -1);
-        return arrayOfInt;
+        if (networkInfo.getType() == 0) {
+            if (mTelephonyManager != null) {
+                switch (mTelephonyManager.getNetworkType()) {
+                    case 11: {
+                        return 0x2;
+                    }
+                    case 8: {
+                        return 0x3;
+                    }
+                    case 6: {
+                        return 0x4;
+                    }
+                    case 18: {
+                        return 0x5;
+                    }
+                    case 9: {
+                        return 0x6;
+                    }
+                    case 10: {
+                        return 0x7;
+                    }
+                    case 16: {
+                        return 0x8;
+                    }
+                    case 5: {
+                        return 0x9;
+                    }
+                    case 12: {
+                        return 0xa;
+                    }
+                    case 14: {
+                        return 0xb;
+                    }
+                    case 19: {
+                        return 0xc;
+                    }
+                    case 13: {
+                        return 0xd;
+                    }
+                    case 15: {
+                        return 0xe;
+                    }
+                    case 17: {
+                        return 0xf;
+                    }
+                    case 7: {
+                        return 0x10;
+                    }
+                }
+            }
+        }
+        return 0x0;
     }
 
     public int getSimMcc() {
-        if (this.mTelephonyManager == null) {
+        if(mTelephonyManager == null) {
+            return -0x1;
         }
-        String str;
-        do {
-            return -1;
-            str = this.mTelephonyManager.getSimOperator();
-        } while ((str == null) || (str.length() <= 3));
-        return tryParse(str.substring(0, 3), -1);
-    }
-
-    @Nonnull
-    public int[] getSimMccMnc() {
-        if (this.mTelephonyManager == null) {
-            return MISSING_TELEPHONY_RESULT;
+        String simOperator = mTelephonyManager.getSimOperator();
+        if((simOperator != null) && (simOperator.length() > 0x3)) {
+            return tryParse(simOperator.substring(0x0, 0x3), -0x1);
         }
-        String str = this.mTelephonyManager.getSimOperator();
-        if ((str == null) || (str.length() < 3)) {
-            return MISSING_TELEPHONY_RESULT;
-        }
-        int[] arrayOfInt = new int[2];
-        arrayOfInt[0] = tryParse(str.substring(0, 3), -1);
-        arrayOfInt[1] = tryParse(str.substring(3), -1);
-        return arrayOfInt;
+        return -0x1;
     }
 
     public boolean isConnected() {
-        if (this.mConnectivityManager == null) {
-        }
-        NetworkInfo localNetworkInfo;
-        do {
+        if (mConnectivityManager == null) {
             return false;
-            localNetworkInfo = this.mConnectivityManager.getActiveNetworkInfo();
-        } while ((localNetworkInfo == null) || (!localNetworkInfo.isConnected()));
+        }
+        NetworkInfo ni = mConnectivityManager.getActiveNetworkInfo();
+        if ((ni == null) || (!ni.isConnected())) {
+            return true;
+        }
         return true;
     }
 
@@ -164,9 +135,7 @@ public class NetworkInformation {
         } else {
             NetworkInfo localNetworkInfo = this.mConnectivityManager.getActiveNetworkInfo();
             if ((localNetworkInfo != null) && (localNetworkInfo.getType() != 1) && (localNetworkInfo.getType() != 6)) {
-            }
-            for (bool = true; ; bool = false) {
-                break;
+                return true;
             }
         }
         return false;
