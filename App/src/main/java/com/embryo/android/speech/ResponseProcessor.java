@@ -1,10 +1,7 @@
 package com.embryo.android.speech;
 
-import com.google.android.speech.message.S3ResponseProcessor;
-import com.google.audio.ears.proto.EarsService;
-import com.google.majel.proto.MajelProtos;
-import com.google.speech.s3.PinholeStream;
-import com.google.speech.s3.S3;
+import com.embryo.android.speech.message.S3ResponseProcessor;
+import com.embryo.speech.s3.S3;
 
 public class ResponseProcessor
         implements com.embryo.android.speech.callback.RecognitionEngineCallback {
@@ -22,12 +19,6 @@ public class ResponseProcessor
         this.mEndpointerEventProcessor = new com.embryo.android.speech.endpointing.DefaultEndpointerEventProcessor(this.mEventListener, paramEndpointerParams);
         this.mS3ResponseProcessor = paramS3ResponseProcessor;
         this.mLogger = paramSpeechLibLogger;
-    }
-
-    private void handleMusicDetectorResponse(Boolean paramBoolean) {
-        if (paramBoolean == Boolean.TRUE) {
-            this.mEventListener.onMusicDetected();
-        }
     }
 
     private void handleS3Response(S3.S3Response s3Response) {
@@ -81,11 +72,11 @@ public class ResponseProcessor
         }
         int i = paramRecognitionResponse.getType();
         if (i == 3) {
-            handleMusicDetectorResponse((Boolean) paramRecognitionResponse.get(3));
+            //handleMusicDetectorResponse((Boolean) paramRecognitionResponse.get(3));
             return;
         }
         if (i == 2) {
-            com.embryo.speech.recognizer.api.RecognizerProtos.EndpointerEvent localEndpointerEvent = (com.embryo.speech.recognizer.api.RecognizerProtos.EndpointerEvent) paramRecognitionResponse.get(2);
+            com.embryo.speech.recognizer.api.RecognizerProtos.EndpointerEvent localEndpointerEvent = paramRecognitionResponse.get(2);
             this.mEndpointerEventProcessor.process(localEndpointerEvent);
             return;
         }
@@ -139,27 +130,14 @@ public class ResponseProcessor
             this.mDelegate.onError(paramRecognizeException);
         }
 
-        public void onMajelResult(MajelProtos.MajelResponse paramMajelResponse) {
-            this.mLogger.logS3MajelResultReceived();
-            this.mDelegate.onMajelResult(paramMajelResponse);
-        }
-
         public void onMediaDataResult(byte[] paramArrayOfByte) {
             this.mLogger.logS3TtsReceived();
             this.mDelegate.onMediaDataResult(paramArrayOfByte);
         }
 
-        public void onMusicDetected() {
-            this.mDelegate.onMusicDetected();
-        }
-
         public void onNoSpeechDetected() {
             this.mLogger.logNoSpeechDetected();
             this.mDelegate.onNoSpeechDetected();
-        }
-
-        public void onPinholeResult(PinholeStream.PinholeOutput paramPinholeOutput) {
-            this.mDelegate.onPinholeResult(paramPinholeOutput);
         }
 
         public void onReadyForSpeech() {
@@ -172,11 +150,6 @@ public class ResponseProcessor
 
         public void onRecognitionResult(com.embryo.speech.recognizer.api.RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
             this.mDelegate.onRecognitionResult(paramRecognitionEvent);
-        }
-
-        public void onSoundSearchResult(EarsService.EarsResultsResponse paramEarsResultsResponse) {
-            this.mLogger.logS3SoundSearchResultReceived();
-            this.mDelegate.onSoundSearchResult(paramEarsResultsResponse);
         }
     }
 }

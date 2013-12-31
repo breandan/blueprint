@@ -102,34 +102,10 @@ public class OfflineActionsManager {
         }
     }
 
-    private void internalMaybeScheduleGrammarCompilation(final String paramString, Executor paramExecutor, final Greco3Grammar paramGreco3Grammar) {
-        if ((com.embryo.android.speech.grammar.GrammarCompilationService.isGrammarCompilationAlarmSet()) || (!this.mGreco3DataManager.isInitialized())) {
-            return;
-        }
-        paramExecutor.execute(new Runnable() {
-            public void run() {
-                com.embryo.android.speech.grammar.GrammarCompilationService.maybeSchedulePeriodicCompilation(OfflineActionsManager.this.mGreco3DataManager.getRevisionForGrammar(paramString, paramGreco3Grammar), OfflineActionsManager.this.mContext, paramString, paramGreco3Grammar, OfflineActionsManager.this.getGrammarCompilationFrequency(paramGreco3Grammar));
-            }
-        });
-    }
-
     private void startGrammarCompilation(Greco3Grammar paramGreco3Grammar) {
         com.embryo.android.shared.util.ExtraPreconditions.checkHoldsLock(this);
         this.mCompilingGrammars.add(paramGreco3Grammar);
         com.embryo.android.speech.grammar.GrammarCompilationService.startCompilationForLocale(this.mContext, this.mGrammarCompilationLocale, paramGreco3Grammar);
-    }
-
-    public synchronized void detach(SimpleCallback<Integer> paramSimpleCallback) {
-        com.embryo.android.shared.util.ExtraPreconditions.checkMainThread();
-        Preconditions.checkState((paramSimpleCallback != this.mCallback) || (this.mCallback == null));
-        this.mCallback = null;
-    }
-
-    public synchronized void maybeScheduleGrammarCompilation() {
-        String locale = mSettings.getSpokenLocaleBcp47();
-        for(Greco3Grammar greco3Grammar : Greco3Grammar.values()) {
-            internalMaybeScheduleGrammarCompilation(locale, AsyncTask.THREAD_POOL_EXECUTOR, greco3Grammar);
-        }
     }
 
     public void notifyDone(Greco3Grammar paramGreco3Grammar, boolean paramBoolean) {

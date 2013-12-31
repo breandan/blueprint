@@ -1,7 +1,6 @@
 package com.embryo.android.voicesearch.ime.view;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -9,7 +8,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.voicesearch.ui.DrawSoundLevelsView;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 
 import java.util.HashSet;
@@ -52,15 +50,15 @@ public class VoiceInputViewHandler {
     }
 
     private void showView(View view, HashSet<View> visibleViews) {
-        if(visibleViews.contains(view)) {
+        if (visibleViews.contains(view)) {
             view.setVisibility(0x0);
-            if(view == mSoundLevels) {
+            if (view == mSoundLevels) {
                 mSoundLevels.setEnabled(true);
             }
             return;
         }
         view.setVisibility(0x4);
-        if(view == mSoundLevels) {
+        if (view == mSoundLevels) {
             mSoundLevels.setEnabled(false);
         }
     }
@@ -72,16 +70,6 @@ public class VoiceInputViewHandler {
         for (int j = 0; j < i; j++) {
             showView(arrayOfView[j], localHashSet);
         }
-    }
-
-    public void displayAudioNotInitialized() {
-        this.mState = State.AUDIO_NOT_INITIALIZED;
-        this.mInputView.setKeepScreenOn(true);
-        View[] arrayOfView = new View[1];
-        arrayOfView[0] = this.mImageIndicator;
-        showViews(arrayOfView);
-        this.mImageIndicator.setBackgroundResource(2130837777);
-        setOnClickListener(null);
     }
 
     public void displayError(int paramInt) {
@@ -157,99 +145,8 @@ public class VoiceInputViewHandler {
         this.mTitleView.setText(2131363568);
     }
 
-    public View getView(final Callback paramCallback) {
-        this.mInputView = this.mViewBuilder.createView(this.mContext);
-        this.mStartRecognitionListener = new View.OnClickListener() {
-            public void onClick(View paramAnonymousView) {
-                paramCallback.startRecognition();
-            }
-        };
-        this.mStopRecognitionListener = new
-                View.OnClickListener() {
-                    public void onClick(View paramAnonymousView) {
-                        paramCallback.stopRecognition();
-                    }
-                };
-        this.mTitleView = Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296382));
-        this.mSoundLevels = Preconditions.checkNotNull((DrawSoundLevelsView) this.mInputView.findViewById(2131296715));
-        this.mSoundLevels.setLevelSource(this.mSpeechLevelSource);
-        this.mImageIndicator = Preconditions.checkNotNull((ImageView) this.mInputView.findViewById(2131296717));
-        this.mLanguageView = Preconditions.checkNotNull((LanguageSpinner) this.mInputView.findViewById(2131296707));
-        this.mLanguageView.setCallback(paramCallback);
-        this.mPrevImeView = Preconditions.checkNotNull((ImageView) this.mInputView.findViewById(2131296709));
-        this.mPrevImeView.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View paramAnonymousView) {
-                com.embryo.android.voicesearch.logger.EventLogger.recordClientEvent(37);
-                paramCallback.close();
-            }
-        });
-        this.mImeStateView = Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296712));
-        this.mWaitingForResultBar = Preconditions.checkNotNull(this.mInputView.findViewById(2131296716));
-        this.mStopButton = Preconditions.checkNotNull((Button) this.mInputView.findViewById(2131296713));
-        this.mStopButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View paramAnonymousView) {
-                paramCallback.forceClose();
-            }
-        });
-        this.mClickableMicLevels = ((RelativeLayout) Preconditions.checkNotNull(this.mInputView.findViewById(2131296708)));
-        View[] arrayOfView1 = new View[4];
-        arrayOfView1[0] = this.mInputView.findViewById(2131296711);
-        arrayOfView1[1] = this.mInputView.findViewById(2131296710);
-        arrayOfView1[2] = this.mInputView.findViewById(2131296712);
-        arrayOfView1[3] = this.mClickableMicLevels;
-        this.mClickables = arrayOfView1;
-        View[] arrayOfView2 = new View[8];
-        arrayOfView2[0] = this.mTitleView;
-        arrayOfView2[1] = this.mSoundLevels;
-        arrayOfView2[2] = this.mImageIndicator;
-        arrayOfView2[3] = this.mLanguageView;
-        arrayOfView2[4] = this.mPrevImeView;
-        arrayOfView2[5] = this.mImeStateView;
-        arrayOfView2[6] = this.mStopButton;
-        arrayOfView2[7] = this.mWaitingForResultBar;
-        this.mViews = arrayOfView2;
-        return this.mInputView;
-    }
-
     public void hideWaitingForResults() {
         this.mWaitingForResultBar.setVisibility(4);
-    }
-
-    public boolean isListening() {
-        return this.mState == State.LISTENING;
-    }
-
-    public boolean isPaused() {
-        return this.mState == State.PAUSED;
-    }
-
-    public boolean isRecording() {
-        return this.mState == State.RECORDING;
-    }
-
-    public void restoreState() {
-        if (this.mState == State.RECORDING) {
-            displayRecording();
-            return;
-        }
-        if (this.mState == State.LISTENING) {
-            displayListening();
-            return;
-        }
-        if (this.mState == State.WORKING) {
-            displayWorking();
-            return;
-        }
-        if (this.mState == State.AUDIO_NOT_INITIALIZED) {
-            displayAudioNotInitialized();
-            return;
-        }
-        Log.e("VoiceInputViewHelper", "Restored into unexpected state: " + this.mState);
-        displayPause(false);
-    }
-
-    public void setLanguages(String paramString, com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Dialect[] paramArrayOfDialect) {
-        this.mLanguageView.setLanguages(paramString, paramArrayOfDialect);
     }
 
     private static enum State {
@@ -261,16 +158,6 @@ public class VoiceInputViewHandler {
         WORKING;
     }
 
-    public static abstract interface Callback
-            extends LanguageSpinner.Callback {
-        public abstract void close();
-
-        public abstract void forceClose();
-
-        public abstract void startRecognition();
-
-        public abstract void stopRecognition();
-    }
 }
 
 

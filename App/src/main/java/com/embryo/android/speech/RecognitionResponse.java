@@ -1,7 +1,7 @@
 package com.embryo.android.speech;
 
+import com.embryo.speech.s3.S3;
 import com.google.common.base.Preconditions;
-import com.google.speech.s3.S3;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -2,7 +2,6 @@ package com.embryo.android.speech.listeners;
 
 import com.embryo.android.speech.exception.RecognizeException;
 import com.google.audio.ears.proto.EarsService;
-import com.google.majel.proto.MajelProtos;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
 import com.google.speech.s3.PinholeStream;
 
@@ -18,9 +17,6 @@ public class RecognitionEventListenerAdapter
     }
 
     public void onError(RecognizeException paramRecognizeException) {
-    }
-
-    public void onMajelResult(MajelProtos.MajelResponse paramMajelResponse) {
     }
 
     public void onMediaDataResult(byte[] paramArrayOfByte) {

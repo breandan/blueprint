@@ -10,8 +10,8 @@ import com.embryo.android.speech.audio.SpeakNowSoundPlayer;
 import com.google.common.io.ByteStreams;
 
 import java.io.Closeable;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 
 public class AudioTrackSoundManager
@@ -52,32 +52,34 @@ public class AudioTrackSoundManager
         }
     }
 
-    private byte[] loadSound(int paramInt) {
-        AssetFileDescriptor localAssetFileDescriptor = this.mContext.getResources().openRawResourceFd(paramInt);
-        if (localAssetFileDescriptor.getLength() > 2147483647L) {
-            closeSilently(localAssetFileDescriptor);
+    private byte[] loadSound(int id) {
+        AssetFileDescriptor afd = mContext.getResources().openRawResourceFd(id);
+        long lengthAsLong = afd.getLength();
+        if (lengthAsLong > 0x7fffffff) {
+            closeSilently(afd);
             return INVALID_SOUND;
         }
-        int i = (int) localAssetFileDescriptor.getLength();
-        byte[] arrayOfByte1 = new byte[i];
-        FileInputStream localFileInputStream = null;
+
+        int length = (int) afd.getLength();
+        byte[] data = new byte[length];
+        InputStream is = null;
         try {
-            localFileInputStream = localAssetFileDescriptor.createInputStream();
-            if (ByteStreams.read(localFileInputStream, arrayOfByte1, 0, i) != i) {
+            is = afd.createInputStream();
+            if (ByteStreams.read(is, data, 0x0, length) != length) {
                 throw new IOException();
             }
-        } catch (IOException localIOException) {
-            byte[] arrayOfByte2 = INVALID_SOUND;
-            return arrayOfByte2;
-            return arrayOfByte1;
+        } catch (IOException e) {
+            data = INVALID_SOUND;
         } finally {
-            closeSilently(localFileInputStream);
-            closeSilently(localAssetFileDescriptor);
+            closeSilently(is);
+            closeSilently(afd);
         }
+
+        return data;
     }
 
     private int playSound(int paramInt) {
-        byte[] arrayOfByte = (byte[]) this.mAudioData.get(paramInt, null);
+        byte[] arrayOfByte = this.mAudioData.get(paramInt, null);
         if (arrayOfByte == null) {
             arrayOfByte = loadSound(paramInt);
         }
@@ -159,36 +161,29 @@ public class AudioTrackSoundManager
         }
 
         public void run() {
-            int i = this.mLengthBytes / 2;
-            int j = -1;
-            long l1 = 0L;
-            int k = this.mAudioTrack.getPlaybackHeadPosition();
-            long l2;
-            if ((k < i) && (this.mAudioTrack.getPlayState() == 3)) {
-                l2 = AudioTrackSoundManager.clip(1000 * (i - k) / 16000, 50L, 500L);
-                if (k != j) {
-                    break label96;
-                }
-                l1 += l2;
-                if (l1 <= 500L) {
-                    break label98;
-                }
-                Log.w("AudioTrackSoundManager", "Waited unsuccessfully for 500ms for AudioTrack to make progress, Aborting");
-            }
-            for (; ; ) {
-                for (; ; ) {
-                    this.mAudioTrack.release();
-                    return;
-                    label96:
-                    l1 = 0L;
-                    label98:
-                    j = k;
-                    try {
-                        Thread.sleep(l2);
-                    } catch (InterruptedException localInterruptedException) {
+            int lengthInFrames = this.mLengthBytes / 2;
+            int previousPosition = -1;
+            long blockedTimeMs = 0L;
+            for (int currentPosition = 0; (currentPosition < lengthInFrames) && (this.mAudioTrack.getPlayState() == 3); currentPosition = this.mAudioTrack.getPlaybackHeadPosition()) {
+                long sleepTimeMs = AudioTrackSoundManager.clip(1000 * (lengthInFrames - currentPosition) / 16000, 50L, 500L);
+                if (currentPosition == previousPosition) {
+                    blockedTimeMs += sleepTimeMs;
+                    if (blockedTimeMs > 500L) {
+                        Log.w("AudioTrackSoundManager", "Waited unsuccessfully for 500ms for AudioTrack to make progress, Aborting");
+                        break;
                     }
+                } else {
+                    blockedTimeMs = 0;
+                }
+
+                previousPosition = currentPosition;
+
+                try {
+                    Thread.sleep(sleepTimeMs);
+                } catch (InterruptedException localInterruptedException) {
                 }
             }
+            this.mAudioTrack.release();
         }
     }
 }

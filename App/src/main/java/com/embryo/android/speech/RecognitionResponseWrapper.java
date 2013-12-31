@@ -1,11 +1,10 @@
 package com.embryo.android.speech;
 
 import com.embryo.android.speech.exception.RecognizeException;
-import com.google.speech.s3.S3;
-import com.google.speech.s3.S3.S3Response;
+import com.embryo.speech.s3.S3;
 
 public class RecognitionResponseWrapper
-        implements com.embryo.android.speech.callback.Callback<S3Response, RecognizeException> {
+        implements com.embryo.android.speech.callback.Callback<S3.S3Response, RecognizeException> {
     final com.embryo.android.speech.callback.Callback<RecognitionResponse, RecognizeException> mCallback;
     final int mEngine;
 

@@ -1,11 +1,8 @@
 package com.embryo.android.speech.listeners;
 
 import com.embryo.android.speech.exception.RecognizeException;
-import com.google.audio.ears.proto.EarsService;
-import com.google.common.base.Preconditions;
-import com.google.majel.proto.MajelProtos;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
-import com.google.speech.s3.PinholeStream;
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,13 +51,6 @@ public class CompositeRecognitionEventListener
         }
     }
 
-    public void onMajelResult(MajelProtos.MajelResponse paramMajelResponse) {
-        Iterator localIterator = this.mListeners.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognitionEventListener) localIterator.next()).onMajelResult(paramMajelResponse);
-        }
-    }
-
     public void onMediaDataResult(byte[] paramArrayOfByte) {
         Iterator localIterator = this.mListeners.iterator();
         while (localIterator.hasNext()) {
@@ -68,24 +58,10 @@ public class CompositeRecognitionEventListener
         }
     }
 
-    public void onMusicDetected() {
-        Iterator localIterator = this.mListeners.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognitionEventListener) localIterator.next()).onMusicDetected();
-        }
-    }
-
     public void onNoSpeechDetected() {
         Iterator localIterator = this.mListeners.iterator();
         while (localIterator.hasNext()) {
             ((RecognitionEventListener) localIterator.next()).onNoSpeechDetected();
-        }
-    }
-
-    public void onPinholeResult(PinholeStream.PinholeOutput paramPinholeOutput) {
-        Iterator localIterator = this.mListeners.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognitionEventListener) localIterator.next()).onPinholeResult(paramPinholeOutput);
         }
     }
 
@@ -107,13 +83,6 @@ public class CompositeRecognitionEventListener
         Iterator localIterator = this.mListeners.iterator();
         while (localIterator.hasNext()) {
             ((RecognitionEventListener) localIterator.next()).onRecognitionResult(paramRecognitionEvent);
-        }
-    }
-
-    public void onSoundSearchResult(EarsService.EarsResultsResponse paramEarsResultsResponse) {
-        Iterator localIterator = this.mListeners.iterator();
-        while (localIterator.hasNext()) {
-            ((RecognitionEventListener) localIterator.next()).onSoundSearchResult(paramEarsResultsResponse);
         }
     }
 }

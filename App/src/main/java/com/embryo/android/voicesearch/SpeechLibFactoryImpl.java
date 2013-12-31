@@ -3,7 +3,7 @@ package com.embryo.android.voicesearch;
 import com.embryo.android.speech.EngineSelector;
 import com.embryo.android.speech.RecognitionEngineStore;
 import com.embryo.android.speech.dispatcher.HotwordResultsDispatcher;
-import com.google.android.speech.message.GsaS3ResponseProcessor;
+import com.embryo.android.speech.message.GsaS3ResponseProcessor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;

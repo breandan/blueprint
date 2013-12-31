@@ -177,14 +177,6 @@ public class GrammarCompilationService
         paramContext.startService(getStartServiceIntent(paramContext, paramString, paramGreco3Grammar));
     }
 
-    public void onCreate() {
-        super.onCreate();
-        com.embryo.android.voicesearch.VoiceSearchServices localVoiceSearchServices = VelvetServices.get().getVoiceSearchServices();
-        this.mGreco3Container = localVoiceSearchServices.getGreco3Container();
-        this.mSpeechSettings = localVoiceSearchServices.getSettings();
-        this.mOfflineActionsManager = localVoiceSearchServices.getOfflineActionsManager();
-    }
-
     public void onHandleIntent(Intent paramIntent) {
         Process.setThreadPriority(10);
         com.embryo.android.speech.embedded.Greco3Recognizer.maybeLoadSharedLibrary();

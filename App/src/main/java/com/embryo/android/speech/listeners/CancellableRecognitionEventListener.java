@@ -43,33 +43,15 @@ public class CancellableRecognitionEventListener
         }
     }
 
-    public void onMajelResult(MajelProtos.MajelResponse paramMajelResponse) {
-        if (this.mActive) {
-            this.mListener.onMajelResult(paramMajelResponse);
-        }
-    }
-
     public void onMediaDataResult(byte[] paramArrayOfByte) {
         if (this.mActive) {
             this.mListener.onMediaDataResult(paramArrayOfByte);
         }
     }
 
-    public void onMusicDetected() {
-        if (this.mActive) {
-            this.mListener.onMusicDetected();
-        }
-    }
-
     public void onNoSpeechDetected() {
         if (this.mActive) {
             this.mListener.onNoSpeechDetected();
-        }
-    }
-
-    public void onPinholeResult(PinholeStream.PinholeOutput paramPinholeOutput) {
-        if (this.mActive) {
-            this.mListener.onPinholeResult(paramPinholeOutput);
         }
     }
 
@@ -88,12 +70,6 @@ public class CancellableRecognitionEventListener
     public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
         if (this.mActive) {
             this.mListener.onRecognitionResult(paramRecognitionEvent);
-        }
-    }
-
-    public void onSoundSearchResult(EarsService.EarsResultsResponse paramEarsResultsResponse) {
-        if (this.mActive) {
-            this.mListener.onSoundSearchResult(paramEarsResultsResponse);
         }
     }
 }
