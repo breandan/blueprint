@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.widget.TextView;
 
-import com.google.android.search.core.AsyncServices;
 import com.google.android.search.core.AsyncServicesImpl;
+import com.embryo.android.voicesearch.VoiceSearchServices;
+import com.embryo.android.voicesearch.hotword.HotwordDetector;
 import com.google.android.search.core.GsaPreferenceController;
-import com.google.android.voicesearch.VoiceSearchServices;
 
 import java.io.InputStream;
 
@@ -31,6 +32,38 @@ public class MainActivity extends Activity {
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
         VoiceSearchServices vss = new VoiceSearchServices(getApplication(), new AsyncServicesImpl(), new GsaPreferenceController(getApplication()), this);
+        HotwordDetector hd = vss.getHotwordDetector();
+        hd.start(new HotwordDetector.HotwordListener() {
+            @Override
+            public void onHotword(long paramLong) {
+                Log.i("MainActivity", "#onHotword");
+                textView.setText("#onHotword");
+            }
+
+            @Override
+            public void onHotwordDetectorNotStarted() {
+                Log.i("SearchController", "#onHotwordDetectorNotStarted");
+                textView.setText("#onHotwordDetectorNotStarted");
+            }
+
+            @Override
+            public void onHotwordDetectorStarted() {
+                Log.i("SearchController", "#onHotwordDetectorStarted");
+                textView.setText("#onHotwordDetectorStarted");
+            }
+
+            @Override
+            public void onHotwordDetectorStopped(boolean paramBoolean) {
+                Log.i("SearchController", "#onHotwordDetectorStarted");
+                textView.setText("#onHotwordDetectorStarted");
+            }
+
+            @Override
+            public void onMusicDetected() {
+                Log.i("SearchController", "#onHotwordDetectorStopped");
+                textView.setText("#onHotwordDetectorStopped");
+            }
+        }, false);
 
 //        AudioInputStreamFactory aisf = new AudioInputStreamFactory();
 

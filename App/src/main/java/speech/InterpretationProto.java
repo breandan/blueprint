@@ -1,10 +1,10 @@
 package speech;
 
-import com.google.protobuf.micro.CodedInputStreamMicro;
-import com.google.protobuf.micro.CodedOutputStreamMicro;
-import com.google.protobuf.micro.MessageMicro;
-import com.google.speech.common.Alternates;
-import com.google.speech.common.Alternates.RecognitionClientAlternates;
+import com.embryo.protobuf.micro.CodedInputStreamMicro;
+import com.embryo.protobuf.micro.CodedOutputStreamMicro;
+import com.embryo.protobuf.micro.MessageMicro;
+import com.embryo.speech.common.Alternates;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,8 +1,8 @@
 package speech.s3.goggles;
 
-import com.google.protobuf.micro.CodedInputStreamMicro;
-import com.google.protobuf.micro.CodedOutputStreamMicro;
-import com.google.protobuf.micro.MessageMicro;
+import com.embryo.protobuf.micro.CodedInputStreamMicro;
+import com.embryo.protobuf.micro.CodedOutputStreamMicro;
+import com.embryo.protobuf.micro.MessageMicro;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -195,8 +195,12 @@ public final class GogglesS3
   }
 }
 
-
-/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
- * Qualified Name:     speech.s3.goggles.GogglesS3
- * JD-Core Version:    0.7.0.1
+
+
+/* Location:           C:\Cygwin\home\breandan\apk-tool\classes-dex2jar.jar
+
+ * Qualified Name:     speech.s3.goggles.GogglesS3
+
+ * JD-Core Version:    0.7.0.1
+
  */
