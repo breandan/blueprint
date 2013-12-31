@@ -36,7 +36,6 @@ public class GrammarCompilationService
     private Greco3Container mGreco3Container;
     private final MessageDigest mMd5Digest;
     private OfflineActionsManager mOfflineActionsManager;
-    private SearchConfig mSearchConfig;
     private SpeechSettings mSpeechSettings;
 
     public GrammarCompilationService() {
@@ -69,7 +68,7 @@ public class GrammarCompilationService
     private boolean doCompile(String paramString, Greco3Grammar paramGreco3Grammar) {
         Log.i("VS.GrammarCompilationService", "Compiling grammar for: " + paramString + ", type=" + paramGreco3Grammar);
         Greco3Preferences localGreco3Preferences = this.mGreco3Container.getGreco3Preferences();
-        HandsFreeGrammarCompiler localHandsFreeGrammarCompiler = new HandsFreeGrammarCompiler(this.mGreco3Container.getGreco3DataManager(), new GrammarContactRetriever(getContentResolver(), this.mSearchConfig), new TextGrammarLoader(getResources(), getPackageName()), paramGreco3Grammar);
+        HandsFreeGrammarCompiler localHandsFreeGrammarCompiler = new HandsFreeGrammarCompiler(this.mGreco3Container.getGreco3DataManager(), new TextGrammarLoader(getResources(), getPackageName()), paramGreco3Grammar);
         Greco3DataManager localGreco3DataManager = this.mGreco3Container.getGreco3DataManager();
         localGreco3DataManager.blockingUpdateResources(false);
         if (!localGreco3DataManager.hasResources(paramString, Greco3Mode.COMPILER)) {
@@ -192,7 +191,6 @@ public class GrammarCompilationService
         this.mGreco3Container = localVoiceSearchServices.getGreco3Container();
         this.mSpeechSettings = localVoiceSearchServices.getSettings();
         this.mOfflineActionsManager = localVoiceSearchServices.getOfflineActionsManager();
-        this.mSearchConfig = localVoiceSearchServices.getSearchConfig();
     }
 
     public void onHandleIntent(Intent paramIntent) {

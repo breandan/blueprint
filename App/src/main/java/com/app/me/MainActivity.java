@@ -6,6 +6,11 @@ import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.widget.TextView;
 
+import com.google.android.search.core.AsyncServices;
+import com.google.android.search.core.AsyncServicesImpl;
+import com.google.android.search.core.GsaPreferenceController;
+import com.google.android.voicesearch.VoiceSearchServices;
+
 import java.io.InputStream;
 
 public class MainActivity extends Activity {
@@ -25,6 +30,7 @@ public class MainActivity extends Activity {
         final TextView textView = (TextView) findViewById(R.id.textView);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
+        VoiceSearchServices vss = new VoiceSearchServices(getApplication(), new AsyncServicesImpl(), new GsaPreferenceController(getApplication()));
 //        AudioInputStreamFactory aisf = new AudioInputStreamFactory();
 
 

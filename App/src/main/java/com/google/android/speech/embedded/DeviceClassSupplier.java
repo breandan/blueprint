@@ -1,9 +1,7 @@
 package com.google.android.speech.embedded;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.os.Build;
 
 import com.google.common.base.Supplier;
 
@@ -16,6 +14,11 @@ public class DeviceClassSupplier
         this.mActivityManager = ((ActivityManager) paramContext.getSystemService("activity"));
     }
 
+    private static boolean hasNeon() {
+        //TODO ARM NEON commpliance (assume true for now)
+        return true;
+    }
+
     private Integer calculateDeviceClass() {
         if (!hasNeon()) {
             return Integer.valueOf(5);
@@ -26,11 +29,6 @@ public class DeviceClassSupplier
             return Integer.valueOf(100);
         }
         return Integer.valueOf(10);
-    }
-
-    private static boolean hasNeon() {
-        //TODO ARM NEON commpliance (assume true for now)
-        return true;
     }
 
     public Integer get() {

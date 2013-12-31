@@ -13,17 +13,16 @@ import com.google.common.base.Preconditions;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HandsFreeGrammarCompiler {
-    private final GrammarContactRetriever mContactRetriever;
     private final Greco3DataManager mGreco3DataManager;
     private final Greco3Grammar mGreco3Grammar;
     private final TextGrammarLoader mTextGrammarLoader;
 
-    public HandsFreeGrammarCompiler(Greco3DataManager paramGreco3DataManager, GrammarContactRetriever paramGrammarContactRetriever, TextGrammarLoader paramTextGrammarLoader, Greco3Grammar paramGreco3Grammar) {
+    public HandsFreeGrammarCompiler(Greco3DataManager paramGreco3DataManager, TextGrammarLoader paramTextGrammarLoader, Greco3Grammar paramGreco3Grammar) {
         this.mGreco3DataManager = paramGreco3DataManager;
-        this.mContactRetriever = paramGrammarContactRetriever;
         this.mTextGrammarLoader = paramTextGrammarLoader;
         this.mGreco3Grammar = paramGreco3Grammar;
     }
@@ -31,13 +30,14 @@ public class HandsFreeGrammarCompiler {
     private String buildAbnfGrammar(Greco3DataManager.LocaleResources paramLocaleResources) {
         String str = paramLocaleResources.getLanguageMetadata().getBcp47Locale();
         if (!"en-US".equals(str)) {
+            return null;
         }
         StringBuilder localStringBuilder;
         try {
             localStringBuilder = this.mTextGrammarLoader.get(this.mGreco3Grammar.getApkFullName(str), 524288);
             if (localStringBuilder != null) {
                 if (this.mGreco3Grammar.isAddContacts()) {
-                    List localList = this.mContactRetriever.getContacts();
+                    List localList = new LinkedList<GrammarContact>();
                     EventLogger.recordSpeechEvent(14, Integer.valueOf(localList.size()));
                     ContactsGrammarBuilder localContactsGrammarBuilder = new ContactsGrammarBuilder();
                     Iterator localIterator = localList.iterator();

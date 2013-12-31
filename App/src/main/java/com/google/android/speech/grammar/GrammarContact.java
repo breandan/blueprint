@@ -16,14 +16,14 @@ public class GrammarContact {
     double weight;
 
     public GrammarContact(@Nonnull String paramString, int paramInt, long paramLong) {
-        this.displayName = ((String) Preconditions.checkNotNull(paramString));
+        this.displayName = Preconditions.checkNotNull(paramString);
         this.timesContacted = paramInt;
         this.lastTimeContactedElapsed = paramLong;
     }
 
     private void addToken(String paramString, double paramDouble, Map<String, GrammarToken> paramMap) {
         if (paramMap.containsKey(paramString)) {
-            ((GrammarToken) paramMap.get(paramString)).add(paramDouble);
+            paramMap.get(paramString).add(paramDouble);
             return;
         }
         paramMap.put(paramString, new GrammarToken(paramString, paramDouble));

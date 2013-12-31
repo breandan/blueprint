@@ -14,18 +14,10 @@ import java.util.List;
 
 public class GrammarContactRetriever {
     private static final String[] COLS = {"display_name", "times_contacted", "last_time_contacted"};
-    private final SearchConfig mConfig;
     protected final ContactRetriever mContactRetriever;
 
-    public GrammarContactRetriever(ContentResolver paramContentResolver, SearchConfig paramSearchConfig) {
+    public GrammarContactRetriever(ContentResolver paramContentResolver) {
         this.mContactRetriever = new ContactRetriever(paramContentResolver);
-        this.mConfig = paramSearchConfig;
-    }
-
-    public List<GrammarContact> getContacts() {
-        GrammarContactRowHandler localGrammarContactRowHandler = new GrammarContactRowHandler();
-        this.mContactRetriever.getContacts(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, this.mConfig.getAbnfCompilerNumContacts(), COLS, localGrammarContactRowHandler);
-        return localGrammarContactRowHandler.mResults;
     }
 
     private static class GrammarContactRowHandler

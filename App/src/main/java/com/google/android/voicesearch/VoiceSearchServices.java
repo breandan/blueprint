@@ -6,13 +6,10 @@ import android.media.AudioManager;
 import android.util.Log;
 
 import com.google.android.search.core.AsyncServices;
-import com.google.android.search.core.CoreSearchServices;
 import com.google.android.search.core.DeviceCapabilityManager;
+import com.google.android.search.core.DeviceCapabilityManagerImpl;
 import com.google.android.search.core.GsaConfigFlags;
 import com.google.android.search.core.GsaPreferenceController;
-import com.google.android.search.core.SearchConfig;
-import com.google.android.search.core.google.SearchUrlHelper;
-import com.google.android.shared.util.Clock;
 import com.google.android.shared.util.ConcurrentUtils;
 import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.shared.util.SpeechLevelSource;
@@ -20,6 +17,7 @@ import com.google.android.shared.util.Util;
 import com.google.android.speech.Recognizer;
 import com.google.android.speech.RecognizerImpl;
 import com.google.android.speech.SpeechLibFactory;
+import com.google.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.google.android.speech.audio.AudioController;
 import com.google.android.speech.audio.AudioStore;
 import com.google.android.speech.audio.SingleRecordingAudioStore;
@@ -28,22 +26,17 @@ import com.google.android.speech.embedded.OfflineActionsManager;
 import com.google.android.speech.internal.DefaultCallbackFactory;
 import com.google.android.speech.internal.DefaultModeSelector;
 import com.google.android.speech.logger.SuggestionLogger;
-import com.google.android.speech.network.ConnectionFactory;
 import com.google.android.speech.params.RecognitionEngineParams;
 import com.google.android.voicesearch.audio.AudioRouter;
 import com.google.android.voicesearch.audio.AudioRouterImpl;
 import com.google.android.voicesearch.audio.AudioTrackSoundManager;
-import com.google.android.voicesearch.audio.TtsAudioPlayer;
 import com.google.android.voicesearch.bluetooth.BluetoothController;
-import com.google.android.voicesearch.fragments.VoiceSearchController;
 import com.google.android.voicesearch.greco3.languagepack.LanguagePackUpdateController;
 import com.google.android.voicesearch.hotword.HotwordDetector;
 import com.google.android.voicesearch.ime.VoiceImeSubtypeUpdater;
 import com.google.android.voicesearch.settings.Settings;
-import com.google.android.voicesearch.util.LocalTtsManager;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
-import java.io.PrintWriter;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
@@ -51,7 +44,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class VoiceSearchServices {
     private final AsyncServices mAsyncServices;
     private final Context mContext;
-    private final CoreSearchServices mCoreSearchServices;
     private final Object mCreationLock;
     private final DeviceCapabilityManager mDeviceCapabilityManager;
     private final GsaPreferenceController mPreferenceController;
@@ -66,33 +58,30 @@ public class VoiceSearchServices {
     private HotwordDetector mHotwordDetector;
     private HypothesisToSuggestionSpansConverter mHypothesisToSuggestionSpansConverter;
     private LanguagePackUpdateController mLanguagePackUpdateController;
-    private LocalTtsManager mLocalTtsManager;
     private OfflineActionsManager mOfflineActionsManager;
     private Recognizer mRecognizer;
     private AudioTrackSoundManager mSoundManager;
     private SpeechLevelSource mSpeechLevelSource;
     private SpeechLibFactory mSpeechLibFactory;
     private SuggestionLogger mSuggestionLogger;
-    private TtsAudioPlayer mTtsAudioPlayer;
     private VoiceImeSubtypeUpdater mVoiceImeSubtypeUpdater;
 
-    public VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, CoreSearchServices paramCoreSearchServices, Object paramObject) {
-        this(paramContext, paramAsyncServices, paramGsaPreferenceController, paramCoreSearchServices, paramObject, new Settings(paramContext, paramGsaPreferenceController, paramCoreSearchServices.getSearchSettings(), paramCoreSearchServices.getConfig(), paramCoreSearchServices.getGsaConfigFlags(), paramCoreSearchServices.getHttpHelper(), paramAsyncServices.getPooledBackgroundExecutorService()));
+    public VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, Object paramObject) {
+        this(paramContext, paramAsyncServices, paramGsaPreferenceController, paramObject, new Settings(paramContext, paramGsaPreferenceController, paramAsyncServices.getPooledBackgroundExecutorService()));
     }
 
-    VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, CoreSearchServices paramCoreSearchServices, Object paramObject, Settings paramSettings) {
+    VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, Object paramObject, Settings paramSettings) {
         this.mContext = paramContext;
         this.mPreferenceController = paramGsaPreferenceController;
         this.mAsyncServices = paramAsyncServices;
         this.mScheduledExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(5, "ContainerScheduledExecutor");
-        this.mDeviceCapabilityManager = paramCoreSearchServices.getDeviceCapabilityManager();
+        this.mDeviceCapabilityManager = new DeviceCapabilityManagerImpl(mContext);
         this.mSettings = paramSettings;
         this.mSettings.addConfigurationListener(new Settings.ConfigurationChangeListener() {
             public void onChange(GstaticConfiguration.Configuration paramAnonymousConfiguration) {
                 VoiceSearchServices.this.getVoiceImeSubtypeUpdater().onChange(paramAnonymousConfiguration);
             }
         });
-        this.mCoreSearchServices = paramCoreSearchServices;
         this.mCreationLock = paramObject;
     }
 
@@ -125,7 +114,7 @@ public class VoiceSearchServices {
 
     private SpeechLibFactory getSpeechLibFactory() {
         if (this.mSpeechLibFactory == null) {
-            this.mSpeechLibFactory = new SpeechLibFactoryImpl(createRecognitionEngineParams(), this.mSettings, this.mScheduledExecutorService, this.mCoreSearchServices.getClock());
+            this.mSpeechLibFactory = new SpeechLibFactoryImpl(createRecognitionEngineParams(), this.mSettings, this.mScheduledExecutorService);
         }
         return this.mSpeechLibFactory;
     }
@@ -135,24 +124,6 @@ public class VoiceSearchServices {
             return false;
         }
         return paramGsaConfigFlags.hasPumpkinLocale(paramString);
-    }
-
-    public VoiceSearchController createVoiceSearchController(Clock paramClock, SearchUrlHelper paramSearchUrlHelper) {
-        return new VoiceSearchController(this, paramClock, paramSearchUrlHelper, getGsaConfigFlags());
-    }
-
-    public void dump(String paramString, PrintWriter paramPrintWriter) {
-        paramPrintWriter.print(paramString);
-        paramPrintWriter.println("VoiceSearchServices state:");
-        synchronized (this.mCreationLock) {
-            LanguagePackUpdateController localLanguagePackUpdateController = this.mLanguagePackUpdateController;
-            if (localLanguagePackUpdateController != null) {
-                localLanguagePackUpdateController.dumpState(paramString + "  ", paramPrintWriter);
-                return;
-            }
-        }
-        paramPrintWriter.print(paramString);
-        paramPrintWriter.println("  LanguageUpdateController not initialized");
     }
 
     public AudioController getAudioController() {
@@ -178,10 +149,6 @@ public class VoiceSearchServices {
         }
     }
 
-    public ConnectionFactory getConnectionFactory() {
-        return this.mCoreSearchServices.getSpdyConnectionFactory();
-    }
-
     public ExecutorService getExecutorService() {
         return this.mScheduledExecutorService;
     }
@@ -194,10 +161,6 @@ public class VoiceSearchServices {
             Greco3Container localGreco3Container = this.mGreco3Container;
             return localGreco3Container;
         }
-    }
-
-    public GsaConfigFlags getGsaConfigFlags() {
-        return this.mCoreSearchServices.getGsaConfigFlags();
     }
 
     public HotwordDetector getHotwordDetector() {
@@ -224,14 +187,6 @@ public class VoiceSearchServices {
         }
     }
 
-    public LocalTtsManager getLocalTtsManager() {
-
-        if (this.mLocalTtsManager == null) {
-            this.mLocalTtsManager = new LocalTtsManager(this.mContext, this.mAsyncServices.getUiThreadExecutor(), this.mScheduledExecutorService, getAudioRouter(), getSettings());
-        }
-        return this.mLocalTtsManager;
-    }
-
     public Executor getMainThreadExecutor() {
         return this.mAsyncServices.getUiThreadExecutor();
     }
@@ -254,10 +209,6 @@ public class VoiceSearchServices {
 
     public ScheduledExecutorService getScheduledExecutorService() {
         return this.mScheduledExecutorService;
-    }
-
-    public SearchConfig getSearchConfig() {
-        return this.mCoreSearchServices.getConfig();
     }
 
     public Settings getSettings() {
@@ -285,14 +236,6 @@ public class VoiceSearchServices {
             this.mSuggestionLogger = new SuggestionLogger();
         }
         return this.mSuggestionLogger;
-    }
-
-    public TtsAudioPlayer getTtsAudioPlayer() {
-
-        if (this.mTtsAudioPlayer == null) {
-            this.mTtsAudioPlayer = new TtsAudioPlayer(getAudioRouter(), this.mAsyncServices.getUiThreadExecutor());
-        }
-        return this.mTtsAudioPlayer;
     }
 
     public VoiceImeSubtypeUpdater getVoiceImeSubtypeUpdater() {

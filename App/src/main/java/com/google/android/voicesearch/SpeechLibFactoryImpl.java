@@ -26,18 +26,16 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class SpeechLibFactoryImpl
         implements SpeechLibFactory {
-    private final Clock mClock;
     private final ExecutorService mLocalExecutorService;
     private final ExecutorService mNetworkExecutorService;
     private final RecognitionEngineParams mRecognitionEngineParams;
     private final ScheduledExecutorService mScheduledExecutorService;
     private final SpeechSettings mSpeechSettings;
 
-    public SpeechLibFactoryImpl(RecognitionEngineParams paramRecognitionEngineParams, SpeechSettings paramSpeechSettings, ScheduledExecutorService paramScheduledExecutorService, Clock paramClock) {
+    public SpeechLibFactoryImpl(RecognitionEngineParams paramRecognitionEngineParams, SpeechSettings paramSpeechSettings, ScheduledExecutorService paramScheduledExecutorService) {
         this.mRecognitionEngineParams = paramRecognitionEngineParams;
         this.mSpeechSettings = paramSpeechSettings;
         this.mScheduledExecutorService = paramScheduledExecutorService;
-        this.mClock = paramClock;
         this.mLocalExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(1, "LocalEngine");
         this.mNetworkExecutorService = ConcurrentUtils.createSafeScheduledExecutorService(1, "NetworkEngine");
     }
@@ -66,7 +64,7 @@ public class SpeechLibFactoryImpl
         if (paramSessionParams.getMode() == 6) {
             return new HotwordResultsDispatcher(paramRecognitionDispatcher, paramRecognitionEngineCallback);
         }
-        return new ResultsMergerImpl(this.mClock, paramRecognitionDispatcher, paramEngineSelector, paramRecognitionEngineCallback, paramExecutorService, this.mScheduledExecutorService, paramSessionParams.getEmbeddedFallbackTimeout(this.mSpeechSettings), shouldStopMusicDetectorOnStartOfSpeech(), this.mSpeechSettings, buildSpeechLibLogger());
+        return new ResultsMergerImpl(paramRecognitionDispatcher, paramEngineSelector, paramRecognitionEngineCallback, paramExecutorService, this.mScheduledExecutorService, paramSessionParams.getEmbeddedFallbackTimeout(this.mSpeechSettings), shouldStopMusicDetectorOnStartOfSpeech(), this.mSpeechSettings, buildSpeechLibLogger());
     }
 
     public SpeechLibLogger buildSpeechLibLogger() {

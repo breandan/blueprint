@@ -130,17 +130,10 @@ public class OfflineActionsManager {
         this.mCallback = null;
     }
 
-    public void maybeScheduleGrammarCompilation() {
-        try {
-            String str = this.mSettings.getSpokenLocaleBcp47();
-            Executor localExecutor = AsyncTask.THREAD_POOL_EXECUTOR;
-            Greco3Grammar[] arrayOfGreco3Grammar = Greco3Grammar.values();
-            int i = arrayOfGreco3Grammar.length;
-            for (int j = 0; j < i; j++) {
-                internalMaybeScheduleGrammarCompilation(str, localExecutor, arrayOfGreco3Grammar[j]);
-            }
-            return;
-        } finally {
+    public synchronized void maybeScheduleGrammarCompilation() {
+        String locale = mSettings.getSpokenLocaleBcp47();
+        for(Greco3Grammar greco3Grammar : Greco3Grammar.values()) {
+            internalMaybeScheduleGrammarCompilation(locale, AsyncTask.THREAD_POOL_EXECUTOR, greco3Grammar);
         }
     }
 
@@ -172,27 +165,19 @@ public class OfflineActionsManager {
     public void notifyStart(Greco3Grammar paramGreco3Grammar) {
     }
 
-    public void startOfflineDataCheck(SimpleCallback<Integer> paramSimpleCallback, String paramString, Greco3Grammar... paramVarArgs) {
-        for (; ; ) {
-            try {
-                ExtraPreconditions.checkMainThread();
-                if (this.mCallback == paramSimpleCallback) {
-                    boolean bool = this.mCompilingGrammars.isEmpty();
-                    if (!bool) {
-                        return;
-                    }
-                }
-                this.mGrammarCompilationLocale = paramString;
-                this.mCallback = paramSimpleCallback;
-                this.mCompilingGrammars.clear();
-                if (this.mGreco3DataManager.isInitialized()) {
-                    initGrammars(paramVarArgs);
-                } else {
-                    this.mGreco3DataManager.initialize(createInitGrammarCallback(paramVarArgs));
-                }
-            } finally {
-            }
+    public synchronized void startOfflineDataCheck(SimpleCallback<Integer> completionCallback, String bcp47Locale, Greco3Grammar[] grammars) {
+        ExtraPreconditions.checkMainThread();
+        if((mCallback == completionCallback) && (!mCompilingGrammars.isEmpty())) {
+            return;
         }
+        mGrammarCompilationLocale = bcp47Locale;
+        mCallback = completionCallback;
+        mCompilingGrammars.clear();
+        if(mGreco3DataManager.isInitialized()) {
+            initGrammars(grammars);
+            return;
+        }
+        mGreco3DataManager.initialize(createInitGrammarCallback(grammars));
     }
 
     public static final class GrammarCompilationException

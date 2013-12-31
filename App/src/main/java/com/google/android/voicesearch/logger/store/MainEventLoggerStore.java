@@ -18,31 +18,6 @@ public class MainEventLoggerStore
             this.mDatas.clear();
     }
 
-    public synchronized Results getAndClearResults() {
-            Results localResults = getResults();
-            clearResults();
-    }
-
-    public synchronized Results getResults() {
-            Results local1 = new Results() {
-                public Object getData(int paramAnonymousInt) {
-                    return this.val$datas.get(paramAnonymousInt);
-                }
-
-                public int getEvent(int paramAnonymousInt) {
-                    return ((Integer) this.val$events.get(paramAnonymousInt)).intValue();
-                }
-
-                public long getTime(int paramAnonymousInt) {
-                    return ((Long) this.val$times.get(paramAnonymousInt)).longValue();
-                }
-
-                public int size() {
-                    return this.val$events.size();
-                }
-            };
-    }
-
     public synchronized void recordEvent(int paramInt, Object paramObject) {
             long l = SystemClock.elapsedRealtime();
             this.mEvents.add(Integer.valueOf(paramInt));

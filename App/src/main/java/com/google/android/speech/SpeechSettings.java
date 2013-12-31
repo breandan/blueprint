@@ -9,13 +9,7 @@ public abstract interface SpeechSettings {
 
     public abstract List<String> getExperimentIds();
 
-    public abstract String getInstallId();
-
-    public abstract int getServerEndpointingActivityTimeoutMs();
-
     public abstract String getSpokenLocaleBcp47();
-
-    public abstract String getVoiceSearchTokenType();
 
     public abstract boolean isDebugAudioLoggingEnabled();
 
@@ -23,13 +17,7 @@ public abstract interface SpeechSettings {
 
     public abstract boolean isEmbeddedRecognitionOnlyForDebug();
 
-    public abstract boolean isNetworkRecognitionOnlyForDebug();
-
-    public abstract boolean isPersonalizationEnabled();
-
     public abstract boolean isS3DebugLoggingEnabled();
-
-    public abstract boolean isServerEndpointingEnabled();
 
     public abstract boolean isSoundSearchEnabled();
 

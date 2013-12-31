@@ -173,22 +173,22 @@ public class VoiceInputViewHandler {
                         paramCallback.stopRecognition();
                     }
                 };
-        this.mTitleView = ((TextView) Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296382)));
-        this.mSoundLevels = ((DrawSoundLevelsView) Preconditions.checkNotNull((DrawSoundLevelsView) this.mInputView.findViewById(2131296715)));
+        this.mTitleView = Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296382));
+        this.mSoundLevels = Preconditions.checkNotNull((DrawSoundLevelsView) this.mInputView.findViewById(2131296715));
         this.mSoundLevels.setLevelSource(this.mSpeechLevelSource);
-        this.mImageIndicator = ((ImageView) Preconditions.checkNotNull((ImageView) this.mInputView.findViewById(2131296717)));
-        this.mLanguageView = ((LanguageSpinner) Preconditions.checkNotNull((LanguageSpinner) this.mInputView.findViewById(2131296707)));
+        this.mImageIndicator = Preconditions.checkNotNull((ImageView) this.mInputView.findViewById(2131296717));
+        this.mLanguageView = Preconditions.checkNotNull((LanguageSpinner) this.mInputView.findViewById(2131296707));
         this.mLanguageView.setCallback(paramCallback);
-        this.mPrevImeView = ((ImageView) Preconditions.checkNotNull((ImageView) this.mInputView.findViewById(2131296709)));
+        this.mPrevImeView = Preconditions.checkNotNull((ImageView) this.mInputView.findViewById(2131296709));
         this.mPrevImeView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 EventLogger.recordClientEvent(37);
                 paramCallback.close();
             }
         });
-        this.mImeStateView = ((TextView) Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296712)));
-        this.mWaitingForResultBar = ((View) Preconditions.checkNotNull(this.mInputView.findViewById(2131296716)));
-        this.mStopButton = ((Button) Preconditions.checkNotNull((Button) this.mInputView.findViewById(2131296713)));
+        this.mImeStateView = Preconditions.checkNotNull((TextView) this.mInputView.findViewById(2131296712));
+        this.mWaitingForResultBar = Preconditions.checkNotNull(this.mInputView.findViewById(2131296716));
+        this.mStopButton = Preconditions.checkNotNull((Button) this.mInputView.findViewById(2131296713));
         this.mStopButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View paramAnonymousView) {
                 paramCallback.forceClose();

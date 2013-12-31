@@ -2,7 +2,6 @@ package com.google.android.voicesearch.greco3;
 
 import android.util.Log;
 
-import com.google.android.shared.util.Clock;
 import com.google.android.shared.util.ExtraPreconditions;
 import com.google.android.shared.util.StateMachine;
 import com.google.android.speech.EngineSelector;
@@ -22,14 +21,12 @@ import com.google.speech.s3.S3;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
 public class ResultsMergerImpl
         implements RecognitionDispatcher.ResultsMerger {
-    private final Clock mClock;
     private final boolean mEmbeddedEndpointingEnabled;
     private final ExecutorService mExecutor;
     private final SpeechLibLogger mLogger;
@@ -39,8 +36,6 @@ public class ResultsMergerImpl
     private final RecognitionEngineCallback mRecognitionEngineCallback;
     private final int mSecondaryEngine;
     private final List<RecognitionResponse> mSecondaryEngineResponseQueue = Lists.newArrayList();
-    private final long mServerEndpointingActivityTimeoutMs;
-    private final boolean mServerEndpointingEnabled;
     private final StateMachine<State> mStateMachine = StateMachine.newBuilder("VS.ResultsMerger", State.WAITING).addTransition(State.WAITING, State.USE_PRIMARY).addTransition(State.WAITING, State.USE_SECONDARY).setStrictMode(true).setSingleThreadOnly(true).setDebug(false).build();
     private final boolean mStopMusicDetectorOnStartOfSpeech;
     private final long mSwitchTimeoutMs;
@@ -48,28 +43,23 @@ public class ResultsMergerImpl
     private final ScheduledExecutorService mTimeoutExecutor;
     private boolean mHasAlreadyLoggedEngine;
     private boolean mInvalid;
-    private long mLastNetworkActivity = -1L;
     private RecognizeException mPrimaryException;
     @Nullable
-    private ScheduledFuture<?> mScheduledNetworkActivityTimeout;
     private RecognizeException mSecondaryException;
     private int mSelectedEndpointingEngine = 0;
     private boolean mSpeechDetected;
 
-    public ResultsMergerImpl(Clock paramClock, RecognitionDispatcher paramRecognitionDispatcher, EngineSelector paramEngineSelector, RecognitionEngineCallback paramRecognitionEngineCallback, ExecutorService paramExecutorService, ScheduledExecutorService paramScheduledExecutorService, long paramLong, boolean paramBoolean, SpeechSettings paramSpeechSettings, SpeechLibLogger paramSpeechLibLogger) {
+    public ResultsMergerImpl(RecognitionDispatcher paramRecognitionDispatcher, EngineSelector paramEngineSelector, RecognitionEngineCallback paramRecognitionEngineCallback, ExecutorService paramExecutorService, ScheduledExecutorService paramScheduledExecutorService, long paramLong, boolean paramBoolean, SpeechSettings paramSpeechSettings, SpeechLibLogger paramSpeechLibLogger) {
         this.mPrimaryEngine = paramEngineSelector.getPrimaryEngine();
         this.mSecondaryEngine = paramEngineSelector.getSecondaryEngine();
         this.mRecognitionDispatcher = paramRecognitionDispatcher;
         this.mRecognitionEngineCallback = paramRecognitionEngineCallback;
         this.mTimeoutExecutor = paramScheduledExecutorService;
         this.mExecutor = paramExecutorService;
-        this.mClock = paramClock;
         this.mSwitchTimeoutMs = paramLong;
         this.mStopMusicDetectorOnStartOfSpeech = paramBoolean;
         this.mPhoneActionsMerger = new PhoneActionsMerger();
         this.mEmbeddedEndpointingEnabled = paramSpeechSettings.isEmbeddedEndpointingEnabled();
-        this.mServerEndpointingEnabled = paramSpeechSettings.isServerEndpointingEnabled();
-        this.mServerEndpointingActivityTimeoutMs = paramSpeechSettings.getServerEndpointingActivityTimeoutMs();
         this.mLogger = paramSpeechLibLogger;
     }
 
@@ -80,14 +70,8 @@ public class ResultsMergerImpl
         return State.USE_SECONDARY;
     }
 
-    private boolean isEndpointingEngineEnabled(int paramInt) {
-        if (paramInt == 1) {
-            return this.mEmbeddedEndpointingEnabled;
-        }
-        if (paramInt == 2) {
-            return this.mServerEndpointingEnabled;
-        }
-        return false;
+    private boolean isEndpointingEngineEnabled() {
+        return this.mEmbeddedEndpointingEnabled;
     }
 
     private void maybeLogUsingResultsFrom(int paramInt) {
@@ -135,12 +119,6 @@ public class ResultsMergerImpl
             this.mSecondaryEngineResponseQueue.add(paramRecognitionResponse);
         }
         this.mPhoneActionsMerger.process(localS3Response);
-    }
-
-    private void onEngineActivity(int paramInt) {
-        if (paramInt == 2) {
-            this.mLastNetworkActivity = this.mClock.uptimeMillis();
-        }
     }
 
     private void setSpeechRelatedState(RecognizerProtos.EndpointerEvent paramEndpointerEvent) {
@@ -191,9 +169,6 @@ public class ResultsMergerImpl
 
     public void invalidate() {
         this.mThreadCheck.check();
-        if (this.mScheduledNetworkActivityTimeout != null) {
-            this.mScheduledNetworkActivityTimeout.cancel(true);
-        }
         this.mInvalid = true;
     }
 
@@ -238,7 +213,6 @@ public class ResultsMergerImpl
         if (mInvalid) {
             return;
         }
-        onEngineActivity(engine);
         if (shouldProcessProgressUpdate(engine)) {
             mRecognitionEngineCallback.onProgressUpdate(engine, progressMs);
         }
@@ -250,7 +224,6 @@ public class ResultsMergerImpl
             return;
         }
         int engine = response.getEngine();
-        onEngineActivity(engine);
         int type = response.getType();
         if ((mStateMachine.isIn(ResultsMergerImpl.State.WAITING)) && (engine == mPrimaryEngine) && (type != 0x2)) {
             switchTo(ResultsMergerImpl.State.USE_PRIMARY);
@@ -272,15 +245,12 @@ public class ResultsMergerImpl
     }
 
     boolean shouldProcessEndpointingEvent(RecognitionResponse response) {
-        if (!isEndpointingEngineEnabled(response.getEngine())) {
+        if (!isEndpointingEngineEnabled()) {
             Log.w("VS.ResultsMerger", "Ignoring " + response.getEngineName() + " endpointing event");
             return false;
         }
         if (mSelectedEndpointingEngine == 0) {
             mSelectedEndpointingEngine = response.getEngine();
-            if (mSelectedEndpointingEngine == 0x2) {
-                new ResultsMergerImpl.ServerEndpointingTimeoutProcessor().run();
-            }
             return true;
         }
         if (response.getEngine() != mSelectedEndpointingEngine) {
@@ -297,30 +267,6 @@ public class ResultsMergerImpl
             extends EmbeddedRecognizeException {
         public EmbeddedRecognizerTimeoutException() {
             super("Timed out waiting for Greco3RecognitionEngine response.");
-        }
-    }
-
-    private class ServerEndpointingTimeoutProcessor
-            implements Runnable {
-        public void run() {
-            if (mInvalid) {
-                return;
-            }
-            long elapsedMs = mClock.uptimeMillis() - mLastNetworkActivity;
-            long remainingMs = mServerEndpointingActivityTimeoutMs - elapsedMs;
-            if (remainingMs <= 0x0) {
-                Log.w("VS.ResultsMerger", "Timed out waiting for server activity");
-                final NetworkRecognizeException timeout = new NetworkRecognizeException("Using the network for endpointing and have had no network response in " + mServerEndpointingActivityTimeoutMs + "ms");
-                timeout.setEngine(0x2);
-                mExecutor.execute(new Runnable() {
-                    public void run() {
-                        mRecognitionDispatcher.cancel();
-                        mRecognitionEngineCallback.onError(timeout);
-                    }
-                });
-                return;
-            }
-            mScheduledNetworkActivityTimeout = mTimeoutExecutor.schedule(this, Math.max(remainingMs, 10), TimeUnit.MILLISECONDS);
         }
     }
 }

@@ -3,18 +3,11 @@ package com.google.android.voicesearch.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.text.TextUtils;
 
-import com.google.android.search.core.GsaConfigFlags;
 import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.search.core.GserviceWrapper;
-import com.google.android.search.core.SearchConfig;
-import com.google.android.search.core.SearchSettings;
-import com.google.android.search.core.util.HttpHelper;
 import com.google.android.speech.SpeechSettings;
 import com.google.android.speech.utils.SpokenLanguageUtils;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.util.ArrayList;
@@ -22,25 +15,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 
-import javax.annotation.Nullable;
-
 public class Settings
         implements SpeechSettings {
-    private final GsaConfigFlags mConfigFlags;
     private final GStaticConfiguration mGStaticConfiguration;
     private final GsaPreferenceController mPrefController;
-    private final SearchConfig mSearchConfig;
-    private final SearchSettings mSearchSettings;
 
-    public Settings(Context paramContext, GsaPreferenceController paramGsaPreferenceController, SearchSettings paramSearchSettings, SearchConfig paramSearchConfig, GsaConfigFlags paramGsaConfigFlags, HttpHelper paramHttpHelper, ExecutorService paramExecutorService) {
-        this(paramGsaPreferenceController, paramContext, paramSearchSettings, paramSearchConfig, paramGsaConfigFlags, paramHttpHelper, new GStaticConfiguration(paramGsaPreferenceController, paramContext.getResources(), paramExecutorService, new GserviceWrapper(paramContext.getContentResolver())));
+    public Settings(Context paramContext, GsaPreferenceController paramGsaPreferenceController, ExecutorService paramExecutorService) {
+        this(paramGsaPreferenceController, new GStaticConfiguration(paramGsaPreferenceController, paramContext.getResources(), paramExecutorService, new GserviceWrapper(paramContext.getContentResolver())));
     }
 
-    Settings(GsaPreferenceController paramGsaPreferenceController, Context paramContext, SearchSettings paramSearchSettings, SearchConfig paramSearchConfig, GsaConfigFlags paramGsaConfigFlags, HttpHelper paramHttpHelper, GStaticConfiguration paramGStaticConfiguration) {
+    Settings(GsaPreferenceController paramGsaPreferenceController, GStaticConfiguration paramGStaticConfiguration) {
         this.mPrefController = paramGsaPreferenceController;
-        this.mSearchSettings = paramSearchSettings;
-        this.mSearchConfig = paramSearchConfig;
-        this.mConfigFlags = paramGsaConfigFlags;
         this.mGStaticConfiguration = paramGStaticConfiguration;
         this.mGStaticConfiguration.addListener(new ConfigurationChangeListener() {
             public void onChange(GstaticConfiguration.Configuration paramAnonymousConfiguration) {
@@ -98,82 +83,12 @@ public class Settings
         return this.mGStaticConfiguration.getConfiguration();
     }
 
-    @Nullable
-    public GstaticConfiguration.Configuration getConfigurationIfReady() {
-        return this.mGStaticConfiguration.getConfigurationIfReady();
-    }
-
     public String getDebugRecognitionEngineRestrict() {
         return getPrefs().getString("debugRecognitionEngineRestrict", null);
     }
 
-    public String getDebugS3SandboxOverride() {
-        return getPrefs().getString("s3SandboxOverride", null);
-    }
-
-    public long getDefaultActionCountDownMs() {
-        return this.mGStaticConfiguration.getConfiguration().getVoiceSearch().getActionCountDownMsec();
-    }
-
     public List<String> getExperimentIds() {
-        ArrayList localArrayList = Lists.newArrayListWithExpectedSize(1);
-        localArrayList.add(getConfiguration().getId());
-        Integer[] arrayOfInteger = this.mConfigFlags.getExperimentIds();
-        int i = arrayOfInteger.length;
-        for (int j = 0; j < i; j++) {
-            localArrayList.add(arrayOfInteger[j].toString());
-        }
-        for (String str : this.mSearchConfig.getGservicesExperimentIds().split(",")) {
-            if (!TextUtils.isEmpty(str)) {
-                localArrayList.add(str);
-            }
-        }
-        if (this.mSearchConfig.isSdchEnabledForSerp()) {
-            localArrayList.add("sdch");
-        }
-        if (this.mSearchConfig.isSpdyForSearchResultFetchesEnabled()) {
-            localArrayList.add("spdy_search");
-        }
-        if (this.mSearchConfig.isSpdyForSuggestionsEnabled()) {
-            localArrayList.add("spdy_suggest");
-        }
-        if (this.mSearchConfig.shouldUseChromePrerender()) {
-            localArrayList.add("chrome_prerender");
-        }
-        return localArrayList;
-    }
-
-    public String getInstallId() {
-        return this.mSearchSettings.getVoiceSearchInstallId();
-    }
-
-    public int getLanguagePacksAutoUpdate() {
-        return getPrefs().getInt("languagePacksAutoUpdate", 2);
-    }
-
-    public void setLanguagePacksAutoUpdate(int strategy) {
-        Preconditions.checkArgument((strategy == 0) || (strategy == 1) || (strategy == 2));
-        getPrefs().edit().putInt("languagePacksAutoUpdate", strategy).apply();
-    }
-
-    public int getPersonalizationValue() {
-        return getPrefs().getInt("pref-voice-personalization-status", 0);
-    }
-
-    public void setPersonalizationValue(int paramInt) {
-        getPrefs().edit().putInt("pref-voice-personalization-status", paramInt).apply();
-    }
-
-    public String getS3ServerOverride() {
-        return getPrefs().getString("debugS3Server", "");
-    }
-
-    public int getServerEndpointingActivityTimeoutMs() {
-        return this.mConfigFlags.getServerEndpointingActivityTimeoutMs();
-    }
-
-    public Locale getSpokenLocale() {
-        return SpokenLanguageUtils.getMainJavaLocaleForBcp47(getConfiguration(), getSpokenLocaleBcp47());
+        return new ArrayList<>();
     }
 
     public synchronized String getSpokenLocaleBcp47() {
@@ -184,53 +99,24 @@ public class Settings
         return slb47;
     }
 
-    public String getVoiceSearchTokenType() {
-        return this.mSearchConfig.getVoiceSearchTokenType();
-    }
-
-    public boolean hasEverUsedVoiceSearch() {
-        return getPrefs().getBoolean("hasEverUsedVoiceSearch", false);
-    }
-
     public boolean isBluetoothHeadsetEnabled() {
-        boolean bool1 = this.mSearchConfig.isBluetoothEnabled();
-        boolean bool2 = false;
-        if (bool1) {
-            boolean bool3 = getPrefs().getBoolean("bluetoothHeadset", false);
-            bool2 = false;
-            if (bool3) {
-                bool2 = true;
-            }
-        }
-        return bool2;
+        return false;
     }
 
     public boolean isDebugAudioLoggingEnabled() {
-        return this.mSearchConfig.isDebugAudioLoggingEnabled();
-    }
-
-    public boolean isDefaultSpokenLanguage() {
-        return getPrefs().getBoolean("spoken-language-default", false);
+        return true;
     }
 
     public boolean isEmbeddedEndpointingEnabled() {
-        return this.mConfigFlags.isEmbeddedEndpointingEnabled();
+        return true;
     }
 
     public boolean isEmbeddedRecognitionOnlyForDebug() {
         return "embeddedOnly".equals(getDebugRecognitionEngineRestrict());
     }
 
-    public boolean isNetworkRecognitionOnlyForDebug() {
-        return "networkOnly".equals(getDebugRecognitionEngineRestrict());
-    }
-
-    public boolean isPersonalizationEnabled() {
-        return getPersonalizationValue() == 4;
-    }
-
     public boolean isProfanityFilterEnabled() {
-        return getPrefs().getBoolean("profanityFilter", true);
+        return false;
     }
 
     public boolean isS3DebugLoggingEnabled() {
@@ -238,15 +124,11 @@ public class Settings
     }
 
     public boolean isServerEndpointingEnabled() {
-        return this.mConfigFlags.isServerEndpointingEnabled();
+        return false;
     }
 
     public boolean isSoundSearchEnabled() {
-        return ((this.mSearchConfig.getSoundSearchEnabled()) && (!isBlacklistedSoundSearchDevice())) || (getConfiguration().hasDebug());
-    }
-
-    public void setHasEverUsedVoiceSearch() {
-        getPrefs().edit().putBoolean("hasEverUsedVoiceSearch", true).apply();
+        return false;
     }
 
     public synchronized void setSpokenLanguageBcp47(String paramString, boolean paramBoolean) {

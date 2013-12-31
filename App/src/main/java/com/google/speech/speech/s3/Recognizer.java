@@ -117,8 +117,10 @@ public final class Recognizer {
                         paramCodedInputStreamMicro.readMessage(localEndpointerEvent);
                         setEndpointerEvent(localEndpointerEvent);
                         break;
+                    case 26:
+                        setLanguage(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setLanguage(paramCodedInputStreamMicro.readString());
             }
         }
 
