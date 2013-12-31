@@ -30,7 +30,8 @@ public class MainActivity extends Activity {
         final TextView textView = (TextView) findViewById(R.id.textView);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-        VoiceSearchServices vss = new VoiceSearchServices(getApplication(), new AsyncServicesImpl(), new GsaPreferenceController(getApplication()));
+        VoiceSearchServices vss = new VoiceSearchServices(getApplication(), new AsyncServicesImpl(), new GsaPreferenceController(getApplication()), this);
+
 //        AudioInputStreamFactory aisf = new AudioInputStreamFactory();
 
 

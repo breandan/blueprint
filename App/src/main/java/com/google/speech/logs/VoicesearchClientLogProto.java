@@ -38,16 +38,40 @@ public final class VoicesearchClientLogProto {
             return this.length_;
         }
 
+        public AlternateCorrectionData setLength(int paramInt) {
+            this.hasLength = true;
+            this.length_ = paramInt;
+            return this;
+        }
+
         public String getNewText() {
             return this.newText_;
+        }
+
+        public AlternateCorrectionData setNewText(String paramString) {
+            this.hasNewText = true;
+            this.newText_ = paramString;
+            return this;
         }
 
         public String getOldText() {
             return this.oldText_;
         }
 
+        public AlternateCorrectionData setOldText(String paramString) {
+            this.hasOldText = true;
+            this.oldText_ = paramString;
+            return this;
+        }
+
         public int getRecognizerSegmentIndex() {
             return this.recognizerSegmentIndex_;
+        }
+
+        public AlternateCorrectionData setRecognizerSegmentIndex(int paramInt) {
+            this.hasRecognizerSegmentIndex = true;
+            this.recognizerSegmentIndex_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -79,8 +103,20 @@ public final class VoicesearchClientLogProto {
             return this.start_;
         }
 
+        public AlternateCorrectionData setStart(int paramInt) {
+            this.hasStart = true;
+            this.start_ = paramInt;
+            return this;
+        }
+
         public int getUnit() {
             return this.unit_;
+        }
+
+        public AlternateCorrectionData setUnit(int paramInt) {
+            this.hasUnit = true;
+            this.unit_ = paramInt;
+            return this;
         }
 
         public boolean hasLength() {
@@ -133,45 +169,11 @@ public final class VoicesearchClientLogProto {
                     case 42:
                         setOldText(paramCodedInputStreamMicro.readString());
                         break;
+                    case 50:
+                        setNewText(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setNewText(paramCodedInputStreamMicro.readString());
             }
-        }
-
-        public AlternateCorrectionData setLength(int paramInt) {
-            this.hasLength = true;
-            this.length_ = paramInt;
-            return this;
-        }
-
-        public AlternateCorrectionData setNewText(String paramString) {
-            this.hasNewText = true;
-            this.newText_ = paramString;
-            return this;
-        }
-
-        public AlternateCorrectionData setOldText(String paramString) {
-            this.hasOldText = true;
-            this.oldText_ = paramString;
-            return this;
-        }
-
-        public AlternateCorrectionData setRecognizerSegmentIndex(int paramInt) {
-            this.hasRecognizerSegmentIndex = true;
-            this.recognizerSegmentIndex_ = paramInt;
-            return this;
-        }
-
-        public AlternateCorrectionData setStart(int paramInt) {
-            this.hasStart = true;
-            this.start_ = paramInt;
-            return this;
-        }
-
-        public AlternateCorrectionData setUnit(int paramInt) {
-            this.hasUnit = true;
-            this.unit_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -224,6 +226,12 @@ public final class VoicesearchClientLogProto {
             return this.statusCode_;
         }
 
+        public AuthTokenStatus setStatusCode(int paramInt) {
+            this.hasStatusCode = true;
+            this.statusCode_ = paramInt;
+            return this;
+        }
+
         public boolean hasStatusCode() {
             return this.hasStatusCode;
         }
@@ -244,12 +252,6 @@ public final class VoicesearchClientLogProto {
                         break;
                 }
             }
-        }
-
-        public AuthTokenStatus setStatusCode(int paramInt) {
-            this.hasStatusCode = true;
-            this.statusCode_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -281,12 +283,30 @@ public final class VoicesearchClientLogProto {
             return this.deviceName_;
         }
 
+        public BluetoothDevice setDeviceName(String paramString) {
+            this.hasDeviceName = true;
+            this.deviceName_ = paramString;
+            return this;
+        }
+
         public String getDeviceNameHash() {
             return this.deviceNameHash_;
         }
 
+        public BluetoothDevice setDeviceNameHash(String paramString) {
+            this.hasDeviceNameHash = true;
+            this.deviceNameHash_ = paramString;
+            return this;
+        }
+
         public String getOrgIdentifier() {
             return this.orgIdentifier_;
+        }
+
+        public BluetoothDevice setOrgIdentifier(String paramString) {
+            this.hasOrgIdentifier = true;
+            this.orgIdentifier_ = paramString;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -334,27 +354,11 @@ public final class VoicesearchClientLogProto {
                     case 18:
                         setDeviceNameHash(paramCodedInputStreamMicro.readString());
                         break;
+                    case 26:
+                        setOrgIdentifier(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setOrgIdentifier(paramCodedInputStreamMicro.readString());
             }
-        }
-
-        public BluetoothDevice setDeviceName(String paramString) {
-            this.hasDeviceName = true;
-            this.deviceName_ = paramString;
-            return this;
-        }
-
-        public BluetoothDevice setDeviceNameHash(String paramString) {
-            this.hasDeviceNameHash = true;
-            this.deviceNameHash_ = paramString;
-            return this;
-        }
-
-        public BluetoothDevice setOrgIdentifier(String paramString) {
-            this.hasOrgIdentifier = true;
-            this.orgIdentifier_ = paramString;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -379,6 +383,12 @@ public final class VoicesearchClientLogProto {
 
         public int getBugNumber() {
             return this.bugNumber_;
+        }
+
+        public BugReport setBugNumber(int paramInt) {
+            this.hasBugNumber = true;
+            this.bugNumber_ = paramInt;
+            return this;
         }
 
         public int getCachedSize() {
@@ -418,12 +428,6 @@ public final class VoicesearchClientLogProto {
                         break;
                 }
             }
-        }
-
-        public BugReport setBugNumber(int paramInt) {
-            this.hasBugNumber = true;
-            this.bugNumber_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -498,20 +502,62 @@ public final class VoicesearchClientLogProto {
             return this.alternateCorrection_;
         }
 
+        public ClientEvent setAlternateCorrection(VoicesearchClientLogProto.AlternateCorrectionData paramAlternateCorrectionData) {
+            if (paramAlternateCorrectionData == null) {
+                throw new NullPointerException();
+            }
+            this.hasAlternateCorrection = true;
+            this.alternateCorrection_ = paramAlternateCorrectionData;
+            return this;
+        }
+
         public int getAudioInputDevice() {
             return this.audioInputDevice_;
+        }
+
+        public ClientEvent setAudioInputDevice(int paramInt) {
+            this.hasAudioInputDevice = true;
+            this.audioInputDevice_ = paramInt;
+            return this;
         }
 
         public VoicesearchClientLogProto.AuthTokenStatus getAuthTokenStatus() {
             return this.authTokenStatus_;
         }
 
+        public ClientEvent setAuthTokenStatus(VoicesearchClientLogProto.AuthTokenStatus paramAuthTokenStatus) {
+            if (paramAuthTokenStatus == null) {
+                throw new NullPointerException();
+            }
+            this.hasAuthTokenStatus = true;
+            this.authTokenStatus_ = paramAuthTokenStatus;
+            return this;
+        }
+
         public VoicesearchClientLogProto.BluetoothDevice getBluetoothDevice() {
             return this.bluetoothDevice_;
         }
 
+        public ClientEvent setBluetoothDevice(VoicesearchClientLogProto.BluetoothDevice paramBluetoothDevice) {
+            if (paramBluetoothDevice == null) {
+                throw new NullPointerException();
+            }
+            this.hasBluetoothDevice = true;
+            this.bluetoothDevice_ = paramBluetoothDevice;
+            return this;
+        }
+
         public VoicesearchClientLogProto.BugReport getBugReport() {
             return this.bugReport_;
+        }
+
+        public ClientEvent setBugReport(VoicesearchClientLogProto.BugReport paramBugReport) {
+            if (paramBugReport == null) {
+                throw new NullPointerException();
+            }
+            this.hasBugReport = true;
+            this.bugReport_ = paramBugReport;
+            return this;
         }
 
         public int getCachedSize() {
@@ -525,88 +571,256 @@ public final class VoicesearchClientLogProto {
             return this.cardType_;
         }
 
+        public ClientEvent setCardType(int paramInt) {
+            this.hasCardType = true;
+            this.cardType_ = paramInt;
+            return this;
+        }
+
         public long getClientTimeMs() {
             return this.clientTimeMs_;
+        }
+
+        public ClientEvent setClientTimeMs(long paramLong) {
+            this.hasClientTimeMs = true;
+            this.clientTimeMs_ = paramLong;
+            return this;
         }
 
         public VoicesearchClientLogProto.ContactDisplayInfo getContactDisplayInfo() {
             return this.contactDisplayInfo_;
         }
 
+        public ClientEvent setContactDisplayInfo(VoicesearchClientLogProto.ContactDisplayInfo paramContactDisplayInfo) {
+            if (paramContactDisplayInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasContactDisplayInfo = true;
+            this.contactDisplayInfo_ = paramContactDisplayInfo;
+            return this;
+        }
+
         public VoicesearchClientLogProto.ContactInfo getContactInfo() {
             return this.contactInfo_;
+        }
+
+        public ClientEvent setContactInfo(VoicesearchClientLogProto.ContactInfo paramContactInfo) {
+            if (paramContactInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasContactInfo = true;
+            this.contactInfo_ = paramContactInfo;
+            return this;
         }
 
         public VoicesearchClientLogProto.ContactLookupInfo getContactLookupInfo() {
             return this.contactLookupInfo_;
         }
 
+        public ClientEvent setContactLookupInfo(VoicesearchClientLogProto.ContactLookupInfo paramContactLookupInfo) {
+            if (paramContactLookupInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasContactLookupInfo = true;
+            this.contactLookupInfo_ = paramContactLookupInfo;
+            return this;
+        }
+
         public VoicesearchClientLogProto.ContactSelectInfo getContactSelectInfo() {
             return this.contactSelectInfo_;
+        }
+
+        public ClientEvent setContactSelectInfo(VoicesearchClientLogProto.ContactSelectInfo paramContactSelectInfo) {
+            if (paramContactSelectInfo == null) {
+                throw new NullPointerException();
+            }
+            this.hasContactSelectInfo = true;
+            this.contactSelectInfo_ = paramContactSelectInfo;
+            return this;
         }
 
         public VoicesearchClientLogProto.EmbeddedParserDetails getEmbeddedParserDetails() {
             return this.embeddedParserDetails_;
         }
 
+        public ClientEvent setEmbeddedParserDetails(VoicesearchClientLogProto.EmbeddedParserDetails paramEmbeddedParserDetails) {
+            if (paramEmbeddedParserDetails == null) {
+                throw new NullPointerException();
+            }
+            this.hasEmbeddedParserDetails = true;
+            this.embeddedParserDetails_ = paramEmbeddedParserDetails;
+            return this;
+        }
+
         public RecognizerOuterClass.RecognizerLog getEmbeddedRecognizerLog() {
             return this.embeddedRecognizerLog_;
+        }
+
+        public ClientEvent setEmbeddedRecognizerLog(RecognizerOuterClass.RecognizerLog paramRecognizerLog) {
+            if (paramRecognizerLog == null) {
+                throw new NullPointerException();
+            }
+            this.hasEmbeddedRecognizerLog = true;
+            this.embeddedRecognizerLog_ = paramRecognizerLog;
+            return this;
         }
 
         public int getErrorType() {
             return this.errorType_;
         }
 
+        public ClientEvent setErrorType(int paramInt) {
+            this.hasErrorType = true;
+            this.errorType_ = paramInt;
+            return this;
+        }
+
         public int getEventSource() {
             return this.eventSource_;
+        }
+
+        public ClientEvent setEventSource(int paramInt) {
+            this.hasEventSource = true;
+            this.eventSource_ = paramInt;
+            return this;
         }
 
         public int getEventType() {
             return this.eventType_;
         }
 
+        public ClientEvent setEventType(int paramInt) {
+            this.hasEventType = true;
+            this.eventType_ = paramInt;
+            return this;
+        }
+
         public VoicesearchClientLogProto.GmsCoreData getGmsCoreData() {
             return this.gmsCoreData_;
+        }
+
+        public ClientEvent setGmsCoreData(VoicesearchClientLogProto.GmsCoreData paramGmsCoreData) {
+            if (paramGmsCoreData == null) {
+                throw new NullPointerException();
+            }
+            this.hasGmsCoreData = true;
+            this.gmsCoreData_ = paramGmsCoreData;
+            return this;
         }
 
         public VoicesearchClientLogProto.GwsCorrectionData getGwsCorrection() {
             return this.gwsCorrection_;
         }
 
+        public ClientEvent setGwsCorrection(VoicesearchClientLogProto.GwsCorrectionData paramGwsCorrectionData) {
+            if (paramGwsCorrectionData == null) {
+                throw new NullPointerException();
+            }
+            this.hasGwsCorrection = true;
+            this.gwsCorrection_ = paramGwsCorrectionData;
+            return this;
+        }
+
         public VoicesearchClientLogProto.IcingCorpusDiagnostics getIcingCorpusDiagnostic() {
             return this.icingCorpusDiagnostic_;
+        }
+
+        public ClientEvent setIcingCorpusDiagnostic(VoicesearchClientLogProto.IcingCorpusDiagnostics paramIcingCorpusDiagnostics) {
+            if (paramIcingCorpusDiagnostics == null) {
+                throw new NullPointerException();
+            }
+            this.hasIcingCorpusDiagnostic = true;
+            this.icingCorpusDiagnostic_ = paramIcingCorpusDiagnostics;
+            return this;
         }
 
         public int getIntentType() {
             return this.intentType_;
         }
 
+        public ClientEvent setIntentType(int paramInt) {
+            this.hasIntentType = true;
+            this.intentType_ = paramInt;
+            return this;
+        }
+
         public VoicesearchClientLogProto.LatencyData getLatency() {
             return this.latency_;
+        }
+
+        public ClientEvent setLatency(VoicesearchClientLogProto.LatencyData paramLatencyData) {
+            if (paramLatencyData == null) {
+                throw new NullPointerException();
+            }
+            this.hasLatency = true;
+            this.latency_ = paramLatencyData;
+            return this;
         }
 
         public int getNetworkType() {
             return this.networkType_;
         }
 
+        public ClientEvent setNetworkType(int paramInt) {
+            this.hasNetworkType = true;
+            this.networkType_ = paramInt;
+            return this;
+        }
+
         public VoicesearchClientLogProto.OnDeviceSource getOnDeviceSource() {
             return this.onDeviceSource_;
+        }
+
+        public ClientEvent setOnDeviceSource(VoicesearchClientLogProto.OnDeviceSource paramOnDeviceSource) {
+            if (paramOnDeviceSource == null) {
+                throw new NullPointerException();
+            }
+            this.hasOnDeviceSource = true;
+            this.onDeviceSource_ = paramOnDeviceSource;
+            return this;
         }
 
         public String getRequestId() {
             return this.requestId_;
         }
 
+        public ClientEvent setRequestId(String paramString) {
+            this.hasRequestId = true;
+            this.requestId_ = paramString;
+            return this;
+        }
+
         public int getRequestType() {
             return this.requestType_;
+        }
+
+        public ClientEvent setRequestType(int paramInt) {
+            this.hasRequestType = true;
+            this.requestType_ = paramInt;
+            return this;
         }
 
         public boolean getScoOutputDisabled() {
             return this.scoOutputDisabled_;
         }
 
+        public ClientEvent setScoOutputDisabled(boolean paramBoolean) {
+            this.hasScoOutputDisabled = true;
+            this.scoOutputDisabled_ = paramBoolean;
+            return this;
+        }
+
         public VoicesearchClientLogProto.ScreenTransitionData getScreenTransition() {
             return this.screenTransition_;
+        }
+
+        public ClientEvent setScreenTransition(VoicesearchClientLogProto.ScreenTransitionData paramScreenTransitionData) {
+            if (paramScreenTransitionData == null) {
+                throw new NullPointerException();
+            }
+            this.hasScreenTransition = true;
+            this.screenTransition_ = paramScreenTransitionData;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -702,6 +916,15 @@ public final class VoicesearchClientLogProto {
 
         public VoicesearchClientLogProto.TypingCorrection getTypingCorrection() {
             return this.typingCorrection_;
+        }
+
+        public ClientEvent setTypingCorrection(VoicesearchClientLogProto.TypingCorrection paramTypingCorrection) {
+            if (paramTypingCorrection == null) {
+                throw new NullPointerException();
+            }
+            this.hasTypingCorrection = true;
+            this.typingCorrection_ = paramTypingCorrection;
+            return this;
         }
 
         public boolean hasAlternateCorrection() {
@@ -940,230 +1163,13 @@ public final class VoicesearchClientLogProto {
                         paramCodedInputStreamMicro.readMessage(localBluetoothDevice);
                         setBluetoothDevice(localBluetoothDevice);
                         break;
+                    case 226:
+                        VoicesearchClientLogProto.GwsCorrectionData localGwsCorrectionData = new VoicesearchClientLogProto.GwsCorrectionData();
+                        paramCodedInputStreamMicro.readMessage(localGwsCorrectionData);
+                        setGwsCorrection(localGwsCorrectionData);
+                        break;
                 }
-                VoicesearchClientLogProto.GwsCorrectionData localGwsCorrectionData = new VoicesearchClientLogProto.GwsCorrectionData();
-                paramCodedInputStreamMicro.readMessage(localGwsCorrectionData);
-                setGwsCorrection(localGwsCorrectionData);
             }
-        }
-
-        public ClientEvent setAlternateCorrection(VoicesearchClientLogProto.AlternateCorrectionData paramAlternateCorrectionData) {
-            if (paramAlternateCorrectionData == null) {
-                throw new NullPointerException();
-            }
-            this.hasAlternateCorrection = true;
-            this.alternateCorrection_ = paramAlternateCorrectionData;
-            return this;
-        }
-
-        public ClientEvent setAudioInputDevice(int paramInt) {
-            this.hasAudioInputDevice = true;
-            this.audioInputDevice_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setAuthTokenStatus(VoicesearchClientLogProto.AuthTokenStatus paramAuthTokenStatus) {
-            if (paramAuthTokenStatus == null) {
-                throw new NullPointerException();
-            }
-            this.hasAuthTokenStatus = true;
-            this.authTokenStatus_ = paramAuthTokenStatus;
-            return this;
-        }
-
-        public ClientEvent setBluetoothDevice(VoicesearchClientLogProto.BluetoothDevice paramBluetoothDevice) {
-            if (paramBluetoothDevice == null) {
-                throw new NullPointerException();
-            }
-            this.hasBluetoothDevice = true;
-            this.bluetoothDevice_ = paramBluetoothDevice;
-            return this;
-        }
-
-        public ClientEvent setBugReport(VoicesearchClientLogProto.BugReport paramBugReport) {
-            if (paramBugReport == null) {
-                throw new NullPointerException();
-            }
-            this.hasBugReport = true;
-            this.bugReport_ = paramBugReport;
-            return this;
-        }
-
-        public ClientEvent setCardType(int paramInt) {
-            this.hasCardType = true;
-            this.cardType_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setClientTimeMs(long paramLong) {
-            this.hasClientTimeMs = true;
-            this.clientTimeMs_ = paramLong;
-            return this;
-        }
-
-        public ClientEvent setContactDisplayInfo(VoicesearchClientLogProto.ContactDisplayInfo paramContactDisplayInfo) {
-            if (paramContactDisplayInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasContactDisplayInfo = true;
-            this.contactDisplayInfo_ = paramContactDisplayInfo;
-            return this;
-        }
-
-        public ClientEvent setContactInfo(VoicesearchClientLogProto.ContactInfo paramContactInfo) {
-            if (paramContactInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasContactInfo = true;
-            this.contactInfo_ = paramContactInfo;
-            return this;
-        }
-
-        public ClientEvent setContactLookupInfo(VoicesearchClientLogProto.ContactLookupInfo paramContactLookupInfo) {
-            if (paramContactLookupInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasContactLookupInfo = true;
-            this.contactLookupInfo_ = paramContactLookupInfo;
-            return this;
-        }
-
-        public ClientEvent setContactSelectInfo(VoicesearchClientLogProto.ContactSelectInfo paramContactSelectInfo) {
-            if (paramContactSelectInfo == null) {
-                throw new NullPointerException();
-            }
-            this.hasContactSelectInfo = true;
-            this.contactSelectInfo_ = paramContactSelectInfo;
-            return this;
-        }
-
-        public ClientEvent setEmbeddedParserDetails(VoicesearchClientLogProto.EmbeddedParserDetails paramEmbeddedParserDetails) {
-            if (paramEmbeddedParserDetails == null) {
-                throw new NullPointerException();
-            }
-            this.hasEmbeddedParserDetails = true;
-            this.embeddedParserDetails_ = paramEmbeddedParserDetails;
-            return this;
-        }
-
-        public ClientEvent setEmbeddedRecognizerLog(RecognizerOuterClass.RecognizerLog paramRecognizerLog) {
-            if (paramRecognizerLog == null) {
-                throw new NullPointerException();
-            }
-            this.hasEmbeddedRecognizerLog = true;
-            this.embeddedRecognizerLog_ = paramRecognizerLog;
-            return this;
-        }
-
-        public ClientEvent setErrorType(int paramInt) {
-            this.hasErrorType = true;
-            this.errorType_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setEventSource(int paramInt) {
-            this.hasEventSource = true;
-            this.eventSource_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setEventType(int paramInt) {
-            this.hasEventType = true;
-            this.eventType_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setGmsCoreData(VoicesearchClientLogProto.GmsCoreData paramGmsCoreData) {
-            if (paramGmsCoreData == null) {
-                throw new NullPointerException();
-            }
-            this.hasGmsCoreData = true;
-            this.gmsCoreData_ = paramGmsCoreData;
-            return this;
-        }
-
-        public ClientEvent setGwsCorrection(VoicesearchClientLogProto.GwsCorrectionData paramGwsCorrectionData) {
-            if (paramGwsCorrectionData == null) {
-                throw new NullPointerException();
-            }
-            this.hasGwsCorrection = true;
-            this.gwsCorrection_ = paramGwsCorrectionData;
-            return this;
-        }
-
-        public ClientEvent setIcingCorpusDiagnostic(VoicesearchClientLogProto.IcingCorpusDiagnostics paramIcingCorpusDiagnostics) {
-            if (paramIcingCorpusDiagnostics == null) {
-                throw new NullPointerException();
-            }
-            this.hasIcingCorpusDiagnostic = true;
-            this.icingCorpusDiagnostic_ = paramIcingCorpusDiagnostics;
-            return this;
-        }
-
-        public ClientEvent setIntentType(int paramInt) {
-            this.hasIntentType = true;
-            this.intentType_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setLatency(VoicesearchClientLogProto.LatencyData paramLatencyData) {
-            if (paramLatencyData == null) {
-                throw new NullPointerException();
-            }
-            this.hasLatency = true;
-            this.latency_ = paramLatencyData;
-            return this;
-        }
-
-        public ClientEvent setNetworkType(int paramInt) {
-            this.hasNetworkType = true;
-            this.networkType_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setOnDeviceSource(VoicesearchClientLogProto.OnDeviceSource paramOnDeviceSource) {
-            if (paramOnDeviceSource == null) {
-                throw new NullPointerException();
-            }
-            this.hasOnDeviceSource = true;
-            this.onDeviceSource_ = paramOnDeviceSource;
-            return this;
-        }
-
-        public ClientEvent setRequestId(String paramString) {
-            this.hasRequestId = true;
-            this.requestId_ = paramString;
-            return this;
-        }
-
-        public ClientEvent setRequestType(int paramInt) {
-            this.hasRequestType = true;
-            this.requestType_ = paramInt;
-            return this;
-        }
-
-        public ClientEvent setScoOutputDisabled(boolean paramBoolean) {
-            this.hasScoOutputDisabled = true;
-            this.scoOutputDisabled_ = paramBoolean;
-            return this;
-        }
-
-        public ClientEvent setScreenTransition(VoicesearchClientLogProto.ScreenTransitionData paramScreenTransitionData) {
-            if (paramScreenTransitionData == null) {
-                throw new NullPointerException();
-            }
-            this.hasScreenTransition = true;
-            this.screenTransition_ = paramScreenTransitionData;
-            return this;
-        }
-
-        public ClientEvent setTypingCorrection(VoicesearchClientLogProto.TypingCorrection paramTypingCorrection) {
-            if (paramTypingCorrection == null) {
-                throw new NullPointerException();
-            }
-            this.hasTypingCorrection = true;
-            this.typingCorrection_ = paramTypingCorrection;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1276,8 +1282,20 @@ public final class VoicesearchClientLogProto {
             return this.contactShownCount_;
         }
 
+        public ContactDisplayInfo setContactShownCount(int paramInt) {
+            this.hasContactShownCount = true;
+            this.contactShownCount_ = paramInt;
+            return this;
+        }
+
         public int getPeopleShownCount() {
             return this.peopleShownCount_;
+        }
+
+        public ContactDisplayInfo setPeopleShownCount(int paramInt) {
+            this.hasPeopleShownCount = true;
+            this.peopleShownCount_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1298,6 +1316,12 @@ public final class VoicesearchClientLogProto {
 
         public int getSyncedContactShownCount() {
             return this.syncedContactShownCount_;
+        }
+
+        public ContactDisplayInfo setSyncedContactShownCount(int paramInt) {
+            this.hasSyncedContactShownCount = true;
+            this.syncedContactShownCount_ = paramInt;
+            return this;
         }
 
         public boolean hasContactShownCount() {
@@ -1329,27 +1353,11 @@ public final class VoicesearchClientLogProto {
                     case 16:
                         setPeopleShownCount(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 24:
+                        setSyncedContactShownCount(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setSyncedContactShownCount(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public ContactDisplayInfo setContactShownCount(int paramInt) {
-            this.hasContactShownCount = true;
-            this.contactShownCount_ = paramInt;
-            return this;
-        }
-
-        public ContactDisplayInfo setPeopleShownCount(int paramInt) {
-            this.hasPeopleShownCount = true;
-            this.peopleShownCount_ = paramInt;
-            return this;
-        }
-
-        public ContactDisplayInfo setSyncedContactShownCount(int paramInt) {
-            this.hasSyncedContactShownCount = true;
-            this.syncedContactShownCount_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1387,6 +1395,12 @@ public final class VoicesearchClientLogProto {
             return this.grammarWeight_;
         }
 
+        public ContactInfo setGrammarWeight(double paramDouble) {
+            this.hasGrammarWeight = true;
+            this.grammarWeight_ = paramDouble;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasGrammarWeight();
             int i = 0;
@@ -1407,8 +1421,20 @@ public final class VoicesearchClientLogProto {
             return this.source_;
         }
 
+        public ContactInfo setSource(int paramInt) {
+            this.hasSource = true;
+            this.source_ = paramInt;
+            return this;
+        }
+
         public boolean getSyncedContact() {
             return this.syncedContact_;
+        }
+
+        public ContactInfo setSyncedContact(boolean paramBoolean) {
+            this.hasSyncedContact = true;
+            this.syncedContact_ = paramBoolean;
+            return this;
         }
 
         public boolean hasGrammarWeight() {
@@ -1440,27 +1466,11 @@ public final class VoicesearchClientLogProto {
                     case 16:
                         setSyncedContact(paramCodedInputStreamMicro.readBool());
                         break;
+                    case 24:
+                        setSource(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setSource(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public ContactInfo setGrammarWeight(double paramDouble) {
-            this.hasGrammarWeight = true;
-            this.grammarWeight_ = paramDouble;
-            return this;
-        }
-
-        public ContactInfo setSource(int paramInt) {
-            this.hasSource = true;
-            this.source_ = paramInt;
-            return this;
-        }
-
-        public ContactInfo setSyncedContact(boolean paramBoolean) {
-            this.hasSyncedContact = true;
-            this.syncedContact_ = paramBoolean;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1506,28 +1516,70 @@ public final class VoicesearchClientLogProto {
             return this.contactDedupCount_;
         }
 
+        public ContactLookupInfo setContactDedupCount(int paramInt) {
+            this.hasContactDedupCount = true;
+            this.contactDedupCount_ = paramInt;
+            return this;
+        }
+
         public int getExactQueryCount() {
             return this.exactQueryCount_;
+        }
+
+        public ContactLookupInfo setExactQueryCount(int paramInt) {
+            this.hasExactQueryCount = true;
+            this.exactQueryCount_ = paramInt;
+            return this;
         }
 
         public int getFuzzyQueryCount() {
             return this.fuzzyQueryCount_;
         }
 
+        public ContactLookupInfo setFuzzyQueryCount(int paramInt) {
+            this.hasFuzzyQueryCount = true;
+            this.fuzzyQueryCount_ = paramInt;
+            return this;
+        }
+
         public int getNameMatchCount() {
             return this.nameMatchCount_;
+        }
+
+        public ContactLookupInfo setNameMatchCount(int paramInt) {
+            this.hasNameMatchCount = true;
+            this.nameMatchCount_ = paramInt;
+            return this;
         }
 
         public int getNameTypeMatchCount() {
             return this.nameTypeMatchCount_;
         }
 
+        public ContactLookupInfo setNameTypeMatchCount(int paramInt) {
+            this.hasNameTypeMatchCount = true;
+            this.nameTypeMatchCount_ = paramInt;
+            return this;
+        }
+
         public int getPeopleFoundCount() {
             return this.peopleFoundCount_;
         }
 
+        public ContactLookupInfo setPeopleFoundCount(int paramInt) {
+            this.hasPeopleFoundCount = true;
+            this.peopleFoundCount_ = paramInt;
+            return this;
+        }
+
         public int getPrimaryFilterCount() {
             return this.primaryFilterCount_;
+        }
+
+        public ContactLookupInfo setPrimaryFilterCount(int paramInt) {
+            this.hasPrimaryFilterCount = true;
+            this.primaryFilterCount_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1615,51 +1667,11 @@ public final class VoicesearchClientLogProto {
                     case 48:
                         setPrimaryFilterCount(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 56:
+                        setPeopleFoundCount(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setPeopleFoundCount(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public ContactLookupInfo setContactDedupCount(int paramInt) {
-            this.hasContactDedupCount = true;
-            this.contactDedupCount_ = paramInt;
-            return this;
-        }
-
-        public ContactLookupInfo setExactQueryCount(int paramInt) {
-            this.hasExactQueryCount = true;
-            this.exactQueryCount_ = paramInt;
-            return this;
-        }
-
-        public ContactLookupInfo setFuzzyQueryCount(int paramInt) {
-            this.hasFuzzyQueryCount = true;
-            this.fuzzyQueryCount_ = paramInt;
-            return this;
-        }
-
-        public ContactLookupInfo setNameMatchCount(int paramInt) {
-            this.hasNameMatchCount = true;
-            this.nameMatchCount_ = paramInt;
-            return this;
-        }
-
-        public ContactLookupInfo setNameTypeMatchCount(int paramInt) {
-            this.hasNameTypeMatchCount = true;
-            this.nameTypeMatchCount_ = paramInt;
-            return this;
-        }
-
-        public ContactLookupInfo setPeopleFoundCount(int paramInt) {
-            this.hasPeopleFoundCount = true;
-            this.peopleFoundCount_ = paramInt;
-            return this;
-        }
-
-        public ContactLookupInfo setPrimaryFilterCount(int paramInt) {
-            this.hasPrimaryFilterCount = true;
-            this.primaryFilterCount_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1705,6 +1717,12 @@ public final class VoicesearchClientLogProto {
             return this.contactSelectPosition_;
         }
 
+        public ContactSelectInfo setContactSelectPosition(int paramInt) {
+            this.hasContactSelectPosition = true;
+            this.contactSelectPosition_ = paramInt;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasContactSelectPosition();
             int i = 0;
@@ -1737,12 +1755,6 @@ public final class VoicesearchClientLogProto {
             }
         }
 
-        public ContactSelectInfo setContactSelectPosition(int paramInt) {
-            this.hasContactSelectPosition = true;
-            this.contactSelectPosition_ = paramInt;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasContactSelectPosition()) {
@@ -1766,6 +1778,12 @@ public final class VoicesearchClientLogProto {
 
         public int getHypothesisIndex() {
             return this.hypothesisIndex_;
+        }
+
+        public EmbeddedParserDetails setHypothesisIndex(int paramInt) {
+            this.hasHypothesisIndex = true;
+            this.hypothesisIndex_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1800,12 +1818,6 @@ public final class VoicesearchClientLogProto {
             }
         }
 
-        public EmbeddedParserDetails setHypothesisIndex(int paramInt) {
-            this.hasHypothesisIndex = true;
-            this.hypothesisIndex_ = paramInt;
-            return this;
-        }
-
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             if (hasHypothesisIndex()) {
@@ -1833,8 +1845,20 @@ public final class VoicesearchClientLogProto {
             return this.googlePlayServicesAvailability_;
         }
 
+        public GmsCoreData setGooglePlayServicesAvailability(int paramInt) {
+            this.hasGooglePlayServicesAvailability = true;
+            this.googlePlayServicesAvailability_ = paramInt;
+            return this;
+        }
+
         public int getGooglePlayServicesVersionCode() {
             return this.googlePlayServicesVersionCode_;
+        }
+
+        public GmsCoreData setGooglePlayServicesVersionCode(int paramInt) {
+            this.hasGooglePlayServicesVersionCode = true;
+            this.googlePlayServicesVersionCode_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1872,21 +1896,11 @@ public final class VoicesearchClientLogProto {
                     case 8:
                         setGooglePlayServicesAvailability(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 16:
+                        setGooglePlayServicesVersionCode(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setGooglePlayServicesVersionCode(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public GmsCoreData setGooglePlayServicesAvailability(int paramInt) {
-            this.hasGooglePlayServicesAvailability = true;
-            this.googlePlayServicesAvailability_ = paramInt;
-            return this;
-        }
-
-        public GmsCoreData setGooglePlayServicesVersionCode(int paramInt) {
-            this.hasGooglePlayServicesVersionCode = true;
-            this.googlePlayServicesVersionCode_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -1923,12 +1937,30 @@ public final class VoicesearchClientLogProto {
             return this.length_;
         }
 
+        public GwsCorrectionData setLength(int paramInt) {
+            this.hasLength = true;
+            this.length_ = paramInt;
+            return this;
+        }
+
         public String getNewText() {
             return this.newText_;
         }
 
+        public GwsCorrectionData setNewText(String paramString) {
+            this.hasNewText = true;
+            this.newText_ = paramString;
+            return this;
+        }
+
         public String getOldText() {
             return this.oldText_;
+        }
+
+        public GwsCorrectionData setOldText(String paramString) {
+            this.hasOldText = true;
+            this.oldText_ = paramString;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -1952,6 +1984,12 @@ public final class VoicesearchClientLogProto {
 
         public int getStart() {
             return this.start_;
+        }
+
+        public GwsCorrectionData setStart(int paramInt) {
+            this.hasStart = true;
+            this.start_ = paramInt;
+            return this;
         }
 
         public boolean hasLength() {
@@ -1990,33 +2028,11 @@ public final class VoicesearchClientLogProto {
                     case 26:
                         setOldText(paramCodedInputStreamMicro.readString());
                         break;
+                    case 34:
+                        setNewText(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setNewText(paramCodedInputStreamMicro.readString());
             }
-        }
-
-        public GwsCorrectionData setLength(int paramInt) {
-            this.hasLength = true;
-            this.length_ = paramInt;
-            return this;
-        }
-
-        public GwsCorrectionData setNewText(String paramString) {
-            this.hasNewText = true;
-            this.newText_ = paramString;
-            return this;
-        }
-
-        public GwsCorrectionData setOldText(String paramString) {
-            this.hasOldText = true;
-            this.oldText_ = paramString;
-            return this;
-        }
-
-        public GwsCorrectionData setStart(int paramInt) {
-            this.hasStart = true;
-            this.start_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2065,6 +2081,12 @@ public final class VoicesearchClientLogProto {
             return this.deviceStorageLow_;
         }
 
+        public IcingCorpusDiagnostics setDeviceStorageLow(boolean paramBoolean) {
+            this.hasDeviceStorageLow = true;
+            this.deviceStorageLow_ = paramBoolean;
+            return this;
+        }
+
         public List<IcingCorpusDiagnostic> getDiagnosticsList() {
             return this.diagnostics_;
         }
@@ -2102,15 +2124,11 @@ public final class VoicesearchClientLogProto {
                         paramCodedInputStreamMicro.readMessage(localIcingCorpusDiagnostic);
                         addDiagnostics(localIcingCorpusDiagnostic);
                         break;
+                    case 16:
+                        setDeviceStorageLow(paramCodedInputStreamMicro.readBool());
+                        break;
                 }
-                setDeviceStorageLow(paramCodedInputStreamMicro.readBool());
             }
-        }
-
-        public IcingCorpusDiagnostics setDeviceStorageLow(boolean paramBoolean) {
-            this.hasDeviceStorageLow = true;
-            this.deviceStorageLow_ = paramBoolean;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2143,8 +2161,20 @@ public final class VoicesearchClientLogProto {
                 return this.corpus_;
             }
 
+            public IcingCorpusDiagnostic setCorpus(int paramInt) {
+                this.hasCorpus = true;
+                this.corpus_ = paramInt;
+                return this;
+            }
+
             public int getDiagnostic() {
                 return this.diagnostic_;
+            }
+
+            public IcingCorpusDiagnostic setDiagnostic(int paramInt) {
+                this.hasDiagnostic = true;
+                this.diagnostic_ = paramInt;
+                return this;
             }
 
             public int getSerializedSize() {
@@ -2182,21 +2212,11 @@ public final class VoicesearchClientLogProto {
                         case 8:
                             setCorpus(paramCodedInputStreamMicro.readInt32());
                             break;
+                        case 16:
+                            setDiagnostic(paramCodedInputStreamMicro.readInt32());
+                            break;
                     }
-                    setDiagnostic(paramCodedInputStreamMicro.readInt32());
                 }
-            }
-
-            public IcingCorpusDiagnostic setCorpus(int paramInt) {
-                this.hasCorpus = true;
-                this.corpus_ = paramInt;
-                return this;
-            }
-
-            public IcingCorpusDiagnostic setDiagnostic(int paramInt) {
-                this.hasDiagnostic = true;
-                this.diagnostic_ = paramInt;
-                return this;
             }
 
             public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2232,8 +2252,20 @@ public final class VoicesearchClientLogProto {
             return this.event_;
         }
 
+        public LatencyBreakdownEvent setEvent(int paramInt) {
+            this.hasEvent = true;
+            this.event_ = paramInt;
+            return this;
+        }
+
         public int getOffsetMsec() {
             return this.offsetMsec_;
+        }
+
+        public LatencyBreakdownEvent setOffsetMsec(int paramInt) {
+            this.hasOffsetMsec = true;
+            this.offsetMsec_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2254,6 +2286,12 @@ public final class VoicesearchClientLogProto {
 
         public int getSublatency() {
             return this.sublatency_;
+        }
+
+        public LatencyBreakdownEvent setSublatency(int paramInt) {
+            this.hasSublatency = true;
+            this.sublatency_ = paramInt;
+            return this;
         }
 
         public boolean hasEvent() {
@@ -2285,27 +2323,11 @@ public final class VoicesearchClientLogProto {
                     case 16:
                         setOffsetMsec(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 24:
+                        setSublatency(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setSublatency(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public LatencyBreakdownEvent setEvent(int paramInt) {
-            this.hasEvent = true;
-            this.event_ = paramInt;
-            return this;
-        }
-
-        public LatencyBreakdownEvent setOffsetMsec(int paramInt) {
-            this.hasOffsetMsec = true;
-            this.offsetMsec_ = paramInt;
-            return this;
-        }
-
-        public LatencyBreakdownEvent setSublatency(int paramInt) {
-            this.hasSublatency = true;
-            this.sublatency_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2367,8 +2389,20 @@ public final class VoicesearchClientLogProto {
             return this.durationMsec_;
         }
 
+        public LatencyData setDurationMsec(int paramInt) {
+            this.hasDurationMsec = true;
+            this.durationMsec_ = paramInt;
+            return this;
+        }
+
         public int getFactor() {
             return this.factor_;
+        }
+
+        public LatencyData setFactor(int paramInt) {
+            this.hasFactor = true;
+            this.factor_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2393,6 +2427,12 @@ public final class VoicesearchClientLogProto {
 
         public boolean getTimeout() {
             return this.timeout_;
+        }
+
+        public LatencyData setTimeout(boolean paramBoolean) {
+            this.hasTimeout = true;
+            this.timeout_ = paramBoolean;
+            return this;
         }
 
         public boolean hasDurationMsec() {
@@ -2427,29 +2467,13 @@ public final class VoicesearchClientLogProto {
                     case 24:
                         setFactor(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 34:
+                        VoicesearchClientLogProto.LatencyBreakdownEvent localLatencyBreakdownEvent = new VoicesearchClientLogProto.LatencyBreakdownEvent();
+                        paramCodedInputStreamMicro.readMessage(localLatencyBreakdownEvent);
+                        addBreakdown(localLatencyBreakdownEvent);
+                        break;
                 }
-                VoicesearchClientLogProto.LatencyBreakdownEvent localLatencyBreakdownEvent = new VoicesearchClientLogProto.LatencyBreakdownEvent();
-                paramCodedInputStreamMicro.readMessage(localLatencyBreakdownEvent);
-                addBreakdown(localLatencyBreakdownEvent);
             }
-        }
-
-        public LatencyData setDurationMsec(int paramInt) {
-            this.hasDurationMsec = true;
-            this.durationMsec_ = paramInt;
-            return this;
-        }
-
-        public LatencyData setFactor(int paramInt) {
-            this.hasFactor = true;
-            this.factor_ = paramInt;
-            return this;
-        }
-
-        public LatencyData setTimeout(boolean paramBoolean) {
-            this.hasTimeout = true;
-            this.timeout_ = paramBoolean;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2491,8 +2515,20 @@ public final class VoicesearchClientLogProto {
             return this.canonicalSource_;
         }
 
+        public OnDeviceSource setCanonicalSource(int paramInt) {
+            this.hasCanonicalSource = true;
+            this.canonicalSource_ = paramInt;
+            return this;
+        }
+
         public String getPackageName() {
             return this.packageName_;
+        }
+
+        public OnDeviceSource setPackageName(String paramString) {
+            this.hasPackageName = true;
+            this.packageName_ = paramString;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2513,6 +2549,12 @@ public final class VoicesearchClientLogProto {
 
         public int getSourceType() {
             return this.sourceType_;
+        }
+
+        public OnDeviceSource setSourceType(int paramInt) {
+            this.hasSourceType = true;
+            this.sourceType_ = paramInt;
+            return this;
         }
 
         public boolean hasCanonicalSource() {
@@ -2544,27 +2586,11 @@ public final class VoicesearchClientLogProto {
                     case 16:
                         setCanonicalSource(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 24:
+                        setSourceType(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setSourceType(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public OnDeviceSource setCanonicalSource(int paramInt) {
-            this.hasCanonicalSource = true;
-            this.canonicalSource_ = paramInt;
-            return this;
-        }
-
-        public OnDeviceSource setPackageName(String paramString) {
-            this.hasPackageName = true;
-            this.packageName_ = paramString;
-            return this;
-        }
-
-        public OnDeviceSource setSourceType(int paramInt) {
-            this.hasSourceType = true;
-            this.sourceType_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2600,6 +2626,12 @@ public final class VoicesearchClientLogProto {
             return this.from_;
         }
 
+        public ScreenTransitionData setFrom(int paramInt) {
+            this.hasFrom = true;
+            this.from_ = paramInt;
+            return this;
+        }
+
         public int getSerializedSize() {
             boolean bool = hasFrom();
             int i = 0;
@@ -2615,6 +2647,12 @@ public final class VoicesearchClientLogProto {
 
         public int getTo() {
             return this.to_;
+        }
+
+        public ScreenTransitionData setTo(int paramInt) {
+            this.hasTo = true;
+            this.to_ = paramInt;
+            return this;
         }
 
         public boolean hasFrom() {
@@ -2639,21 +2677,11 @@ public final class VoicesearchClientLogProto {
                     case 8:
                         setFrom(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 16:
+                        setTo(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setTo(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public ScreenTransitionData setFrom(int paramInt) {
-            this.hasFrom = true;
-            this.from_ = paramInt;
-            return this;
-        }
-
-        public ScreenTransitionData setTo(int paramInt) {
-            this.hasTo = true;
-            this.to_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2682,6 +2710,12 @@ public final class VoicesearchClientLogProto {
 
         public int getRecognizerSegmentIndex() {
             return this.recognizerSegmentIndex_;
+        }
+
+        public TypingCorrection setRecognizerSegmentIndex(int paramInt) {
+            this.hasRecognizerSegmentIndex = true;
+            this.recognizerSegmentIndex_ = paramInt;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2714,12 +2748,6 @@ public final class VoicesearchClientLogProto {
                         break;
                 }
             }
-        }
-
-        public TypingCorrection setRecognizerSegmentIndex(int paramInt) {
-            this.hasRecognizerSegmentIndex = true;
-            this.recognizerSegmentIndex_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)
@@ -2804,12 +2832,30 @@ public final class VoicesearchClientLogProto {
             return this.applicationId_;
         }
 
+        public VoiceSearchClientLog setApplicationId(String paramString) {
+            this.hasApplicationId = true;
+            this.applicationId_ = paramString;
+            return this;
+        }
+
         public String getApplicationVersion() {
             return this.applicationVersion_;
         }
 
+        public VoiceSearchClientLog setApplicationVersion(String paramString) {
+            this.hasApplicationVersion = true;
+            this.applicationVersion_ = paramString;
+            return this;
+        }
+
         public String getApplicationVersionName() {
             return this.applicationVersionName_;
+        }
+
+        public VoiceSearchClientLog setApplicationVersionName(String paramString) {
+            this.hasApplicationVersionName = true;
+            this.applicationVersionName_ = paramString;
+            return this;
         }
 
         public VoicesearchClientLogProto.ClientEvent getBundledClientEvents(int paramInt) {
@@ -2835,6 +2881,12 @@ public final class VoicesearchClientLogProto {
             return this.deviceModel_;
         }
 
+        public VoiceSearchClientLog setDeviceModel(String paramString) {
+            this.hasDeviceModel = true;
+            this.deviceModel_ = paramString;
+            return this;
+        }
+
         public List<String> getExperimentIdList() {
             return this.experimentId_;
         }
@@ -2847,32 +2899,80 @@ public final class VoicesearchClientLogProto {
             return this.imeLangCount_;
         }
 
+        public VoiceSearchClientLog setImeLangCount(int paramInt) {
+            this.hasImeLangCount = true;
+            this.imeLangCount_ = paramInt;
+            return this;
+        }
+
         public String getInstallId() {
             return this.installId_;
+        }
+
+        public VoiceSearchClientLog setInstallId(String paramString) {
+            this.hasInstallId = true;
+            this.installId_ = paramString;
+            return this;
         }
 
         public String getLocale() {
             return this.locale_;
         }
 
+        public VoiceSearchClientLog setLocale(String paramString) {
+            this.hasLocale = true;
+            this.locale_ = paramString;
+            return this;
+        }
+
         public String getPackageId() {
             return this.packageId_;
+        }
+
+        public VoiceSearchClientLog setPackageId(String paramString) {
+            this.hasPackageId = true;
+            this.packageId_ = paramString;
+            return this;
         }
 
         public boolean getPairedBluetooth() {
             return this.pairedBluetooth_;
         }
 
+        public VoiceSearchClientLog setPairedBluetooth(boolean paramBoolean) {
+            this.hasPairedBluetooth = true;
+            this.pairedBluetooth_ = paramBoolean;
+            return this;
+        }
+
         public String getPlatformId() {
             return this.platformId_;
+        }
+
+        public VoiceSearchClientLog setPlatformId(String paramString) {
+            this.hasPlatformId = true;
+            this.platformId_ = paramString;
+            return this;
         }
 
         public String getPlatformVersion() {
             return this.platformVersion_;
         }
 
+        public VoiceSearchClientLog setPlatformVersion(String paramString) {
+            this.hasPlatformVersion = true;
+            this.platformVersion_ = paramString;
+            return this;
+        }
+
         public long getRequestTimeMsec() {
             return this.requestTimeMsec_;
+        }
+
+        public VoiceSearchClientLog setRequestTimeMsec(long paramLong) {
+            this.hasRequestTimeMsec = true;
+            this.requestTimeMsec_ = paramLong;
+            return this;
         }
 
         public int getSerializedSize() {
@@ -2944,8 +3044,20 @@ public final class VoicesearchClientLogProto {
             return this.triggerApplicationId_;
         }
 
+        public VoiceSearchClientLog setTriggerApplicationId(String paramString) {
+            this.hasTriggerApplicationId = true;
+            this.triggerApplicationId_ = paramString;
+            return this;
+        }
+
         public int getVoicesearchLangCount() {
             return this.voicesearchLangCount_;
+        }
+
+        public VoiceSearchClientLog setVoicesearchLangCount(int paramInt) {
+            this.hasVoicesearchLangCount = true;
+            this.voicesearchLangCount_ = paramInt;
+            return this;
         }
 
         public boolean hasApplicationId() {
@@ -3065,93 +3177,11 @@ public final class VoicesearchClientLogProto {
                     case 130:
                         setApplicationVersionName(paramCodedInputStreamMicro.readString());
                         break;
+                    case 136:
+                        addGsaConfigExperimentId(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                addGsaConfigExperimentId(paramCodedInputStreamMicro.readInt32());
             }
-        }
-
-        public VoiceSearchClientLog setApplicationId(String paramString) {
-            this.hasApplicationId = true;
-            this.applicationId_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setApplicationVersion(String paramString) {
-            this.hasApplicationVersion = true;
-            this.applicationVersion_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setApplicationVersionName(String paramString) {
-            this.hasApplicationVersionName = true;
-            this.applicationVersionName_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setDeviceModel(String paramString) {
-            this.hasDeviceModel = true;
-            this.deviceModel_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setImeLangCount(int paramInt) {
-            this.hasImeLangCount = true;
-            this.imeLangCount_ = paramInt;
-            return this;
-        }
-
-        public VoiceSearchClientLog setInstallId(String paramString) {
-            this.hasInstallId = true;
-            this.installId_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setLocale(String paramString) {
-            this.hasLocale = true;
-            this.locale_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setPackageId(String paramString) {
-            this.hasPackageId = true;
-            this.packageId_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setPairedBluetooth(boolean paramBoolean) {
-            this.hasPairedBluetooth = true;
-            this.pairedBluetooth_ = paramBoolean;
-            return this;
-        }
-
-        public VoiceSearchClientLog setPlatformId(String paramString) {
-            this.hasPlatformId = true;
-            this.platformId_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setPlatformVersion(String paramString) {
-            this.hasPlatformVersion = true;
-            this.platformVersion_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setRequestTimeMsec(long paramLong) {
-            this.hasRequestTimeMsec = true;
-            this.requestTimeMsec_ = paramLong;
-            return this;
-        }
-
-        public VoiceSearchClientLog setTriggerApplicationId(String paramString) {
-            this.hasTriggerApplicationId = true;
-            this.triggerApplicationId_ = paramString;
-            return this;
-        }
-
-        public VoiceSearchClientLog setVoicesearchLangCount(int paramInt) {
-            this.hasVoicesearchLangCount = true;
-            this.voicesearchLangCount_ = paramInt;
-            return this;
         }
 
         public void writeTo(CodedOutputStreamMicro paramCodedOutputStreamMicro)

@@ -382,8 +382,10 @@ public final class RecognitionContextProto {
                     case 162:
                         setRawLanguage(paramCodedInputStreamMicro.readString());
                         break;
+                    case 170:
+                        setCanonicalLanguage(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setCanonicalLanguage(paramCodedInputStreamMicro.readString());
             }
         }
 
