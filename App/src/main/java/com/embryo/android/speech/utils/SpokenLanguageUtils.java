@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.embryo.android.shared.util.LocaleUtils;
+import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
@@ -94,25 +95,20 @@ public class SpokenLanguageUtils {
         return null;
     }
 
-    public static String[] getLanguageDisplayNames(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Configuration paramConfiguration, @Nullable String paramString) {
-        Preconditions.checkNotNull(paramConfiguration);
-        String[] arrayOfString = new String[paramConfiguration.getLanguagesCount()];
-        int i = 0;
-        if (i < arrayOfString.length) {
-            if (paramConfiguration.getLanguages(i).getDialectCount() == 1) {
-                arrayOfString[i] = paramConfiguration.getLanguages(i).getDialect(0).getDisplayName();
+    public static String[] getLanguageDisplayNames(GstaticConfiguration.Configuration configuration, String suffixForMoreDialect) {
+        Preconditions.checkNotNull(configuration);
+        String[] displayNames = new String[configuration.getLanguagesCount()];
+        for(int i = 0x0; i < displayNames.length; i = i + 0x1) {
+            GstaticConfiguration.Language language = configuration.getLanguages(i);
+            if(language.getDialectCount() == 0x1) {
+                displayNames[i] = configuration.getLanguages(i).getDialect(0x0).getDisplayName();
+            } else if(suffixForMoreDialect != null) {
+                displayNames[i] = configuration.getLanguages(i).getDisplayName() + suffixForMoreDialect;
+                continue;
             }
-            for (; ; ) {
-                i++;
-                break;
-                if (paramString != null) {
-                    arrayOfString[i] = (paramConfiguration.getLanguages(i).getDisplayName() + paramString);
-                } else {
-                    arrayOfString[i] = paramConfiguration.getLanguages(i).getDisplayName();
-                }
-            }
+            displayNames[i] = configuration.getLanguages(i).getDisplayName();
         }
-        return arrayOfString;
+        return displayNames;
     }
 
     public static Locale getMainJavaLocaleForBcp47(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Configuration paramConfiguration, String paramString) {
