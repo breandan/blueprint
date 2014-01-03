@@ -65,44 +65,6 @@ public class SessionParams {
         this.mServerEndpointingEnabled = paramBoolean10;
     }
 
-    public static boolean isSoundSearch(int paramInt) {
-        if ((paramInt >= 0) && (paramInt <= 8)) {
-        }
-        for (boolean bool1 = true; ; bool1 = false) {
-            Preconditions.checkArgument(bool1, "Unsupported mode");
-            boolean bool2;
-            if (paramInt != 7) {
-                bool2 = false;
-                if (paramInt != 8) {
-                }
-            } else {
-                bool2 = true;
-            }
-            return bool2;
-        }
-    }
-
-    public static boolean isVoiceDialerSearch(int paramInt) {
-        if ((paramInt >= 0) && (paramInt <= 8)) {
-        }
-        for (boolean bool1 = true; ; bool1 = false) {
-            Preconditions.checkArgument(bool1, "Unsupported mode");
-            boolean bool2;
-            if (paramInt != 4) {
-                bool2 = false;
-                if (paramInt != 5) {
-                }
-            } else {
-                bool2 = true;
-            }
-            return bool2;
-        }
-    }
-
-    public String getApplicationId() {
-        return this.mApplicationId;
-    }
-
     public AudioInputParams getAudioInputParams() {
         return this.mAudioInputParams;
     }
@@ -147,44 +109,20 @@ public class SessionParams {
         return this.mGreco3Mode;
     }
 
-    public Location getLocationOverride() {
-        return this.mLocationOverride;
-    }
-
-    public int getMaxNbest() {
-        return this.mMaxNbest;
-    }
-
     public int getMode() {
         return this.mMode;
-    }
-
-    public RecognitionContextProto.RecognitionContext getRecognitionContext() {
-        return this.mRecognitionContext;
     }
 
     public String getRequestId() {
         return (String) this.mRequestIdSupplier.get();
     }
 
-    public String getService() {
-        return this.mService;
-    }
-
     public String getSpokenBcp47Locale() {
         return this.mSpokenBcp47Locale;
     }
 
-    public String getTriggerApplication() {
-        return this.mTriggerApplication;
-    }
-
     public boolean isAlternatesEnabled() {
         return this.mAlternatesEnabled;
-    }
-
-    public boolean isCombinedNbestEnabled() {
-        return (this.mMode == 2) || (this.mMode == 1) || (this.mMode == 0);
     }
 
     public boolean isPartialResultsEnabled() {
@@ -193,26 +131,6 @@ public class SessionParams {
 
     public boolean isProfanityFilterEnabled() {
         return this.mProfanityFilterEnabled;
-    }
-
-    public boolean isResendingAudio() {
-        return this.mResendingAudio;
-    }
-
-    public boolean isServerEndpointingEnabled() {
-        return this.mServerEndpointingEnabled;
-    }
-
-    public boolean isSoundSearchTtsEnabled() {
-        return this.mSoundSearchTtsEnabled;
-    }
-
-    public boolean isSuggestionsEnabled() {
-        return this.mSuggestionsEnabled;
-    }
-
-    public boolean shouldUseMusicHotworder() {
-        return this.mUseMusicHotworder;
     }
 
     public boolean stopOnEndOfSpeech() {
@@ -225,22 +143,22 @@ public class SessionParams {
         private AudioInputParams mAudioInputParams;
         private Greco3Grammar mGreco3Grammar = Greco3Grammar.CONTACT_DIALING;
         private Greco3Mode mGreco3Mode = Greco3Mode.ENDPOINTER_VOICESEARCH;
-        private Location mLocationOverride;
         private int mMaxNbest = 5;
         private int mMode = 2;
-        private boolean mNoSpeechDetectedEnabled = true;
+        private boolean mNoSpeechDetectedEnabled = false;
         private boolean mPartialResultsEnabled = true;
-        private boolean mProfanityFilterEnabled = true;
+        private Location mLocationOverride = null;
+        private boolean mProfanityFilterEnabled = false;
         private RecognitionContextProto.RecognitionContext mRecognitionContext;
         private boolean mResendingAudio = false;
-        private boolean mServerEndpointingEnabled;
         private String mService;
         private boolean mSoundSearchTtsEnabled = false;
         private String mSpokenBcp47Locale = "en-US";
-        private boolean mStopOnEndOfSpeech = true;
+        private boolean mStopOnEndOfSpeech = false; //Interesting
         private boolean mSuggestionsEnabled = true;
         private String mTriggerApplication;
-        private boolean mUseMusicHotworder = true;
+        private boolean mUseMusicHotworder = false;
+        private boolean mServerEndpointingEnabled = false;
 
         private static String getDefaultApplicationId(int paramInt) {
             switch (paramInt) {
@@ -302,96 +220,6 @@ public class SessionParams {
                 this.mService = getDefaultService(this.mMode);
             }
             return new SessionParams(this.mMode, this.mAudioInputParams, this.mAlternatesEnabled, this.mResendingAudio, this.mStopOnEndOfSpeech, this.mSpokenBcp47Locale, this.mTriggerApplication, this.mGreco3Grammar, this.mGreco3Mode, this.mUseMusicHotworder, this.mNoSpeechDetectedEnabled, this.mPartialResultsEnabled, this.mProfanityFilterEnabled, this.mSuggestionsEnabled, this.mMaxNbest, this.mLocationOverride, this.mRecognitionContext, this.mApplicationId, createNewRequestId(), this.mService, this.mSoundSearchTtsEnabled, this.mServerEndpointingEnabled);
-        }
-
-        public Builder setApplicationIdOverride(String paramString) {
-            this.mApplicationId = paramString;
-            return this;
-        }
-
-        public Builder setAudioInputParams(AudioInputParams paramAudioInputParams) {
-            this.mAudioInputParams = paramAudioInputParams;
-            return this;
-        }
-
-        public Builder setGreco3Grammar(Greco3Grammar paramGreco3Grammar) {
-            this.mGreco3Grammar = paramGreco3Grammar;
-            return this;
-        }
-
-        public Builder setGreco3Mode(Greco3Mode paramGreco3Mode) {
-            this.mGreco3Mode = paramGreco3Mode;
-            return this;
-        }
-
-        public Builder setMode(int paramInt) {
-            if ((paramInt >= 0) && (paramInt <= 8)) {
-            }
-            for (boolean bool = true; ; bool = false) {
-                Preconditions.checkArgument(bool, "Unsupported mode");
-                this.mMode = paramInt;
-                return this;
-            }
-        }
-
-        public Builder setNoSpeechDetectedEnabled(boolean paramBoolean) {
-            this.mNoSpeechDetectedEnabled = paramBoolean;
-            return this;
-        }
-
-        public Builder setProfanityFilterEnabled(boolean paramBoolean) {
-            this.mProfanityFilterEnabled = paramBoolean;
-            return this;
-        }
-
-        public Builder setRecognitionContext(RecognitionContextProto.RecognitionContext paramRecognitionContext) {
-            this.mRecognitionContext = paramRecognitionContext;
-            return this;
-        }
-
-        public Builder setResendingAudio(boolean paramBoolean) {
-            this.mResendingAudio = paramBoolean;
-            return this;
-        }
-
-        public Builder setServerEndpointingEnabled(boolean paramBoolean) {
-            this.mServerEndpointingEnabled = paramBoolean;
-            return this;
-        }
-
-        public Builder setServiceOverride(String paramString) {
-            this.mService = paramString;
-            return this;
-        }
-
-        public Builder setSoundSearchTtsEnabled(boolean paramBoolean) {
-            this.mSoundSearchTtsEnabled = paramBoolean;
-            return this;
-        }
-
-        public Builder setSpokenBcp47Locale(String paramString) {
-            this.mSpokenBcp47Locale = paramString;
-            return this;
-        }
-
-        public Builder setStopOnEndOfSpeech(boolean paramBoolean) {
-            this.mStopOnEndOfSpeech = paramBoolean;
-            return this;
-        }
-
-        public Builder setSuggestionsEnabled(boolean paramBoolean) {
-            this.mSuggestionsEnabled = paramBoolean;
-            return this;
-        }
-
-        public Builder setTriggerApplication(String paramString) {
-            this.mTriggerApplication = paramString;
-            return this;
-        }
-
-        public Builder setUseMusicHotworder(boolean paramBoolean) {
-            this.mUseMusicHotworder = paramBoolean;
-            return this;
         }
     }
 }

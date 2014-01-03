@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
                 Log.i("SearchController", "#onHotwordDetectorStopped");
                 textView.setText("#onHotwordDetectorStopped");
             }
-        }, false);
+        });
 
 //        AudioInputStreamFactory aisf = new AudioInputStreamFactory();
 

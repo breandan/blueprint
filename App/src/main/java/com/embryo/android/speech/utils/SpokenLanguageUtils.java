@@ -119,18 +119,18 @@ public class SpokenLanguageUtils {
         return LocaleUtils.parseJavaLocale(localDialect.getMainJavaLocale(), DEFAULT_LOCALE);
     }
 
-    public static String getSpokenBcp47Locale(com.embryo.android.speech.SpeechSettings paramSpeechSettings, @Nullable String paramString) {
-        if (paramString != null) {
-            if (getLanguageDialect(paramSpeechSettings.getConfiguration(), paramString) != null) {
-                return paramString;
-            }
-            com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Dialect localDialect = getSpokenLanguageByJavaLocale(paramSpeechSettings.getConfiguration(), paramString);
-            if (localDialect != null) {
-                return localDialect.getBcp47Locale();
-            }
-        }
-        return paramSpeechSettings.getSpokenLocaleBcp47();
-    }
+//    public static String getSpokenBcp47Locale(com.embryo.android.speech.SpeechSettings paramSpeechSettings, @Nullable String paramString) {
+//        if (paramString != null) {
+//            if (getLanguageDialect(paramSpeechSettings.getConfiguration(), paramString) != null) {
+//                return paramString;
+//            }
+//            com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Dialect localDialect = getSpokenLanguageByJavaLocale(paramSpeechSettings.getConfiguration(), paramString);
+//            if (localDialect != null) {
+//                return localDialect.getBcp47Locale();
+//            }
+//        }
+//        return paramSpeechSettings.getSpokenLocaleBcp47();
+//    }
 
     public static String getSpokenBcp47Locale(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Configuration paramConfiguration, String[] paramVarArgs) {
         int i = paramVarArgs.length;

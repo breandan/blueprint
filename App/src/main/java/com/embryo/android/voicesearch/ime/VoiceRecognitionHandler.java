@@ -69,10 +69,6 @@ public class VoiceRecognitionHandler {
         }
     }
 
-    public SessionParams createSessionParams(String paramString, boolean paramBoolean) {
-        return new SessionParams.Builder().setSpokenBcp47Locale(paramString).setProfanityFilterEnabled(paramBoolean).setRecognitionContext(createRecognitionContext()).setMode(3).setStopOnEndOfSpeech(false).setGreco3Mode(Greco3Mode.DICTATION).setSuggestionsEnabled(isSuggestionEnabled()).build();
-    }
-
     public SessionParams getSessionParams() {
         return this.mSessionParams;
     }

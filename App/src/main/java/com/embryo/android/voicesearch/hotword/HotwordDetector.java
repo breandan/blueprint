@@ -43,14 +43,14 @@ public class HotwordDetector {
         return (!isMusicActive()) && (!isSpokenFeedbackEnabled()) && (!this.mAudioManager.isSpeakerphoneOn()) && (this.mAudioManager.getMode() == 0);
     }
 
-    private com.embryo.android.speech.params.SessionParams createHotwordSessionParams(String paramString, boolean paramBoolean) {
-        return new com.embryo.android.speech.params.SessionParams.Builder().setAudioInputParams(new com.embryo.android.speech.params.AudioInputParams.Builder().setPlayBeepEnabled(false).setReportSoundLevels(false).setUsePreemptibleAudioSource(true).setRequestAudioFocus(false).build()).setMode(6).setGreco3Mode(Greco3Mode.HOTWORD).setUseMusicHotworder(paramBoolean).setSpokenBcp47Locale(paramString).build();
+    private com.embryo.android.speech.params.SessionParams createHotwordSessionParams() {
+        return new com.embryo.android.speech.params.SessionParams.Builder().build();
     }
 
-    private void internalStart(boolean useMusicHotworder) {
+    private void internalStart() {
         Preconditions.checkState((!mStarted));
         Preconditions.checkState(!mActive);
-        String locale = mSettings.getSpokenLocaleBcp47();
+//        String locale = mSettings.getSpokenLocaleBcp47();
         if (!canStartHotword()) {
             if (mHotwordListener != null) {
                 mHotwordListener.onHotwordDetectorNotStarted();
@@ -60,7 +60,7 @@ public class HotwordDetector {
         }
         mStarted = true;
         mRecognitionListener = new HotwordDetector.HotwordDetectorListener();
-        mVss.getRecognizer().startListening(createHotwordSessionParams(locale, useMusicHotworder), mRecognitionListener, mMainThreadExecutor, null);
+        mVss.getRecognizer().startListening(createHotwordSessionParams(), mRecognitionListener, mMainThreadExecutor, null);
     }
 
     private void internalStop(boolean paramBoolean) {
@@ -87,7 +87,7 @@ public class HotwordDetector {
         return false;
     }
 
-    public void start(HotwordListener paramHotwordListener, boolean paramBoolean) {
+    public void start(HotwordListener paramHotwordListener) {
         this.mThreadCheck.check();
         if ((this.mHotwordListener != null) && (this.mHotwordListener != paramHotwordListener)) {
             this.mHotwordListener = paramHotwordListener;
@@ -95,7 +95,7 @@ public class HotwordDetector {
         }
         if (!this.mStarted) {
             this.mHotwordListener = paramHotwordListener;
-            internalStart(paramBoolean);
+            internalStart();
         }
     }
 
