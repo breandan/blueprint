@@ -19,8 +19,6 @@ public abstract interface AudioRouter {
 
     public abstract void onStopTtsPlayback();
 
-    public abstract void updateRoute(int paramInt, @Nullable AudioRouteListener paramAudioRouteListener);
-
     public static abstract interface AudioRouteListener {
         public abstract void onRouteLost();
     }

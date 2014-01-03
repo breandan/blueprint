@@ -5,11 +5,6 @@ import android.media.AudioManager;
 import android.util.Log;
 
 import com.embryo.android.shared.util.ExtraPreconditions;
-import com.google.android.search.core.AsyncServices;
-import com.google.android.search.core.DeviceCapabilityManager;
-import com.google.android.search.core.DeviceCapabilityManagerImpl;
-import com.google.android.search.core.GsaConfigFlags;
-import com.google.android.search.core.GsaPreferenceController;
 import com.embryo.android.shared.util.SpeechLevelSource;
 import com.embryo.android.speech.Recognizer;
 import com.embryo.android.speech.RecognizerImpl;
@@ -25,12 +20,15 @@ import com.embryo.android.speech.params.RecognitionEngineParams;
 import com.embryo.android.voicesearch.audio.AudioRouter;
 import com.embryo.android.voicesearch.audio.AudioRouterImpl;
 import com.embryo.android.voicesearch.audio.AudioTrackSoundManager;
+import com.embryo.android.voicesearch.settings.Settings;
+import com.google.android.search.core.AsyncServices;
+import com.google.android.search.core.DeviceCapabilityManager;
+import com.google.android.search.core.DeviceCapabilityManagerImpl;
+import com.google.android.search.core.GsaConfigFlags;
+import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.voicesearch.bluetooth.BluetoothController;
 import com.google.android.voicesearch.greco3.languagepack.LanguagePackUpdateController;
-import com.embryo.android.voicesearch.settings.Settings;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class VoiceSearchServices {
@@ -45,12 +43,8 @@ public class VoiceSearchServices {
     private AudioManager mAudioManager;
     private AudioRouter mAudioRouter;
     private AudioStore mAudioStore;
-    private BluetoothController mBluetoothController;
     private Greco3Container mGreco3Container;
     private com.embryo.android.voicesearch.hotword.HotwordDetector mHotwordDetector;
-    private HypothesisToSuggestionSpansConverter mHypothesisToSuggestionSpansConverter;
-    private LanguagePackUpdateController mLanguagePackUpdateController;
-    private OfflineActionsManager mOfflineActionsManager;
     private Recognizer mRecognizer;
     private AudioTrackSoundManager mSoundManager;
     private SpeechLevelSource mSpeechLevelSource;
@@ -82,7 +76,7 @@ public class VoiceSearchServices {
         ExtraPreconditions.ThreadCheck localThreadCheck1 = ExtraPreconditions.createSetThreadsCheck(new String[]{"AudioRouter"});
         ExtraPreconditions.ThreadCheck localThreadCheck2 = ExtraPreconditions.createNotSetThreadsCheck(new String[]{"AudioRouter"});
         AudioManager localAudioManager = getAudioManager();
-        this.mAudioRouter = new AudioRouterImpl(this.mSettings, localAudioManager, localScheduledExecutorService, localThreadCheck1, localThreadCheck2, this.mBluetoothController);
+        this.mAudioRouter = new AudioRouterImpl(this.mSettings, localAudioManager, localScheduledExecutorService, localThreadCheck1, localThreadCheck2);
     }
 
     private RecognitionEngineParams.EmbeddedParams createEmbeddedParams() {
@@ -139,10 +133,6 @@ public class VoiceSearchServices {
         }
     }
 
-    public ExecutorService getExecutorService() {
-        return this.mScheduledExecutorService;
-    }
-
     public Greco3Container getGreco3Container() {
         synchronized (this.mCreationLock) {
             if (this.mGreco3Container == null) {
@@ -160,32 +150,12 @@ public class VoiceSearchServices {
         return this.mHotwordDetector;
     }
 
-    public Executor getMainThreadExecutor() {
-        return this.mAsyncServices.getUiThreadExecutor();
-    }
-
-    public OfflineActionsManager getOfflineActionsManager() {
-
-        if (this.mOfflineActionsManager == null) {
-            this.mOfflineActionsManager = new OfflineActionsManager(this.mContext, getGreco3Container().getGreco3DataManager(), this.mSettings, this.mAsyncServices.getUiThreadExecutor());
-        }
-        return this.mOfflineActionsManager;
-    }
-
     public Recognizer getRecognizer() {
 
         if (this.mRecognizer == null) {
             this.mRecognizer = createRecognizer();
         }
         return this.mRecognizer;
-    }
-
-    public ScheduledExecutorService getScheduledExecutorService() {
-        return this.mScheduledExecutorService;
-    }
-
-    public Settings getSettings() {
-        return this.mSettings;
     }
 
     public AudioTrackSoundManager getSoundManager() {
@@ -203,14 +173,6 @@ public class VoiceSearchServices {
         return this.mSpeechLevelSource;
     }
 
-    public com.embryo.android.speech.logger.SuggestionLogger getSuggestionLogger() {
-
-        if (this.mSuggestionLogger == null) {
-            this.mSuggestionLogger = new com.embryo.android.speech.logger.SuggestionLogger();
-        }
-        return this.mSuggestionLogger;
-    }
-
     public com.embryo.android.voicesearch.ime.VoiceImeSubtypeUpdater getVoiceImeSubtypeUpdater() {
         synchronized (this.mCreationLock) {
             if (this.mVoiceImeSubtypeUpdater == null) {
@@ -219,24 +181,6 @@ public class VoiceSearchServices {
             com.embryo.android.voicesearch.ime.VoiceImeSubtypeUpdater localVoiceImeSubtypeUpdater = this.mVoiceImeSubtypeUpdater;
             return localVoiceImeSubtypeUpdater;
         }
-    }
-
-    public AudioStore getVoiceSearchAudioStore() {
-        if (this.mAudioStore == null) {
-            this.mAudioStore = new com.embryo.android.speech.audio.SingleRecordingAudioStore();
-        }
-        return this.mAudioStore;
-    }
-
-    public void init() {
-        this.mSettings.asyncLoad();
-    }
-
-    public boolean isFollowOnEnabled(GsaConfigFlags paramGsaConfigFlags, String paramString) {
-        if (!canCreatePumpkinTagger(paramGsaConfigFlags, paramString)) {
-            return false;
-        }
-        return paramGsaConfigFlags.hasFollowOnLocale(paramString);
     }
 
     protected boolean isLowRamDevice() {

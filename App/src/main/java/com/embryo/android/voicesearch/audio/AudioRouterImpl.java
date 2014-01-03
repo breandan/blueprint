@@ -4,21 +4,18 @@ import android.media.AudioManager;
 import android.util.Log;
 
 import com.embryo.android.shared.util.StopWatch;
-import com.google.android.voicesearch.bluetooth.BluetoothController;
-import com.google.android.voicesearch.bluetooth.BluetoothListener;
 import com.google.android.voicesearch.bluetooth.BluetoothShim;
 
 import java.util.concurrent.Executor;
 
 public class AudioRouterImpl
-        implements AudioRouter, BluetoothListener {
+        implements AudioRouter {
     private final AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         public void onAudioFocusChange(int paramAnonymousInt) {
             Log.i("AudioRouter", "Audio focus change " + paramAnonymousInt);
         }
     };
     private final AudioManager mAudioManager;
-    private final BluetoothController mBluetoothController;
     private final Executor mExecutor;
     private final com.embryo.android.shared.util.ExtraPreconditions.ThreadCheck mExecutorThreadCheck;
     private final Object mLock = new Object();
@@ -31,10 +28,9 @@ public class AudioRouterImpl
     private boolean mScoFailed = false;
     private boolean mSynchronizePending = false;
 
-    public AudioRouterImpl(com.embryo.android.voicesearch.settings.Settings paramSettings, AudioManager paramAudioManager, Executor paramExecutor, com.embryo.android.shared.util.ExtraPreconditions.ThreadCheck paramThreadCheck1, com.embryo.android.shared.util.ExtraPreconditions.ThreadCheck paramThreadCheck2, BluetoothController paramBluetoothController) {
+    public AudioRouterImpl(com.embryo.android.voicesearch.settings.Settings paramSettings, AudioManager paramAudioManager, Executor paramExecutor, com.embryo.android.shared.util.ExtraPreconditions.ThreadCheck paramThreadCheck1, com.embryo.android.shared.util.ExtraPreconditions.ThreadCheck paramThreadCheck2) {
         this.mSettings = paramSettings;
         this.mAudioManager = paramAudioManager;
-        this.mBluetoothController = paramBluetoothController;
         this.mExecutor = paramExecutor;
         this.mExecutorThreadCheck = paramThreadCheck1;
         this.mNotExecutorThreadCheck = paramThreadCheck2;
@@ -119,29 +115,6 @@ public class AudioRouterImpl
         return false;
     }
 
-    private void synchronizeBluetoothState() {
-        mExecutorThreadCheck.check();
-        synchronized (mLock) {
-            if (mSynchronizePending) {
-                mSynchronizePending = false;
-                mLock.notify();
-            }
-            if (isBluetoothRoute()) {
-                mBluetoothController.ensureInitialized();
-                if (mScoFailed) {
-                    return;
-                }
-                if ((mBluetoothController.getScoState() == 0xa) && (mBluetoothController.getDeviceState() == 0x1) && (shouldUseBluetoothDevice(mBluetoothController.getDevice()))) {
-                    Log.i("AudioRouter", "BT required, starting SCO");
-                    mBluetoothController.startSco();
-                }
-            } else if (mBluetoothController.getScoState() != 0xa) {
-                Log.i("AudioRouter", "BT not required, stopping SCO");
-                mBluetoothController.stopSco();
-            }
-        }
-    }
-
     public boolean awaitRouting() {
         this.mNotExecutorThreadCheck.check();
         com.embryo.android.shared.util.ExtraPreconditions.checkNotMainThread();
@@ -179,9 +152,6 @@ public class AudioRouterImpl
 
     public int getInputDeviceToLog() {
         synchronized (this.mLock) {
-            if (this.mBluetoothController.getScoState() == 12) {
-                return 3;
-            }
             if (isWiredHeadsetConnected()) {
                 return 2;
             }
@@ -191,42 +161,7 @@ public class AudioRouterImpl
 
     public int getOutputStream() {
         synchronized (this.mLock) {
-            if (this.mBluetoothController.getScoState() == 12) {
-                return 0;
-            }
             return 1;
-        }
-    }
-
-    public void onDeviceStateChanged(int prevState, int deviceState, BluetoothShim.BluetoothDevice device) {
-        mExecutorThreadCheck.check();
-        synchronized (mLock) {
-            synchronizeBluetoothState();
-            mLock.notify();
-        }
-    }
-
-    public void onScoStateChanged(int prevState, int scoState) {
-        mExecutorThreadCheck.check();
-        synchronized (mLock) {
-            if ((isBluetoothRoute()) && (scoState == 0xa) && (!mScoFailed)) {
-                mScoFailed = true;
-                if (prevState == 0xc) {
-                    Log.i("AudioRouter", "BT route lost");
-                    if (mRouteListener != null) {
-                        final AudioRouter.AudioRouteListener listener = mRouteListener;
-                        mExecutor.execute(new Runnable() {
-                            public void run() {
-                                listener.onRouteLost();
-                            }
-                        });
-                    }
-                } else if (prevState == 0xb) {
-                    Log.i("AudioRouter", "BT connection failed");
-                }
-            }
-            synchronizeBluetoothState();
-            mLock.notify();
         }
     }
 
@@ -261,37 +196,6 @@ public class AudioRouterImpl
                 maybeAbandonAudioFocus();
             }
             return;
-        }
-    }
-
-    public void updateRoute(int route, AudioRouter.AudioRouteListener routeListener) {
-        if ((route == 0x1) && (!mSettings.isBluetoothHeadsetEnabled())) {
-            route = 0x2;
-        }
-        synchronized (mLock) {
-            if (route != 0x3) {
-                maybeRequestAudioFocus();
-            } else {
-                maybeAbandonAudioFocus();
-            }
-            mRouteListener = routeListener;
-            if (route == mRoute) {
-            } else {
-                Log.i("AudioRouter", enumIntToString(mRoute) + "->" + enumIntToString(route));
-                int prevRoute = mRoute;
-                mRoute = route;
-                if ((!isBluetoothRoute(prevRoute)) && (isBluetoothRoute(route))) {
-                    mScoFailed = false;
-                } else {
-                    mSynchronizePending = true;
-                    mExecutor.execute(new Runnable() {
-
-                        public void run() {
-                            AudioRouterImpl.this.synchronizeBluetoothState();
-                        }
-                    });
-                }
-            }
         }
     }
 }
