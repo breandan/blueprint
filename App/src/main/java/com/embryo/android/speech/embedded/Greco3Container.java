@@ -22,8 +22,8 @@ public class Greco3Container {
 
     public static Greco3Container create(Context paramContext, ExecutorService paramExecutorService, Executor paramExecutor) {
         DeviceClassSupplier localDeviceClassSupplier = new DeviceClassSupplier(paramContext);
-        Greco3DataManager localGreco3DataManager = new Greco3DataManager(paramContext, localGreco3Preferences, SUPPORTED_FORMAT_VERSIONS, paramExecutorService, paramExecutor);
-        Greco3EngineManager localGreco3EngineManager = new Greco3EngineManager(localGreco3DataManager, localGreco3Preferences, new com.embryo.android.voicesearch.greco3.BundledEndpointerModelCopier(paramContext.getResources()));
+        Greco3DataManager localGreco3DataManager = new Greco3DataManager(paramContext, null, SUPPORTED_FORMAT_VERSIONS, paramExecutorService, paramExecutor);
+        Greco3EngineManager localGreco3EngineManager = new Greco3EngineManager(localGreco3DataManager, null, new com.embryo.android.voicesearch.greco3.BundledEndpointerModelCopier(paramContext.getResources()));
         localGreco3DataManager.setPathDeleter(localGreco3EngineManager);
         return new Greco3Container(localGreco3DataManager, localGreco3EngineManager, localDeviceClassSupplier);
     }
