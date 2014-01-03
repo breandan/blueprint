@@ -29,14 +29,14 @@ public final class EventLogger {
     }
 
     private static void record(int group, int source, int event, Object data, boolean oneOff) {
-        Preconditions.checkArgument((0xfffffff & group) != 0);
-        Preconditions.checkArgument((-0xf000001 & source) != 0);
-        Preconditions.checkArgument((-0x1000000 & event) != 0);
-        int wholeEvent = (group | source) | event;
-        if ((oneOff) && (!shouldLog(wholeEvent))) {
-            return;
-        }
-        sEventLoggerStore.recordEvent(wholeEvent, data);
+//        Preconditions.checkArgument((0xfffffff & group) != 0);
+//        Preconditions.checkArgument((-0xf000001 & source) != 0);
+//        Preconditions.checkArgument((-0x1000000 & event) != 0);
+//        int wholeEvent = (group | source) | event;
+//        if ((oneOff) && (!shouldLog(wholeEvent))) {
+//            return;
+//        }
+//        sEventLoggerStore.recordEvent(wholeEvent, data);
     }
 
     public static void recordBreakdownEvent(int paramInt) {

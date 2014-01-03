@@ -2,22 +2,25 @@ package com.embryo.android.shared.util;
 
 import android.util.Log;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 
 public class StateMachine<T extends Enum<T>> {
+    private T mCurrentState;
     private final boolean mDebug;
     private final HashMultimap<T, T> mLegalTransitions;
     private final boolean mStrictMode;
     private final String mTag;
     private final ExtraPreconditions.ThreadCheck mThreadCheck;
-    private T mCurrentState;
 
-    private StateMachine(String paramString, T paramT, boolean paramBoolean1, boolean paramBoolean2, HashMultimap<T, T> paramHashMultimap, boolean paramBoolean3) {
-        mTag = paramString;
-        mStrictMode = paramBoolean1;
-        mThreadCheck = ExtraPreconditions.createSameThreadCheck();
-        mDebug = paramBoolean3;
-        mLegalTransitions = paramHashMultimap;
+    StateMachine(String paramString, T paramT, boolean paramBoolean1, ExtraPreconditions.ThreadCheck paramThreadCheck, HashMultimap<T, T> paramHashMultimap, boolean paramBoolean2)
+    {
+        this.mLegalTransitions = paramHashMultimap;
+        this.mTag = Preconditions.checkNotNull(paramString);
+        this.mStrictMode = paramBoolean1;
+        this.mThreadCheck = paramThreadCheck;
+        this.mCurrentState = Preconditions.checkNotNull(paramT);
+        this.mDebug = paramBoolean2;
     }
 
     public static <T extends Enum<T>> Builder<T> newBuilder(String paramString, T paramT) {
@@ -81,8 +84,9 @@ public class StateMachine<T extends Enum<T>> {
             return this;
         }
 
-        public StateMachine<T> build() {
-            return new StateMachine(this.mTag, this.mInitialState, this.mStrictMode, this.mOneThread, this.mLegalTransitions, this.mDebug);
+        public StateMachine<T> build()
+        {
+            return new StateMachine(this.mTag, this.mInitialState, this.mStrictMode, new ExtraPreconditions.ThreadCheck(), this.mLegalTransitions, this.mDebug);
         }
 
         public Builder<T> setDebug(boolean paramBoolean) {
