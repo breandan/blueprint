@@ -9,11 +9,9 @@ import com.embryo.android.shared.util.SpeechLevelSource;
 import com.embryo.android.speech.Recognizer;
 import com.embryo.android.speech.RecognizerImpl;
 import com.embryo.android.speech.SpeechLibFactory;
-import com.embryo.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.embryo.android.speech.audio.AudioController;
 import com.embryo.android.speech.audio.AudioStore;
 import com.embryo.android.speech.embedded.Greco3Container;
-import com.embryo.android.speech.embedded.OfflineActionsManager;
 import com.embryo.android.speech.internal.DefaultCallbackFactory;
 import com.embryo.android.speech.internal.DefaultModeSelector;
 import com.embryo.android.speech.params.RecognitionEngineParams;
@@ -26,8 +24,6 @@ import com.google.android.search.core.DeviceCapabilityManager;
 import com.google.android.search.core.DeviceCapabilityManagerImpl;
 import com.google.android.search.core.GsaConfigFlags;
 import com.google.android.search.core.GsaPreferenceController;
-import com.google.android.voicesearch.bluetooth.BluetoothController;
-import com.google.android.voicesearch.greco3.languagepack.LanguagePackUpdateController;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -36,7 +32,6 @@ public class VoiceSearchServices {
     private final Context mContext;
     private final Object mCreationLock;
     private final DeviceCapabilityManager mDeviceCapabilityManager;
-    private final GsaPreferenceController mPreferenceController;
     private final ScheduledExecutorService mScheduledExecutorService;
     private final Settings mSettings;
     private AudioController mAudioController;
@@ -58,7 +53,6 @@ public class VoiceSearchServices {
 
     VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, Object paramObject, Settings paramSettings) {
         this.mContext = paramContext;
-        this.mPreferenceController = paramGsaPreferenceController;
         this.mAsyncServices = paramAsyncServices;
         this.mScheduledExecutorService = com.embryo.android.shared.util.ConcurrentUtils.createSafeScheduledExecutorService(5, "ContainerScheduledExecutor");
         this.mDeviceCapabilityManager = new DeviceCapabilityManagerImpl(mContext);
@@ -136,7 +130,7 @@ public class VoiceSearchServices {
     public Greco3Container getGreco3Container() {
         synchronized (this.mCreationLock) {
             if (this.mGreco3Container == null) {
-                this.mGreco3Container = Greco3Container.create(this.mContext, this.mPreferenceController.getMainPreferences(), this.mScheduledExecutorService, this.mAsyncServices.getUiThreadExecutor());
+                this.mGreco3Container = Greco3Container.create(this.mContext, this.mScheduledExecutorService, this.mAsyncServices.getUiThreadExecutor());
             }
             Greco3Container localGreco3Container = this.mGreco3Container;
             return localGreco3Container;

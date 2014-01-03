@@ -1,7 +1,6 @@
 package com.embryo.android.voicesearch.util;
 
 import com.embryo.android.speech.embedded.Greco3RecognitionEngine;
-import com.embryo.android.speech.embedded.OfflineActionsManager;
 import com.embryo.android.speech.exception.AudioRecognizeException;
 import com.embryo.android.speech.exception.NetworkRecognizeException;
 import com.embryo.android.speech.exception.NoMatchRecognizeException;
@@ -26,9 +25,9 @@ public class ErrorUtils {
             }
         }
         while ((paramRecognizeException instanceof Greco3RecognitionEngine.EmbeddedRecognizerUnavailableException));
-        if ((paramRecognizeException instanceof OfflineActionsManager.GrammarCompilationException)) {
-            return 2131363427;
-        }
+//        if ((paramRecognizeException instanceof OfflineActionsManager.GrammarCompilationException)) {
+//            return 2131363427;
+//        }
         return 2131363425;
     }
 
