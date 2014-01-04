@@ -14,6 +14,7 @@ import android.widget.TextView;
 /**
  * Created by breandan on 11/18/13.
  */
+
 public class ScrollTextActivity extends Activity {
 
     @Override

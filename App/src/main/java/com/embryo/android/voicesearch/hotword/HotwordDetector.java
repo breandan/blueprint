@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.view.accessibility.AccessibilityManager;
 
 import com.embryo.android.shared.util.ExtraPreconditions;
+import com.embryo.android.speech.Recognizer;
 import com.embryo.android.speech.embedded.Greco3Mode;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.speech.listeners.RecognitionEventListener;
@@ -48,7 +49,7 @@ public class HotwordDetector {
     }
 
     private void internalStart() {
-        Preconditions.checkState((!mStarted));
+        Preconditions.checkState(!mStarted);
         Preconditions.checkState(!mActive);
 //        String locale = mSettings.getSpokenLocaleBcp47();
         if (!canStartHotword()) {
@@ -60,7 +61,8 @@ public class HotwordDetector {
         }
         mStarted = true;
         mRecognitionListener = new HotwordDetector.HotwordDetectorListener();
-        mVss.getRecognizer().startListening(createHotwordSessionParams(), mRecognitionListener, mMainThreadExecutor, null);
+        Recognizer r = mVss.getRecognizer();
+        r.startListening(createHotwordSessionParams(), mRecognitionListener, mMainThreadExecutor, null);
     }
 
     private void internalStop(boolean paramBoolean) {

@@ -2,22 +2,173 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.app.me"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0">
+
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="19" />
-    <uses-permission android:name="android.permission" />
+    <permission
+        android:description="@string/audio_file_access_desc"
+        android:label="@string/audio_file_access"
+        android:name="com.google.android.voicesearch.AUDIO_FILE_ACCESS"
+        android:protectionLevel="signature" />
+    <permission
+        android:description="@string/permission_remote_access_desc"
+        android:label="@string/permission_remote_access_label"
+        android:name="com.google.android.apps.now.REMOTE_ACCESS"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.google.android.apps.now.REMOTE_ACCESS" />
+    <permission
+        android:name="com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS" />
+    <permission
+        android:description="@string/permission_launch_voice_description"
+        android:label="@string/permission_launch_voice_label"
+        android:name="com.google.android.googlequicksearchbox.LAUNCH_WITH_RECORDED_AUDIO"
+        android:protectionLevel="signatureOrSystem" />
+    <permission
+        android:name="com.google.android.apps.now.OPT_IN_WIZARD"
+        android:protectionLevel="signatureOrSystem" />
+    <permission
+        android:name="com.google.android.googlequicksearchbox.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.google.android.googlequicksearchbox.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="com.android.browser.permission.READ_HISTORY_BOOKMARKS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.google.android.providers.settings.permission.READ_GSETTINGS" />
+    <uses-permission android:name="com.google.android.providers.settings.permission.WRITE_GSETTINGS" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="com.google.android.voicesearch.SHORTCUTS_ACCESS" />
+    <uses-permission android:name="com.google.android.voicesearch.ACCESS_SETTINGS" />
+    <uses-permission android:name="com.android.browser.permission.PRELOAD" />
+    <uses-permission android:name="com.google.android.ears.permission.WRITE" />
+    <uses-permission android:name="android.permission.BROADCAST_STICKY" />
+
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.bluetooth"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="com.google.googlenav.friend.permission.OPT_IN" />
+    <uses-permission android:name="com.google.android.apps.maps.permission.PREFETCH" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="com.google.android.apps.googlevoice.permission.AUTO_SEND" />
+    <uses-permission android:name="com.google.android.gm.permission.AUTO_SEND" />
+    <uses-permission android:name="com.google.android.googleapps.permission.GOOGLE_AUTH.cp" />
+    <uses-permission android:name="com.google.android.googleapps.permission.GOOGLE_AUTH" />
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="com.google.android.providers.settings.permission.READ_GSETTINGS" />
+    <uses-permission android:name="com.google.android.voicesearch.AUDIO_FILE_ACCESS" />
+    <uses-permission android:name="com.android.chrome.PRERENDER_URL" />
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_HOTWORD" />
+
+    <permission
+        android:name="com.android.launcher3.permission.PRELOAD_WORKSPACE"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="system|signature" />
+    <permission
+        android:description="@string/permdesc_install_shortcut"
+        android:label="@string/permlab_install_shortcut"
+        android:name="com.android.launcher3.permission.INSTALL_SHORTCUT"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:description="@string/permdesc_uninstall_shortcut"
+        android:label="@string/permlab_uninstall_shortcut"
+        android:name="com.android.launcher3.permission.UNINSTALL_SHORTCUT"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:description="@string/permdesc_read_settings"
+        android:label="@string/permlab_read_settings"
+        android:name="com.android.launcher3.permission.READ_SETTINGS"
+        android:permissionGroup="android.permission-group.SYSTEM_TOOLS"
+        android:protectionLevel="normal" />
+    <permission
+        android:name="com.android.launcher3.permission.RECEIVE_LAUNCH_BROADCASTS"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER_HINTS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="com.android.launcher3.permission.READ_SETTINGS" />
+    <uses-permission android:name="com.android.launcher3.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="com.android.launcher3.permission.RECEIVE_LAUNCH_BROADCASTS" />
+
     <application android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         <activity
             android:name="com.app.me.MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.app.me.ScrollTextActivity"
-            android:label="BluePrint" ></activity>
+        <activity
+            android:name="com.app.me.ScrollTextActivity"
+            android:label="BluePrint"></activity>
     </application>
 </manifest>
