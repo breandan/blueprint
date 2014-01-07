@@ -47,7 +47,7 @@ public class RecognitionDispatcher {
     }
 
     public void startRecognition(Collection<Pair<Integer, RecognitionEngine>> paramCollection, com.embryo.android.speech.audio.AudioInputStreamFactory paramAudioInputStreamFactory, com.embryo.android.speech.params.SessionParams paramSessionParams, EngineSelector paramEngineSelector, com.embryo.android.speech.callback.RecognitionEngineCallback paramRecognitionEngineCallback) {
-//        Log.w("RecognitionDispatcher", "Recognition initialized!");
+        Log.w("RecognitionDispatcher", "Recognition initialized!");
         if (this.mState.isIn(State.RUNNING)) {
             Log.w("RecognitionDispatcher", "Multiple recognitions in progress, the first will be cancelled.");
             stop();

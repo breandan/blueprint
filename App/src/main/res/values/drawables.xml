@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="drawable" name="selection_highlight_color">@color/selection_highlight_color</item>
+    <item type="drawable" name="selection_highlight_light">#bb4285f4</item>
+    <item type="drawable" name="empty">#00000000</item>
+</resources>

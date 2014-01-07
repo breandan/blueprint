@@ -11,7 +11,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class SpeechLibFactoryImpl
         implements com.embryo.android.speech.SpeechLibFactory {
     private final ExecutorService mLocalExecutorService;
-    private final ExecutorService mNetworkExecutorService;
     private final com.embryo.android.speech.params.RecognitionEngineParams mRecognitionEngineParams;
     private final ScheduledExecutorService mScheduledExecutorService;
     private final com.embryo.android.speech.SpeechSettings mSpeechSettings;
@@ -21,7 +20,6 @@ public class SpeechLibFactoryImpl
         this.mSpeechSettings = paramSpeechSettings;
         this.mScheduledExecutorService = paramScheduledExecutorService;
         this.mLocalExecutorService = com.embryo.android.shared.util.ConcurrentUtils.createSafeScheduledExecutorService(1, "LocalEngine");
-        this.mNetworkExecutorService = com.embryo.android.shared.util.ConcurrentUtils.createSafeScheduledExecutorService(1, "NetworkEngine");
     }
 
     private boolean shouldStopMusicDetectorOnStartOfSpeech() {
@@ -37,7 +35,7 @@ public class SpeechLibFactoryImpl
     }
 
     public RecognitionEngineStore buildRecognitionEngineStore() {
-        return new com.embryo.android.speech.RecognitionEngineStoreImpl(this.mRecognitionEngineParams, buildSpeechLibLogger(), this.mLocalExecutorService, this.mNetworkExecutorService);
+        return new com.embryo.android.speech.RecognitionEngineStoreImpl(this.mRecognitionEngineParams, buildSpeechLibLogger(), this.mLocalExecutorService);
     }
 
     public com.embryo.android.speech.ResponseProcessor buildResponseProcessor(com.embryo.android.speech.ResponseProcessor.AudioCallback paramAudioCallback, com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener, com.embryo.android.speech.params.SessionParams paramSessionParams, com.embryo.android.speech.logger.SpeechLibLogger paramSpeechLibLogger) {

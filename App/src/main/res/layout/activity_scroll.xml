@@ -7,7 +7,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="568dp"
-        android:text="tingwen"
+        android:text="accordion"
         android:id="@+id/textView"
         android:layout_gravity="center_horizontal"
         android:layout_weight="2.16"

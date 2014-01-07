@@ -82,8 +82,10 @@ public final class GstaticConfiguration {
                     case 8:
                         setEnableCalendarEventAttendees(paramCodedInputStreamMicro.readBool());
                         break;
+                    case 16:
+                        setEnableCapabilityHomeControl(paramCodedInputStreamMicro.readBool());
+                        break;
                 }
-                setEnableCapabilityHomeControl(paramCodedInputStreamMicro.readBool());
             }
         }
 
@@ -168,8 +170,10 @@ public final class GstaticConfiguration {
                     case 8:
                         setAuthTokenInvalidateBeforeUsePeriodMsec(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 10:
+                        setAuthTokenProactivelyInvalidatePeriodMsec(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setAuthTokenProactivelyInvalidatePeriodMsec(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -254,8 +258,10 @@ public final class GstaticConfiguration {
                     case 8:
                         setConnectionTimeoutMs(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 10:
+                        setScoConnectionTimeoutMs(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setScoConnectionTimeoutMs(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -890,10 +896,12 @@ public final class GstaticConfiguration {
                         paramCodedInputStreamMicro.readMessage(localActionFeatureFlags);
                         setActionFeatureFlags(localActionFeatureFlags);
                         break;
+                    case 186:
+                        GstaticConfiguration.SoundSearch localSoundSearch = new GstaticConfiguration.SoundSearch();
+                        paramCodedInputStreamMicro.readMessage(localSoundSearch);
+                        setSoundSearch(localSoundSearch);
+                        break;
                 }
-                GstaticConfiguration.SoundSearch localSoundSearch = new GstaticConfiguration.SoundSearch();
-                paramCodedInputStreamMicro.readMessage(localSoundSearch);
-                setSoundSearch(localSoundSearch);
             }
         }
 
@@ -1164,10 +1172,12 @@ public final class GstaticConfiguration {
                         paramCodedInputStreamMicro.readMessage(localHttpServerInfo);
                         setSingleHttpServerInfo(localHttpServerInfo);
                         break;
+                    case 34:
+                        GstaticConfiguration.PairHttpServerInfo localPairHttpServerInfo = new GstaticConfiguration.PairHttpServerInfo();
+                        paramCodedInputStreamMicro.readMessage(localPairHttpServerInfo);
+                        setPairHttpServerInfo(localPairHttpServerInfo);
+                        break;
                 }
-                GstaticConfiguration.PairHttpServerInfo localPairHttpServerInfo = new GstaticConfiguration.PairHttpServerInfo();
-                paramCodedInputStreamMicro.readMessage(localPairHttpServerInfo);
-                setPairHttpServerInfo(localPairHttpServerInfo);
             }
         }
 
@@ -1349,8 +1359,10 @@ public final class GstaticConfiguration {
                     case 50:
                         setMainJavaLocale(paramCodedInputStreamMicro.readString());
                         break;
+                    case 56:
+                        setImeSupported(paramCodedInputStreamMicro.readBool());
+                        break;
                 }
-                setImeSupported(paramCodedInputStreamMicro.readBool());
             }
         }
 
@@ -1586,8 +1598,10 @@ public final class GstaticConfiguration {
                         paramCodedInputStreamMicro.readMessage(localEndpointerParams);
                         setEndpointerParams(localEndpointerParams);
                         break;
+                    case 64:
+                        setEmbeddedRecognizerFallbackTimeout(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setEmbeddedRecognizerFallbackTimeout(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -1819,8 +1833,10 @@ public final class GstaticConfiguration {
                     case 32:
                         setNoSpeechDetectedTimeoutMsec(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 40:
+                        setExtraSilenceAfterEndOfSpeechMsec(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setExtraSilenceAfterEndOfSpeechMsec(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -2137,8 +2153,10 @@ public final class GstaticConfiguration {
                     case 64:
                         setDisableCompression(paramCodedInputStreamMicro.readBool());
                         break;
+                    case 72:
+                        setReplaceHostWithTld(paramCodedInputStreamMicro.readBool());
+                        break;
                 }
-                setReplaceHostWithTld(paramCodedInputStreamMicro.readBool());
             }
         }
 
@@ -2249,10 +2267,12 @@ public final class GstaticConfiguration {
                     case 8:
                         setMaxNbest(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 16:
+                        GstaticConfiguration.EndpointerParams localEndpointerParams = new GstaticConfiguration.EndpointerParams();
+                        paramCodedInputStreamMicro.readMessage(localEndpointerParams);
+                        setEndpointerParams(localEndpointerParams);
+                        break;
                 }
-                GstaticConfiguration.EndpointerParams localEndpointerParams = new GstaticConfiguration.EndpointerParams();
-                paramCodedInputStreamMicro.readMessage(localEndpointerParams);
-                setEndpointerParams(localEndpointerParams);
             }
         }
 
@@ -2346,10 +2366,12 @@ public final class GstaticConfiguration {
                     case 10:
                         setDisplayName(paramCodedInputStreamMicro.readString());
                         break;
+                    case 18:
+                        GstaticConfiguration.Dialect localDialect = new GstaticConfiguration.Dialect();
+                        paramCodedInputStreamMicro.readMessage(localDialect);
+                        addDialect(localDialect);
+                        break;
                 }
-                GstaticConfiguration.Dialect localDialect = new GstaticConfiguration.Dialect();
-                paramCodedInputStreamMicro.readMessage(localDialect);
-                addDialect(localDialect);
             }
         }
 
@@ -2627,8 +2649,10 @@ public final class GstaticConfiguration {
                     case 74:
                         setManifestUrl(paramCodedInputStreamMicro.readString());
                         break;
+                    case 80:
+                        setHotwordQuality(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setHotwordQuality(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -2740,10 +2764,12 @@ public final class GstaticConfiguration {
                     case 10:
                         setJavaLocale(paramCodedInputStreamMicro.readString());
                         break;
+                    case 18:
+                        GstaticConfiguration.Resource localResource = new GstaticConfiguration.Resource();
+                        paramCodedInputStreamMicro.readMessage(localResource);
+                        addResources(localResource);
+                        break;
                 }
-                GstaticConfiguration.Resource localResource = new GstaticConfiguration.Resource();
-                paramCodedInputStreamMicro.readMessage(localResource);
-                addResources(localResource);
             }
         }
 
@@ -2829,8 +2855,10 @@ public final class GstaticConfiguration {
                     case 8:
                         setMaxRetries(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 16:
+                        setMaxRetryTimeoutMsec(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setMaxRetryTimeoutMsec(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -2923,10 +2951,12 @@ public final class GstaticConfiguration {
                         paramCodedInputStreamMicro.readMessage(localHttpServerInfo2);
                         setDown(localHttpServerInfo2);
                         break;
+                    case 18:
+                        GstaticConfiguration.HttpServerInfo localHttpServerInfo1 = new GstaticConfiguration.HttpServerInfo();
+                        paramCodedInputStreamMicro.readMessage(localHttpServerInfo1);
+                        setUp(localHttpServerInfo1);
+                        break;
                 }
-                GstaticConfiguration.HttpServerInfo localHttpServerInfo1 = new GstaticConfiguration.HttpServerInfo();
-                paramCodedInputStreamMicro.readMessage(localHttpServerInfo1);
-                setUp(localHttpServerInfo1);
             }
         }
 
@@ -3031,8 +3061,10 @@ public final class GstaticConfiguration {
                     case 18:
                         setDashboardUrl(paramCodedInputStreamMicro.readString());
                         break;
+                    case 26:
+                        setMoreInfoUrl(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setMoreInfoUrl(paramCodedInputStreamMicro.readString());
             }
         }
 
@@ -3186,8 +3218,10 @@ public final class GstaticConfiguration {
                     case 10:
                         setKey(paramCodedInputStreamMicro.readString());
                         break;
+                    case 18:
+                        setValue(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setValue(paramCodedInputStreamMicro.readString());
             }
         }
 
@@ -3426,8 +3460,10 @@ public final class GstaticConfiguration {
                     case 64:
                         setUseSsl(paramCodedInputStreamMicro.readBool());
                         break;
+                    case 72:
+                        addBlacklistMccMnc(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                addBlacklistMccMnc(paramCodedInputStreamMicro.readInt32());
             }
         }
 
@@ -3693,8 +3729,10 @@ public final class GstaticConfiguration {
                     case 40:
                         setEnableMusicHotworder(paramCodedInputStreamMicro.readBool());
                         break;
+                    case 48:
+                        setEnablePreemptiveDetection(paramCodedInputStreamMicro.readBool());
+                        break;
                 }
-                setEnablePreemptiveDetection(paramCodedInputStreamMicro.readBool());
             }
         }
 
@@ -3819,8 +3857,10 @@ public final class GstaticConfiguration {
                     case 16:
                         setActionCountDownMsec(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 24:
+                        setEmbeddedRecognizerFallbackTimeout(paramCodedInputStreamMicro.readInt32());
+                        break;
                 }
-                setEmbeddedRecognizerFallbackTimeout(paramCodedInputStreamMicro.readInt32());
             }
         }
 

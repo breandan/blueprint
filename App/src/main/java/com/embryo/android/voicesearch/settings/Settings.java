@@ -13,20 +13,13 @@ import java.util.concurrent.ExecutorService;
 public class Settings
         implements com.embryo.android.speech.SpeechSettings {
     private final GStaticConfiguration mGStaticConfiguration;
-    private final GsaPreferenceController mPrefController;
 
     public Settings(Context paramContext, GsaPreferenceController paramGsaPreferenceController, ExecutorService paramExecutorService) {
-        this(paramGsaPreferenceController, new GStaticConfiguration(paramGsaPreferenceController, paramContext.getResources(), paramExecutorService, new GserviceWrapper(paramContext.getContentResolver())));
+        this(new GStaticConfiguration(paramGsaPreferenceController, paramContext.getResources(), paramExecutorService, new GserviceWrapper(paramContext.getContentResolver())));
     }
 
-    Settings(GsaPreferenceController paramGsaPreferenceController, GStaticConfiguration paramGStaticConfiguration) {
-        this.mPrefController = paramGsaPreferenceController;
+    Settings(GStaticConfiguration paramGStaticConfiguration) {
         this.mGStaticConfiguration = paramGStaticConfiguration;
-//        this.mGStaticConfiguration.addListener(new ConfigurationChangeListener() {
-//            public void onChange(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Configuration paramAnonymousConfiguration) {
-//                Settings.this.verifySpokenLocaleBcp47(paramAnonymousConfiguration);
-//            }
-//        });
     }
 
 //    private SharedPreferences getPrefs() {

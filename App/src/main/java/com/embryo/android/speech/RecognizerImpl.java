@@ -2,9 +2,20 @@ package com.embryo.android.speech;
 
 import android.util.Log;
 
+import com.embryo.android.shared.util.StateMachine;
 import com.embryo.android.shared.util.ThreadChanger;
+import com.embryo.android.speech.audio.AudioController;
+import com.embryo.android.speech.audio.AudioInputStreamFactory;
+import com.embryo.android.speech.audio.AudioRecorder;
+import com.embryo.android.speech.audio.AudioStore;
 import com.embryo.android.speech.audio.MicrophoneInputStreamFactory;
+import com.embryo.android.speech.dispatcher.RecognitionDispatcher;
+import com.embryo.android.speech.exception.AudioRecognizeException;
 import com.embryo.android.speech.exception.NoEnginesRecognizeException;
+import com.embryo.android.speech.listeners.RecognitionEventListener;
+import com.embryo.android.speech.logger.SpeechLibLogger;
+import com.embryo.android.speech.params.AudioInputParams;
+import com.embryo.android.speech.params.SessionParams;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,17 +29,17 @@ import javax.annotation.Nullable;
 
 public class RecognizerImpl
         implements Recognizer {
-    private final com.embryo.android.speech.audio.AudioController mAudioController;
-    private final com.embryo.android.speech.audio.AudioRecorder mAudioRecorder;
+    private final AudioController mAudioController;
+    private final AudioRecorder mAudioRecorder;
     private final RecognitionEngineStore mEngineStore;
-    private final com.embryo.android.shared.util.StateMachine<State> mListeningState = com.embryo.android.shared.util.StateMachine.newBuilder("RecognizerImpl", State.IDLE).addTransition(State.IDLE, State.LISTENING).addTransition(State.LISTENING, State.IDLE).addTransition(State.LISTENING, State.LISTENING).addTransition(State.LISTENING, State.STOPPED).addTransition(State.STOPPED, State.IDLE).setSingleThreadOnly(true).setStrictMode(true).build();
-    private final com.embryo.android.speech.dispatcher.RecognitionDispatcher mRecognitionDispatcher;
+    private final StateMachine<State> mListeningState = StateMachine.newBuilder("RecognizerImpl", State.IDLE).addTransition(State.IDLE, State.LISTENING).addTransition(State.LISTENING, State.IDLE).addTransition(State.LISTENING, State.LISTENING).addTransition(State.LISTENING, State.STOPPED).addTransition(State.STOPPED, State.IDLE).setSingleThreadOnly(true).setStrictMode(true).build();
+    private final RecognitionDispatcher mRecognitionDispatcher;
     private final SpeechLibFactory mSpeechLibFactory;
-    private final com.embryo.android.speech.logger.SpeechLibLogger mSpeechLibLogger;
+    private final SpeechLibLogger mSpeechLibLogger;
     private com.embryo.android.speech.listeners.RecognitionEventListener mRecognitionListener;
     private ResponseProcessor mResponseProcessor;
 
-    public RecognizerImpl(com.embryo.android.speech.audio.AudioController paramAudioController, com.embryo.android.speech.audio.AudioRecorder paramAudioRecorder, com.embryo.android.speech.dispatcher.RecognitionDispatcher paramRecognitionDispatcher, RecognitionEngineStore paramRecognitionEngineStore, SpeechLibFactory paramSpeechLibFactory) {
+    public RecognizerImpl(com.embryo.android.speech.audio.AudioController paramAudioController, com.embryo.android.speech.audio.AudioRecorder paramAudioRecorder, RecognitionDispatcher paramRecognitionDispatcher, RecognitionEngineStore paramRecognitionEngineStore, SpeechLibFactory paramSpeechLibFactory) {
         this.mAudioController = paramAudioController;
         this.mAudioRecorder = paramAudioRecorder;
         this.mRecognitionDispatcher = paramRecognitionDispatcher;
@@ -37,8 +48,8 @@ public class RecognizerImpl
         this.mSpeechLibLogger = paramSpeechLibFactory.buildSpeechLibLogger();
     }
 
-    public static Recognizer create(ExecutorService paramExecutorService, com.embryo.android.speech.audio.AudioController paramAudioController, SpeechLibFactory paramSpeechLibFactory) {
-        return threadChange(paramExecutorService, new RecognizerImpl(paramAudioController, new com.embryo.android.speech.audio.AudioRecorder(), new com.embryo.android.speech.dispatcher.RecognitionDispatcher(paramExecutorService, paramSpeechLibFactory), paramSpeechLibFactory.buildRecognitionEngineStore(), paramSpeechLibFactory));
+    public static Recognizer create(ExecutorService paramExecutorService, AudioController paramAudioController, SpeechLibFactory paramSpeechLibFactory) {
+        return threadChange(paramExecutorService, new RecognizerImpl(paramAudioController, new AudioRecorder(), new RecognitionDispatcher(paramExecutorService, paramSpeechLibFactory), paramSpeechLibFactory.buildRecognitionEngineStore(), paramSpeechLibFactory));
     }
 
     private static final <T> T threadChange(Executor paramExecutor, Class<T> paramClass, T paramT) {
@@ -59,7 +70,7 @@ public class RecognizerImpl
         this.mRecognitionDispatcher.cancel();
     }
 
-    private void internalShutdownAudio(com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener) {
+    private void internalShutdownAudio(RecognitionEventListener paramRecognitionEventListener) {
         if (!isListenerStillCurrent(paramRecognitionEventListener)) {
             return;
         }
@@ -74,14 +85,14 @@ public class RecognizerImpl
         }
     }
 
-    private void internalStopAudio(com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener) {
+    private void internalStopAudio(RecognitionEventListener paramRecognitionEventListener) {
         if (!isListenerStillCurrent(paramRecognitionEventListener)) {
             return;
         }
         internalStopAudio();
     }
 
-    private boolean isListenerStillCurrent(com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener) {
+    private boolean isListenerStillCurrent(RecognitionEventListener paramRecognitionEventListener) {
         if ((paramRecognitionEventListener == null) || (paramRecognitionEventListener != this.mRecognitionListener)) {
             Log.i("RecognizerImpl", "Supplied listener [" + paramRecognitionEventListener + "] is not the one that is currently " + "active [" + this.mRecognitionListener + "]");
             return false;
@@ -89,7 +100,7 @@ public class RecognizerImpl
         return true;
     }
 
-    private void recordStartRecognitionEvent(com.embryo.android.speech.params.SessionParams params) {
+    private void recordStartRecognitionEvent(SessionParams params) {
         if (params.getMode() == 6) {
             this.mSpeechLibLogger.recordSpeechEvent(3, params.getRequestId());
         }
@@ -107,7 +118,7 @@ public class RecognizerImpl
         }
     }
 
-    public void cancel(com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener) {
+    public void cancel(RecognitionEventListener paramRecognitionEventListener) {
         if ((!this.mListeningState.notIn(State.IDLE)) || (!isListenerStillCurrent(paramRecognitionEventListener))) {
             return;
         }
@@ -115,7 +126,7 @@ public class RecognizerImpl
         internalShutdownAudio(paramRecognitionEventListener);
     }
 
-    ResponseProcessor.AudioCallback getAudioCallback(final com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener) {
+    ResponseProcessor.AudioCallback getAudioCallback(final RecognitionEventListener paramRecognitionEventListener) {
         return new ResponseProcessor.AudioCallback() {
             public void recordingStarted(long paramAnonymousLong) {
                 if (RecognizerImpl.this.mAudioRecorder.isRecording()) {
@@ -137,9 +148,9 @@ public class RecognizerImpl
         };
     }
 
-    public void startListening(com.embryo.android.speech.params.SessionParams paramSessionParams, com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener, Executor paramExecutor, @Nullable com.embryo.android.speech.audio.AudioStore paramAudioStore) {
-        com.embryo.android.speech.params.AudioInputParams localAudioInputParams = paramSessionParams.getAudioInputParams();
-        boolean i = false;
+    public void startListening(SessionParams paramSessionParams, RecognitionEventListener paramRecognitionEventListener, Executor paramExecutor, @Nullable AudioStore paramAudioStore) {
+        AudioInputParams localAudioInputParams = paramSessionParams.getAudioInputParams();
+        boolean transition = false;
 
         if (this.mListeningState.notIn(State.IDLE)) {
             if (!localAudioInputParams.hasStreamRewindTime()) {
@@ -147,68 +158,65 @@ public class RecognizerImpl
                 internalShutdownAudio();
                 this.mListeningState.checkIn(State.IDLE);
             }
-            i = true;
+            transition = true;
             this.mRecognitionDispatcher.cancel();
             this.mResponseProcessor.invalidate();
             this.mResponseProcessor = null;
         }
 
-        com.embryo.android.speech.listeners.RecognitionEventListener localRecognitionEventListener;
-        com.embryo.android.speech.EngineSelector localEngineSelector;
-        List localList1;
-
         this.mRecognitionListener = paramRecognitionEventListener;
-        localRecognitionEventListener = threadChange(paramExecutor, com.embryo.android.speech.listeners.RecognitionEventListener.class, paramRecognitionEventListener);
+        RecognitionEventListener eventListener = threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
         recordStartRecognitionEvent(paramSessionParams);
-        localEngineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
-        this.mResponseProcessor = this.mSpeechLibFactory.buildResponseProcessor(getAudioCallback(this.mRecognitionListener), localRecognitionEventListener, paramSessionParams, this.mSpeechLibLogger);
-        localList1 = localEngineSelector.getEngineList();
-        if (localList1.isEmpty()) {
-            localRecognitionEventListener.onError(new NoEnginesRecognizeException());
+        EngineSelector engineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
+        this.mResponseProcessor = this.mSpeechLibFactory.buildResponseProcessor(getAudioCallback(this.mRecognitionListener), eventListener, paramSessionParams, this.mSpeechLibLogger);
+        List<Integer> engines = engineSelector.getEngineList();
+        if (engines.isEmpty()) {
+            eventListener.onError(new NoEnginesRecognizeException());
             return;
         }
 
-        if (i) {
-            com.embryo.android.speech.audio.AudioInputStreamFactory localAudioInputStreamFactory = this.mAudioController.createInputStreamFactory(localAudioInputParams);
+        AudioInputStreamFactory localAudioInputStreamFactory;
+
+        if (!transition) {
+            localAudioInputStreamFactory = this.mAudioController.createInputStreamFactory(localAudioInputParams);
+        } else {
+            localAudioInputStreamFactory = this.mAudioController.rewindInputStreamFactory(localAudioInputParams.getStreamRewindTime());
+        }
+
+        try {
             if (paramAudioStore != null) {
-                this.mAudioController.rewindInputStreamFactory(localAudioInputParams.getStreamRewindTime());
-            }
-            try {
-                int j = localAudioInputParams.getSamplingRate();
-                this.mAudioRecorder.startRecording(localAudioInputStreamFactory.createInputStream(), j, MicrophoneInputStreamFactory.getMicrophoneReadSize(j), paramAudioStore, paramSessionParams.getRequestId());
+                this.mAudioRecorder.startRecording(localAudioInputStreamFactory.createInputStream(), localAudioInputParams.getSamplingRate(), MicrophoneInputStreamFactory.getMicrophoneReadSize(localAudioInputParams.getSamplingRate()), paramAudioStore, paramSessionParams.getRequestId());
+            } else {
                 this.mListeningState.moveTo(State.LISTENING);
-                this.mAudioController.startListening(localAudioInputParams, localRecognitionEventListener);
-                com.embryo.android.speech.dispatcher.RecognitionDispatcher localRecognitionDispatcher = this.mRecognitionDispatcher;
-                List localList2 = this.mEngineStore.getEngines(localList1);
-                ResponseProcessor localResponseProcessor = this.mResponseProcessor;
-                localRecognitionDispatcher.startRecognition(localList2, localAudioInputStreamFactory, paramSessionParams, localEngineSelector, localResponseProcessor);
-            } catch (IOException localIOException) {
-                localRecognitionEventListener.onError(new com.embryo.android.speech.exception.AudioRecognizeException("Unable to start the audio recording", localIOException));
+                this.mAudioController.startListening(localAudioInputParams, eventListener);
+                mRecognitionDispatcher.startRecognition(mEngineStore.getEngines(engines), localAudioInputStreamFactory, paramSessionParams, engineSelector, mResponseProcessor);
             }
+        } catch (IOException localIOException) {
+            eventListener.onError(new AudioRecognizeException("Unable to start the audio recording", localIOException));
         }
     }
 
-    public void startRecordedAudioRecognition(com.embryo.android.speech.params.SessionParams paramSessionParams, final byte[] paramArrayOfByte, com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener, Executor paramExecutor) {
+    public void startRecordedAudioRecognition(SessionParams paramSessionParams, final byte[] paramArrayOfByte, RecognitionEventListener paramRecognitionEventListener, Executor paramExecutor) {
         if (this.mListeningState.notIn(State.IDLE)) {
             Log.w("RecognizerImpl", "Multiple recognitions in progress, the first will be cancelled.");
             internalShutdownAudio();
         }
         this.mRecognitionListener = paramRecognitionEventListener;
-        com.embryo.android.speech.listeners.RecognitionEventListener localRecognitionEventListener = threadChange(paramExecutor, com.embryo.android.speech.listeners.RecognitionEventListener.class, paramRecognitionEventListener);
+        RecognitionEventListener localRecognitionEventListener = threadChange(paramExecutor, RecognitionEventListener.class, paramRecognitionEventListener);
         this.mListeningState.checkIn(State.IDLE);
         recordStartRecognitionEvent(paramSessionParams);
-        com.embryo.android.speech.audio.AudioInputStreamFactory local2 = new com.embryo.android.speech.audio.AudioInputStreamFactory() {
+        AudioInputStreamFactory local2 = new AudioInputStreamFactory() {
             public InputStream createInputStream() {
                 return new ByteArrayInputStream(paramArrayOfByte);
             }
         };
         this.mListeningState.moveTo(State.LISTENING);
-        com.embryo.android.speech.EngineSelector localEngineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
+        EngineSelector localEngineSelector = this.mSpeechLibFactory.buildEngineSelector(paramSessionParams);
         this.mResponseProcessor = this.mSpeechLibFactory.buildResponseProcessor(getAudioCallback(this.mRecognitionListener), localRecognitionEventListener, paramSessionParams, this.mSpeechLibLogger);
         this.mRecognitionDispatcher.startRecognition(this.mEngineStore.getEngines(localEngineSelector.getEngineList()), local2, paramSessionParams, localEngineSelector, this.mResponseProcessor);
     }
 
-    public void stopListening(com.embryo.android.speech.listeners.RecognitionEventListener paramRecognitionEventListener) {
+    public void stopListening(RecognitionEventListener paramRecognitionEventListener) {
         if (this.mListeningState.isIn(State.LISTENING)) {
             internalStopAudio(paramRecognitionEventListener);
         }

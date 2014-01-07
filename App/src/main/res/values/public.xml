@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <public type="raw" name="configuration" id="0x7f070000" />
+    <public type="raw" name="default_corpora" id="0x7f070001" />
+    <public type="raw" name="en_us_contacts" id="0x7f070002" />
+    <public type="raw" name="en_us_hands_free_commands" id="0x7f070003" />
+    <public type="raw" name="endpointer_dictation" id="0x7f070004" />
+    <public type="raw" name="endpointer_voicesearch" id="0x7f070005" />
+    <public type="raw" name="ep_acoustic_model" id="0x7f070006" />
+    <public type="raw" name="failure" id="0x7f070007" />
+    <public type="raw" name="metadata" id="0x7f070008" />
+    <public type="raw" name="no_input" id="0x7f070009" />
+    <public type="raw" name="open" id="0x7f07000a" />
+    <public type="raw" name="success" id="0x7f07000b" />
+</resources>

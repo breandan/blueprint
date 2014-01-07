@@ -66,9 +66,8 @@ public class AudioController {
     }
 
     public synchronized AudioInputStreamFactory createInputStreamFactory(com.embryo.android.speech.params.AudioInputParams paramAudioInputParams) {
-        this.mAudioSource = createAudioSource(getRawInputStreamFactoryLocked(paramAudioInputParams), paramAudioInputParams);
-        AudioSource localAudioSource = this.mAudioSource;
-        return localAudioSource;
+        mAudioSource = createAudioSource(getRawInputStreamFactoryLocked(paramAudioInputParams), paramAudioInputParams);
+        return mAudioSource;
     }
 
     public synchronized AudioInputStreamFactory rewindInputStreamFactory(long paramLong) {

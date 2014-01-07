@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="recurrence_interval_daily">
+        <item quantity="other">Every %d days</item>
+        <item quantity="one">Every %d day</item>
+    </plurals>
+    <plurals name="recurrence_interval_weekly">
+        <item quantity="other">Every %d weeks</item>
+        <item quantity="one">Every %d week</item>
+    </plurals>
+    <plurals name="recurrence_interval_monthly">
+        <item quantity="other">Every %d months</item>
+        <item quantity="one">Every %d month</item>
+    </plurals>
+    <plurals name="recurrence_interval_yearly">
+        <item quantity="other">Every %d years</item>
+        <item quantity="one">Every %d year</item>
+    </plurals>
+    <plurals name="recurrence_end_count">
+        <item quantity="other">For %d events</item>
+        <item quantity="one">For %d event</item>
+    </plurals>
+    <plurals name="endByCount">
+        <item quantity="other">; for %d times</item>
+        <item quantity="one">; for one time</item>
+    </plurals>
+    <plurals name="daily">
+        <item quantity="other">Every %d days</item>
+        <item quantity="one">Daily</item>
+    </plurals>
+    <plurals name="weekly">
+        <item quantity="other">Every %1$d weeks on %2$s</item>
+        <item quantity="one">Weekly on %2$s</item>
+    </plurals>
+    <plurals name="number_of_items_selected">
+        <item quantity="other">%1$d selected</item>
+        <item quantity="zero">%1$d selected</item>
+        <item quantity="one">%1$d selected</item>
+    </plurals>
+    <plurals name="duration_in_hours">
+        <item quantity="other">%1$d hours</item>
+        <item quantity="one">%1$d hour</item>
+    </plurals>
+    <plurals name="duration_in_hours_short">
+        <item quantity="other">%1$d hours</item>
+        <item quantity="one">%1$d hour</item>
+    </plurals>
+    <plurals name="duration_in_minutes">
+        <item quantity="other">%1$d minutes</item>
+        <item quantity="one">%1$d minute</item>
+    </plurals>
+    <plurals name="duration_in_minutes_short">
+        <item quantity="other">%1$d mins</item>
+        <item quantity="one">%1$d min</item>
+    </plurals>
+    <plurals name="duration_in_days">
+        <item quantity="other">%1$d days</item>
+        <item quantity="one">%1$d day</item>
+    </plurals>
+    <plurals name="duration_in_days_short">
+        <item quantity="other">%1$d days</item>
+        <item quantity="one">%1$d day</item>
+    </plurals>
+    <plurals name="duration_in_months">
+        <item quantity="other">%1$d months</item>
+        <item quantity="one">%1$d month</item>
+    </plurals>
+    <plurals name="duration_in_months_short">
+        <item quantity="other">%1$d months</item>
+        <item quantity="one">%1$d month</item>
+    </plurals>
+    <plurals name="duration_in_years">
+        <item quantity="other">%1$d years</item>
+        <item quantity="one">%1$d year</item>
+    </plurals>
+    <plurals name="duration_in_years_short">
+        <item quantity="other">%1$d years</item>
+        <item quantity="one">%1$d year</item>
+    </plurals>
+    <plurals name="items_from_without_colon">
+        <item quantity="other">%1$d items from</item>
+        <item quantity="one">%1$d item from</item>
+    </plurals>
+    <plurals name="last_train_home_departure_time">
+        <item quantity="other">Last train home in %2$s%1$d minutes%3$s</item>
+        <item quantity="one">Last train home in %2$s%1$d minute%3$s</item>
+    </plurals>
+    <plurals name="last_train_to_hotel_departure_time">
+        <item quantity="other">Last train to hotel in %2$s%1$d minutes%3$s</item>
+        <item quantity="one">Last train to hotel in %2$s%1$d minute%3$s</item>
+    </plurals>
+    <plurals name="last_train_home_departure_time_abbrev">
+        <item quantity="other">Last train home in %1$d mins</item>
+        <item quantity="one">Last train home in %1$d min</item>
+    </plurals>
+    <plurals name="last_train_to_hotel_departure_time_abbrev">
+        <item quantity="other">Last train to hotel in %1$d mins</item>
+        <item quantity="one">Last train to hotel in %1$d min</item>
+    </plurals>
+    <plurals name="minutes_delay">
+        <item quantity="other">%d minutes delay</item>
+        <item quantity="zero">no delay</item>
+        <item quantity="one">%d minute delay</item>
+        <item quantity="two">%d minutes delay</item>
+        <item quantity="few">%d minutes delay</item>
+        <item quantity="many">%d minutes delay</item>
+    </plurals>
+    <plurals name="minutes_delay_more_than_usual">
+        <item quantity="other">%d minutes more than usual</item>
+        <item quantity="zero">no delay</item>
+        <item quantity="one">%d minute more than usual</item>
+        <item quantity="two">%d minutes more than usual</item>
+        <item quantity="few">%d minutes more than usual</item>
+        <item quantity="many">%d minutes more than usual</item>
+    </plurals>
+    <plurals name="minutes_delay_less_than_usual">
+        <item quantity="other">%d minutes less than usual</item>
+        <item quantity="zero">no delay</item>
+        <item quantity="one">%d minute less than usual</item>
+        <item quantity="two">%d minutes less than usual</item>
+        <item quantity="few">%d minutes less than usual</item>
+        <item quantity="many">%d minutes less than usual</item>
+    </plurals>
+    <plurals name="usual_traffic_minutes_delay">
+        <item quantity="other">Usual traffic: %d minutes delay</item>
+        <item quantity="zero">Usual traffic: no delay</item>
+        <item quantity="one">Usual traffic: %d minute delay</item>
+        <item quantity="two">Usual traffic: %d minutes delay</item>
+        <item quantity="few">Usual traffic: %d minutes delay</item>
+        <item quantity="many">Usual traffc: %d minutes delay</item>
+    </plurals>
+    <plurals name="transit_interval_in_minutes">
+        <item quantity="other">· every %1$s mins</item>
+        <item quantity="one">· every %1$s min</item>
+    </plurals>
+    <plurals name="transit_interval_in_hours">
+        <item quantity="other">· every %1$d hours</item>
+        <item quantity="one">· every %1$d hour</item>
+    </plurals>
+    <plurals name="sports_overtime_period_header">
+        <item quantity="other">%1$dOT</item>
+        <item quantity="one">OT</item>
+    </plurals>
+    <plurals name="next_meeting_card_settings_summary">
+        <item quantity="other">%1$d calendars</item>
+        <item quantity="one">%1$d calendar</item>
+    </plurals>
+    <plurals name="card_count">
+        <item quantity="other">%d cards</item>
+        <item quantity="zero">No cards</item>
+        <item quantity="one">%d card</item>
+        <item quantity="two">%d cards</item>
+        <item quantity="few">%d cards</item>
+        <item quantity="many">%d cards</item>
+    </plurals>
+    <plurals name="num_reviews">
+        <item quantity="other">%1$d reviews</item>
+        <item quantity="one">%1$d review</item>
+    </plurals>
+    <plurals name="miles">
+        <item quantity="other">&amp;lt;font face=sans-serif>%d&amp;lt;/font> miles</item>
+        <item quantity="one">&amp;lt;font face=sans-serif>%d&amp;lt;/font> mile</item>
+    </plurals>
+    <plurals name="kilometers">
+        <item quantity="other">&amp;lt;font face=sans-serif>%d&amp;lt;/font> kilometers</item>
+        <item quantity="one">&amp;lt;font face=sans-serif>%d&amp;lt;/font> kilometer</item>
+    </plurals>
+    <plurals name="reminders">
+        <item quantity="other">%1$d reminders</item>
+        <item quantity="one">%1$d reminder</item>
+    </plurals>
+    <plurals name="deleted">
+        <item quantity="other">%1$d deleted</item>
+    </plurals>
+    <plurals name="number_of_location_sharers">
+        <item quantity="other">%1$d people sharing with you</item>
+        <item quantity="one">%1$d person sharing with you</item>
+    </plurals>
+    <plurals name="expiring_duration_in_days">
+        <item quantity="other">Expires in %1$d days</item>
+        <item quantity="one">Expires in %1$d day</item>
+    </plurals>
+    <plurals name="expiring_duration_in_hours">
+        <item quantity="other">Expires in %1$d hours</item>
+        <item quantity="one">Expires in %1$d hour</item>
+    </plurals>
+    <plurals name="expiring_duration_in_minutes">
+        <item quantity="other">Expires in %1$d minutes</item>
+        <item quantity="one">Expires in %1$d minute</item>
+    </plurals>
+    <plurals name="view_count">
+        <item quantity="other">%1$,d views</item>
+        <item quantity="one">%1$,d view</item>
+    </plurals>
+    <plurals name="calendar_event_meeting_summary_with_attendees">
+        <item quantity="other">&lt;xliff id="subject" example="Meeting">%1$s&lt;/xliff> (&lt;xliff id="attendee_list" example="Paul, Peter, Jane, Hertha">%2$s&lt;/xliff>)</item>
+        <item quantity="one">&lt;xliff id="subject" example="Meeting">%1$s&lt;/xliff> with &lt;xliff id="attendee_list" example="Hertha">%2$s&lt;/xliff></item>
+    </plurals>
+</resources>

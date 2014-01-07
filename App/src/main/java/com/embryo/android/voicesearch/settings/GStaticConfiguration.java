@@ -3,21 +3,21 @@ package com.embryo.android.voicesearch.settings;
 import android.content.res.Resources;
 import android.util.Log;
 
+import com.embryo.android.shared.util.ExtraPreconditions;
+import com.embryo.android.shared.util.ProtoUtils;
+import com.embryo.android.voicesearch.logger.EventLogger;
+import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
+import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.android.search.core.GsaPreferenceController;
 import com.google.android.search.core.GserviceWrapper;
 import com.google.android.search.core.preferences.SharedPreferencesExt;
-import com.embryo.android.shared.util.ProtoUtils;
-import com.embryo.android.voicesearch.logger.EventLogger;
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
-import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
-import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -52,7 +52,6 @@ class GStaticConfiguration {
                     }
                     GStaticConfiguration.this.setCurrentPrefs(localSharedPrefsData);
                     GStaticConfiguration.this.notifyListener();
-                    return;
                 }
             }
         };
@@ -97,16 +96,15 @@ class GStaticConfiguration {
     }
 
     @Nullable
-    private static GstaticConfiguration.Configuration parseConfig(byte[] paramArrayOfByte) {
-        if (paramArrayOfByte == null) {
+    private static GstaticConfiguration.Configuration parseConfig(byte[] configData) {
+        if (configData == null) {
             return null;
         }
         try {
-            GstaticConfiguration.Configuration localConfiguration = GstaticConfiguration.Configuration.parseFrom(paramArrayOfByte);
-            return localConfiguration;
-        } catch (InvalidProtocolBufferMicroException localInvalidProtocolBufferMicroException) {
+            return GstaticConfiguration.Configuration.parseFrom(configData);
+        } catch (InvalidProtocolBufferMicroException e) {
+            return null;
         }
-        return null;
     }
 
     private static void setOrClearConfigBytes(String paramString, GstaticConfiguration.Configuration paramConfiguration, SharedPreferencesExt.Editor paramEditor) {
@@ -145,15 +143,10 @@ class GStaticConfiguration {
     }
 
     private void notifyListener() {
-
-        if (!Thread.holdsLock(this.mLoadingLock)) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            Iterator localIterator = this.mListeners.iterator();
-            while (localIterator.hasNext()) {
-                ((com.embryo.android.voicesearch.settings.Settings.ConfigurationChangeListener) localIterator.next()).onChange(this.mConfiguration);
-            }
+        ExtraPreconditions.checkNotMainThread();
+        Preconditions.checkState((!Thread.holdsLock(mLoadingLock)));
+        for (Settings.ConfigurationChangeListener listener : mListeners) {
+            listener.onChange(mConfiguration);
         }
     }
 
@@ -163,7 +156,6 @@ class GStaticConfiguration {
             this.mCurrentPrefsData = paramSharedPrefsData;
             this.mConfiguration = localConfiguration;
             this.mLoadingLock.notifyAll();
-            return;
         }
     }
 
@@ -202,14 +194,7 @@ class GStaticConfiguration {
                 localSharedPrefsData1.copyFrom(this.mCurrentPrefsData);
                 return localSharedPrefsData1;
             }
-            SharedPreferencesExt localSharedPreferencesExt = this.mPrefController.getMainPreferences();
-            SharedPrefsData localSharedPrefsData2 = new SharedPrefsData();
-            localSharedPrefsData2.configTimestamp = localSharedPreferencesExt.getString("gstatic_configuration_timestamp", null);
-            localSharedPrefsData2.configData = parseConfig(localSharedPreferencesExt.getBytes("gstatic_configuration_data", null));
-            localSharedPrefsData2.experimentUrl = localSharedPreferencesExt.getString("gstatic_configuration_expriment_url", null);
-            localSharedPrefsData2.experimentData = parseConfig(localSharedPreferencesExt.getBytes("gstatic_configuration_experiment_data", null));
-            localSharedPrefsData2.overridenData = parseConfig(localSharedPreferencesExt.getBytes("gstatic_configuration_override_1", null));
-            return localSharedPrefsData2;
+            return new SharedPrefsData();
         }
     }
 

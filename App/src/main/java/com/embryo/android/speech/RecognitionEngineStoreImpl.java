@@ -18,16 +18,13 @@ public class RecognitionEngineStoreImpl
         implements RecognitionEngineStore {
     private final RecognitionEngineParams mEngineParams;
     private final ExecutorService mLocalExecutorService;
-    private final ExecutorService mNetworkExecutorService;
     private final com.embryo.android.speech.logger.SpeechLibLogger mSpeechLibLogger;
     private RecognitionEngine mEmbeddedRecognitionEngine;
-    private RecognitionEngine mMusicDetectorRecognitionEngine;
 
-    public RecognitionEngineStoreImpl(RecognitionEngineParams paramRecognitionEngineParams, com.embryo.android.speech.logger.SpeechLibLogger paramSpeechLibLogger, ExecutorService paramExecutorService1, ExecutorService paramExecutorService2) {
+    public RecognitionEngineStoreImpl(RecognitionEngineParams paramRecognitionEngineParams, com.embryo.android.speech.logger.SpeechLibLogger paramSpeechLibLogger, ExecutorService paramExecutorService1) {
         this.mEngineParams = paramRecognitionEngineParams;
         this.mSpeechLibLogger = paramSpeechLibLogger;
         this.mLocalExecutorService = paramExecutorService1;
-        this.mNetworkExecutorService = paramExecutorService2;
     }
 
     public static final <T> T log(T paramT) {
@@ -42,10 +39,6 @@ public class RecognitionEngineStoreImpl
         return this.mEmbeddedRecognitionEngine;
     }
 
-    private RecognitionEngine getNetworkEngine() {
-        return getEmbeddedEngine();
-    }
-
     public List<Pair<Integer, RecognitionEngine>> getEngines(List<Integer> paramList) {
         ArrayList localArrayList = Lists.newArrayListWithExpectedSize(paramList.size());
         Iterator localIterator = paramList.iterator();
@@ -58,7 +51,7 @@ public class RecognitionEngineStoreImpl
                     localArrayList.add(Pair.create(Integer.valueOf(i), getEmbeddedEngine()));
                     break;
                 case 2:
-                    localArrayList.add(Pair.create(Integer.valueOf(i), getNetworkEngine()));
+                    localArrayList.add(Pair.create(Integer.valueOf(i), getEmbeddedEngine()));
                     break;
             }
         }

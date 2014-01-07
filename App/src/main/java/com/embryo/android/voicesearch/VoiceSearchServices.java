@@ -10,7 +10,6 @@ import com.embryo.android.speech.Recognizer;
 import com.embryo.android.speech.RecognizerImpl;
 import com.embryo.android.speech.SpeechLibFactory;
 import com.embryo.android.speech.audio.AudioController;
-import com.embryo.android.speech.audio.AudioStore;
 import com.embryo.android.speech.embedded.Greco3Container;
 import com.embryo.android.speech.internal.DefaultCallbackFactory;
 import com.embryo.android.speech.internal.DefaultModeSelector;
@@ -37,21 +36,19 @@ public class VoiceSearchServices {
     private AudioController mAudioController;
     private AudioManager mAudioManager;
     private AudioRouter mAudioRouter;
-    private AudioStore mAudioStore;
     private Greco3Container mGreco3Container;
     private com.embryo.android.voicesearch.hotword.HotwordDetector mHotwordDetector;
     private Recognizer mRecognizer;
     private AudioTrackSoundManager mSoundManager;
     private SpeechLevelSource mSpeechLevelSource;
     private SpeechLibFactory mSpeechLibFactory;
-    private com.embryo.android.speech.logger.SuggestionLogger mSuggestionLogger;
     private com.embryo.android.voicesearch.ime.VoiceImeSubtypeUpdater mVoiceImeSubtypeUpdater;
 
     public VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, Object paramObject) {
-        this(paramContext, paramAsyncServices, paramGsaPreferenceController, paramObject, new Settings(paramContext, paramGsaPreferenceController, paramAsyncServices.getPooledBackgroundExecutorService()));
+        this(paramContext, paramAsyncServices, paramObject, new Settings(paramContext, paramGsaPreferenceController, paramAsyncServices.getPooledBackgroundExecutorService()));
     }
 
-    VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, Object paramObject, Settings paramSettings) {
+    VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, Object paramObject, Settings paramSettings) {
         this.mContext = paramContext;
         this.mAsyncServices = paramAsyncServices;
         this.mScheduledExecutorService = com.embryo.android.shared.util.ConcurrentUtils.createSafeScheduledExecutorService(5, "ContainerScheduledExecutor");
@@ -63,6 +60,11 @@ public class VoiceSearchServices {
             }
         });
         this.mCreationLock = paramObject;
+        init();
+    }
+
+    public void init() {
+        mSettings.asyncLoad();
     }
 
     private void createAudioRouterLocked() {

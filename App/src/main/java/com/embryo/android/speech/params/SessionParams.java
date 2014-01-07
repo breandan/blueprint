@@ -81,22 +81,22 @@ public class SessionParams {
 
     @Nullable
     public GstaticConfiguration.EndpointerParams getEndpointerParams(SpeechSettings speechSettings) {
-        GstaticConfiguration.EndpointerParams endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
-        switch (mMode) {
-            case 3:
-                endpointerParams = speechSettings.getConfiguration().getDictation().getEndpointerParams();
-            case 0:
-                endpointerParams = speechSettings.getConfiguration().getIntentApi().getEndpointerParams();
-            case 1:
-                endpointerParams = mStopOnEndOfSpeech ? speechSettings.getConfiguration().getServiceApi().getEndpointerParams() : speechSettings.getConfiguration().getDictation().getEndpointerParams();
-            case 2:
-                endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
-        }
+        GstaticConfiguration.EndpointerParams endpointerParams = new GstaticConfiguration.EndpointerParams();
+//        switch (mMode) {
+//            case 3:
+//                endpointerParams = speechSettings.getConfiguration().getDictation().getEndpointerParams();
+//            case 0:
+//                endpointerParams = speechSettings.getConfiguration().getIntentApi().getEndpointerParams();
+//            case 1:
+//                endpointerParams = mStopOnEndOfSpeech ? speechSettings.getConfiguration().getServiceApi().getEndpointerParams() : speechSettings.getConfiguration().getDictation().getEndpointerParams();
+//            case 2:
+//                endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
+//        }
 
-        if (!mNoSpeechDetectedEnabled) {
-            endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
-            endpointerParams.setNoSpeechDetectedTimeoutMsec(0x4e20);
-        }
+//        if (!mNoSpeechDetectedEnabled) {
+//            endpointerParams = speechSettings.getConfiguration().getVoiceSearch().getEndpointerParams();
+//            endpointerParams.setNoSpeechDetectedTimeoutMsec(0x4e20);
+//        }
 
         return endpointerParams;
     }
