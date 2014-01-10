@@ -5,19 +5,13 @@ import com.embryo.android.speech.embedded.Greco3ModeSelector;
 
 public class RecognitionEngineParams {
     private final EmbeddedParams mEmbeddedParams;
-    private final MusicDetectorParams mMusicDetectorParams;
 
-    public RecognitionEngineParams(EmbeddedParams paramEmbeddedParams, MusicDetectorParams paramMusicDetectorParams) {
+    public RecognitionEngineParams(EmbeddedParams paramEmbeddedParams) {
         this.mEmbeddedParams = paramEmbeddedParams;
-        this.mMusicDetectorParams = paramMusicDetectorParams;
     }
 
     public EmbeddedParams getEmbeddedParams() {
         return this.mEmbeddedParams;
-    }
-
-    public MusicDetectorParams getMusicDetectorParams() {
-        return this.mMusicDetectorParams;
     }
 
     public static class EmbeddedParams {

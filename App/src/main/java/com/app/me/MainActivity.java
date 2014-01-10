@@ -7,10 +7,10 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.google.android.search.core.AsyncServicesImpl;
+import com.embryo.android.search.core.AsyncServicesImpl;
 import com.embryo.android.voicesearch.VoiceSearchServices;
 import com.embryo.android.voicesearch.hotword.HotwordDetector;
-import com.google.android.search.core.GsaPreferenceController;
+import com.embryo.android.search.core.GsaPreferenceController;
 
 import java.io.InputStream;
 

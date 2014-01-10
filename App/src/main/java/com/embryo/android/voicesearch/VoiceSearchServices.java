@@ -4,6 +4,8 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
 
+import com.embryo.android.search.core.GsaPreferenceController;
+import com.embryo.android.shared.util.ConcurrentUtils;
 import com.embryo.android.shared.util.ExtraPreconditions;
 import com.embryo.android.shared.util.SpeechLevelSource;
 import com.embryo.android.speech.Recognizer;
@@ -18,11 +20,7 @@ import com.embryo.android.voicesearch.audio.AudioRouter;
 import com.embryo.android.voicesearch.audio.AudioRouterImpl;
 import com.embryo.android.voicesearch.audio.AudioTrackSoundManager;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.google.android.search.core.AsyncServices;
-import com.google.android.search.core.DeviceCapabilityManager;
-import com.google.android.search.core.DeviceCapabilityManagerImpl;
-import com.google.android.search.core.GsaConfigFlags;
-import com.google.android.search.core.GsaPreferenceController;
+import com.embryo.android.search.core.AsyncServices;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -30,7 +28,6 @@ public class VoiceSearchServices {
     private final AsyncServices mAsyncServices;
     private final Context mContext;
     private final Object mCreationLock;
-    private final DeviceCapabilityManager mDeviceCapabilityManager;
     private final ScheduledExecutorService mScheduledExecutorService;
     private final Settings mSettings;
     private AudioController mAudioController;
@@ -52,7 +49,6 @@ public class VoiceSearchServices {
         this.mContext = paramContext;
         this.mAsyncServices = paramAsyncServices;
         this.mScheduledExecutorService = com.embryo.android.shared.util.ConcurrentUtils.createSafeScheduledExecutorService(5, "ContainerScheduledExecutor");
-        this.mDeviceCapabilityManager = new DeviceCapabilityManagerImpl(mContext);
         this.mSettings = paramSettings;
         this.mSettings.addConfigurationListener(new Settings.ConfigurationChangeListener() {
             public void onChange(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.Configuration paramAnonymousConfiguration) {
@@ -76,20 +72,16 @@ public class VoiceSearchServices {
     }
 
     private RecognitionEngineParams.EmbeddedParams createEmbeddedParams() {
-        return new RecognitionEngineParams.EmbeddedParams(new DefaultCallbackFactory(), getGreco3Container().getGreco3EngineManager(), new DefaultModeSelector(this.mDeviceCapabilityManager.isTelephoneCapable()), getSpeechLevelSource(), this.mSettings, 2, 8000);
-    }
-
-    private RecognitionEngineParams.MusicDetectorParams createMusicDetectorParams() {
-        return new RecognitionEngineParams.MusicDetectorParams(this.mSettings);
+        return new RecognitionEngineParams.EmbeddedParams(new DefaultCallbackFactory(), getGreco3Container().getGreco3EngineManager(), new DefaultModeSelector(), getSpeechLevelSource(), this.mSettings, 2, 8000);
     }
 
     private RecognitionEngineParams createRecognitionEngineParams() {
-        return new RecognitionEngineParams(createEmbeddedParams(), createMusicDetectorParams());
+        return new RecognitionEngineParams(createEmbeddedParams());
     }
 
     private Recognizer createRecognizer() {
         Log.i("VS.Container", "create_speech_recognizer");
-        return RecognizerImpl.create(com.embryo.android.shared.util.ConcurrentUtils.newSingleThreadExecutor("GrecoExecutor"), getAudioController(), getSpeechLibFactory());
+        return RecognizerImpl.create(ConcurrentUtils.newSingleThreadExecutor("GrecoExecutor"), getAudioController(), getSpeechLibFactory());
     }
 
     private SpeechLibFactory getSpeechLibFactory() {
@@ -97,13 +89,6 @@ public class VoiceSearchServices {
             this.mSpeechLibFactory = new SpeechLibFactoryImpl(createRecognitionEngineParams(), this.mSettings, this.mScheduledExecutorService);
         }
         return this.mSpeechLibFactory;
-    }
-
-    public boolean canCreatePumpkinTagger(GsaConfigFlags paramGsaConfigFlags, String paramString) {
-        if (isLowRamDevice()) {
-            return false;
-        }
-        return paramGsaConfigFlags.hasPumpkinLocale(paramString);
     }
 
     public AudioController getAudioController() {

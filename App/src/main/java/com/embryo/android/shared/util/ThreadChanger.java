@@ -31,7 +31,7 @@ public class ThreadChanger {
         Preconditions.checkNotNull(delegate);
         InvocationHandler local1 = new InvocationHandler() {
             public Object invoke(final Object paramAnonymousObject, final Method paramAnonymousMethod, final Object[] paramAnonymousArrayOfObject) {
-                Runnable local1 = new Runnable() {
+                paramExecutor.execute(new Runnable() {
                     public void run() {
                         try {
                             paramAnonymousMethod.invoke(delegate, paramAnonymousArrayOfObject);
@@ -48,8 +48,7 @@ public class ThreadChanger {
                             throw new IllegalStateException(localThrowable);
                         }
                     }
-                };
-                paramExecutor.execute(local1);
+                });
                 return null;
             }
         };

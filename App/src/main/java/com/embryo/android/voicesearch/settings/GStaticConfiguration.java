@@ -8,9 +8,9 @@ import com.embryo.android.shared.util.ProtoUtils;
 import com.embryo.android.voicesearch.logger.EventLogger;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
-import com.google.android.search.core.GsaPreferenceController;
-import com.google.android.search.core.GserviceWrapper;
-import com.google.android.search.core.preferences.SharedPreferencesExt;
+import com.embryo.android.search.core.GsaPreferenceController;
+import com.embryo.android.search.core.GserviceWrapper;
+import com.embryo.android.search.core.preferences.SharedPreferencesExt;
 import com.google.common.base.Preconditions;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
@@ -47,9 +47,9 @@ class GStaticConfiguration {
                         return;
                     }
                     GStaticConfiguration.SharedPrefsData localSharedPrefsData = GStaticConfiguration.this.maybeLoadFromSharedPrefs();
-                    if (GStaticConfiguration.maybeOverrideFromResources(localSharedPrefsData, GStaticConfiguration.this.mResources)) {
-                        GStaticConfiguration.this.writeToSharedPrefs(localSharedPrefsData);
-                    }
+//                    if (GStaticConfiguration.maybeOverrideFromResources(localSharedPrefsData, GStaticConfiguration.this.mResources)) {
+//                        GStaticConfiguration.this.writeToSharedPrefs(localSharedPrefsData);
+//                    }
                     GStaticConfiguration.this.setCurrentPrefs(localSharedPrefsData);
                     GStaticConfiguration.this.notifyListener();
                 }
@@ -128,16 +128,17 @@ class GStaticConfiguration {
             if (mConfiguration != null) {
                 return mConfiguration;
             } else {
-                EventLogger.recordLatencyStart(0x1);
-                try {
-                    mLoadingLock.wait();
-                } catch (InterruptedException e) {
-                    Log.e("GStaticConfiguration", "Interrupted waiting for configuration");
-                    Thread.currentThread().interrupt();
-                    return new GstaticConfiguration.Configuration();
-                }
-                EventLogger.recordClientEvent(0x3);
-                return mConfiguration;
+//                EventLogger.recordLatencyStart(0x1);
+//                try {
+//                    mLoadingLock.wait();
+//                } catch (InterruptedException e) {
+//                    Log.e("GStaticConfiguration", "Interrupted waiting for configuration");
+//                    Thread.currentThread().interrupt();
+//                    return new GstaticConfiguration.Configuration();
+//                }
+//                EventLogger.recordClientEvent(0x3);
+//                return mConfiguration;
+                return new GstaticConfiguration.Configuration();
             }
         }
     }

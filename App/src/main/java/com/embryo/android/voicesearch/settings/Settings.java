@@ -3,8 +3,8 @@ package com.embryo.android.voicesearch.settings;
 import android.content.Context;
 import android.os.Build;
 
-import com.google.android.search.core.GsaPreferenceController;
-import com.google.android.search.core.GserviceWrapper;
+import com.embryo.android.search.core.GsaPreferenceController;
+import com.embryo.android.search.core.GserviceWrapper;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,9 +3,9 @@ package com.embryo.android.speech.embedded;
 import android.util.Log;
 
 import com.embryo.android.shared.util.StopWatch;
-import com.google.common.base.Preconditions;
 import com.embryo.speech.logs.RecognizerOuterClass;
 import com.embryo.speech.recognizer.api.NativeRecognizer;
+import com.google.common.base.Preconditions;
 
 import java.io.File;
 import java.io.InputStream;
@@ -44,36 +44,29 @@ public class Greco3EngineManager
         return new RecognizerOuterClass.LanguagePackLog().setLocale(paramLanguagePack.getBcp47Locale()).setVersion(String.valueOf(paramLanguagePack.getVersion()));
     }
 
-    private static void deleteSingleLevelTree(File paramFile) {
-        if (paramFile.exists()) {
-            File[] arrayOfFile = paramFile.listFiles();
-            if (arrayOfFile != null) {
-                int i = arrayOfFile.length;
-                for (int j = 0; j < i; j++) {
-                    File localFile = arrayOfFile[j];
-                    if (!localFile.delete()) {
-                        Log.e("VS.G3EngineManager", "Error deleting resource file: " + localFile.getAbsolutePath());
+    private static void deleteSingleLevelTree(File resourceDir) {
+        if (resourceDir.exists()) {
+            File[] files = resourceDir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (!file.delete()) {
+                        Log.e("VS.G3EngineManager", "Error deleting resource file: " + file.getAbsolutePath());
                     }
                 }
             }
-            if (!paramFile.delete()) {
-                Log.e("VS.G3EngineManager", "Error deleting directory: " + paramFile.getAbsolutePath());
+            if (!resourceDir.delete()) {
+                Log.e("VS.G3EngineManager", "Error deleting directory: " + resourceDir.getAbsolutePath());
             }
         }
     }
 
-    private void doResourceDelete(File paramFile, boolean paramBoolean) {
-        try {
-            if (isUsedLocked(paramFile)) {
-                if (paramBoolean) {
-                    releaseAllResourcesLocked();
-                }
-            } else {
-                deleteSingleLevelTree(paramFile);
+    private synchronized void doResourceDelete(File path, boolean force) {
+        if (isUsedLocked(path)) {
+            if (force) {
+                releaseAllResourcesLocked();
             }
-            return;
-        } finally {
         }
+        deleteSingleLevelTree(path);
     }
 
     private String getCompiledGrammarPath(com.embryo.android.speech.embedded.Greco3Grammar paramGreco3Grammar, Greco3DataManager.LocaleResources paramLocaleResources) {
@@ -103,17 +96,16 @@ public class Greco3EngineManager
     }
 
     private boolean isUsedLocked(File paramFile) {
-        String str = paramFile.getAbsolutePath();
-        Iterator localIterator = this.mResourcesByMode.values().iterator();
-        while (localIterator.hasNext()) {
-            String[] arrayOfString = ((Resources) localIterator.next()).paths;
-            int i = arrayOfString.length;
-            for (int j = 0; j < i; j++) {
-                if (str.equals(arrayOfString[j])) {
+        String fileUsedLocked = paramFile.getAbsolutePath();
+
+        for (Resources resource : mResourcesByMode.values()) {
+            for (String path : resource.paths) {
+                if (path.equals(fileUsedLocked)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
