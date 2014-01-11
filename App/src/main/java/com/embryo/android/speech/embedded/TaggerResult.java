@@ -5,7 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.google.common.collect.Maps;
+import com.embryo.common.collect.Maps;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.embryo.speech.grammar.pumpkin.PumpkinTaggerResultsProto;
 import com.embryo.speech.logs.VoicesearchClientLogProto;

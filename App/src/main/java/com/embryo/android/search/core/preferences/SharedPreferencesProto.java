@@ -1,26 +1,23 @@
 package com.embryo.android.search.core.preferences;
 
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.embryo.protobuf.micro.ByteStringMicro;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.io.Closeables;
+import com.embryo.common.base.Preconditions;
+import com.embryo.common.base.Predicates;
+import com.embryo.common.collect.ImmutableMap;
+import com.embryo.common.collect.Maps;
+import com.embryo.common.collect.Sets;
+import com.embryo.common.io.Closeables;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;

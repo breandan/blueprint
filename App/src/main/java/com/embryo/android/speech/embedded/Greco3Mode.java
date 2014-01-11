@@ -1,6 +1,6 @@
 package com.embryo.android.speech.embedded;
 
-import com.google.common.collect.Maps;
+import com.embryo.common.collect.Maps;
 
 import java.io.File;
 import java.util.HashMap;

@@ -3,7 +3,7 @@ package com.embryo.android.shared.util;
 import android.os.Looper;
 import android.util.Log;
 
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 public class ExtraPreconditions {
     private static boolean sThreadChecksDisabled;

@@ -2,7 +2,7 @@ package com.embryo.android.speech.utils;
 
 import android.util.Pair;
 
-import com.google.common.collect.ImmutableList;
+import com.embryo.common.collect.ImmutableList;
 
 import javax.annotation.Nullable;
 

@@ -5,7 +5,7 @@ import android.util.Log;
 import com.embryo.android.shared.util.StopWatch;
 import com.embryo.speech.logs.RecognizerOuterClass;
 import com.embryo.speech.recognizer.api.NativeRecognizer;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.io.File;
 import java.io.InputStream;

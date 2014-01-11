@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Build;
 
 import com.embryo.android.search.core.GsaPreferenceController;
-import com.embryo.android.search.core.GserviceWrapper;
 
 import java.util.ArrayList;
 import java.util.List;

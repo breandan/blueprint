@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.embryo.android.shared.util.StateMachine;
 import com.embryo.android.speech.listeners.RecognitionEventListener;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
 
 public class DefaultEndpointerEventProcessor

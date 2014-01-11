@@ -5,9 +5,9 @@ import android.location.Location;
 import com.embryo.android.speech.SpeechSettings;
 import com.embryo.android.speech.embedded.Greco3Grammar;
 import com.embryo.android.speech.embedded.Greco3Mode;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
+import com.embryo.common.base.Preconditions;
+import com.embryo.common.base.Supplier;
+import com.embryo.common.base.Suppliers;
 import com.embryo.speech.common.proto.RecognitionContextProto;
 import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
 

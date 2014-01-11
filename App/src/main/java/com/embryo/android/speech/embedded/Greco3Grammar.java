@@ -1,6 +1,6 @@
 package com.embryo.android.speech.embedded;
 
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 import java.io.File;
 
 public enum Greco3Grammar

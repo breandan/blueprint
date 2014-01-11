@@ -5,13 +5,11 @@ import android.util.Log;
 
 import com.embryo.android.shared.util.LocaleUtils;
 import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Locale;
-
-import javax.annotation.Nullable;
 
 public class SpokenLanguageUtils {
     private static final Locale DEFAULT_LOCALE = Locale.US;

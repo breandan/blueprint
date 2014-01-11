@@ -2,7 +2,7 @@ package com.embryo.android.speech.audio;
 
 import android.content.Context;
 
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.util.List;
 

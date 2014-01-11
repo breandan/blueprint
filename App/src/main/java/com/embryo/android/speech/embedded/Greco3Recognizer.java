@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.embryo.android.speech.exception.AudioRecognizeException;
 import com.embryo.android.speech.exception.RecognizeException;
-import com.google.common.io.Files;
+import com.embryo.common.io.Files;
 import com.embryo.speech.recognizer.AbstractRecognizer;
 import com.embryo.speech.recognizer.RecognizerCallback;
 import com.embryo.speech.recognizer.api.RecognizerProtos;

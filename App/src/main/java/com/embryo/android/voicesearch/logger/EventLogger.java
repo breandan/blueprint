@@ -4,7 +4,7 @@ import android.util.SparseArray;
 
 import com.embryo.android.search.core.EventLoggerStore;
 import com.embryo.android.voicesearch.logger.store.EventLoggerStores;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 public final class EventLogger {
     private static volatile EventLoggerStore sEventLoggerStore;

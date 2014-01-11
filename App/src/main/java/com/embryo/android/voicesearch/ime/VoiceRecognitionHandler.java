@@ -7,7 +7,6 @@ import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 
 import com.embryo.android.shared.util.TextUtil;
-import com.embryo.android.speech.embedded.Greco3Mode;
 import com.embryo.android.speech.params.SessionParams;
 import com.embryo.speech.common.proto.RecognitionContextProto;
 

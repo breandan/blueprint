@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.MessageQueue;
 
-import com.embryo.android.search.core.PoolingNamedTaskExecutor;
 import com.embryo.android.shared.util.HandlerScheduledExecutor;
 import com.embryo.android.shared.util.NamedDelayedTaskExecutor;
 import com.embryo.android.shared.util.NamingDelayedTaskExecutor;

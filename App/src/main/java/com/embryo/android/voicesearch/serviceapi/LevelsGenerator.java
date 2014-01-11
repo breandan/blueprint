@@ -2,7 +2,7 @@ package com.embryo.android.voicesearch.serviceapi;
 
 import com.embryo.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.embryo.android.shared.util.SpeechLevelSource;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 public class LevelsGenerator {
     private final ScheduledSingleThreadedExecutor mExecutor;

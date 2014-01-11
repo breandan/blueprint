@@ -3,8 +3,8 @@ package com.embryo.android.speech.embedded;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.common.collect.Maps;
-import com.google.common.io.Closeables;
+import com.embryo.common.collect.Maps;
+import com.embryo.common.io.Closeables;
 import com.embryo.protobuf.micro.CodedInputStreamMicro;
 
 import java.io.BufferedReader;

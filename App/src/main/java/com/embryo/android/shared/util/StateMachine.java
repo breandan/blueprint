@@ -2,8 +2,8 @@ package com.embryo.android.shared.util;
 
 import android.util.Log;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
+import com.embryo.common.base.Preconditions;
+import com.embryo.common.collect.HashMultimap;
 
 public class StateMachine<T extends Enum<T>> {
     private T mCurrentState;

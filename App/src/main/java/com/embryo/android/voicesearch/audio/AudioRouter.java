@@ -1,7 +1,5 @@
 package com.embryo.android.voicesearch.audio;
 
-import javax.annotation.Nullable;
-
 public abstract interface AudioRouter {
     public abstract boolean awaitRouting();
 

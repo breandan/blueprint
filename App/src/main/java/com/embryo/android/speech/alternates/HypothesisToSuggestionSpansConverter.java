@@ -12,7 +12,7 @@ import android.text.SpannedString;
 import android.text.style.EasyEditSpan;
 import android.text.style.SuggestionSpan;
 
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.lang.reflect.Constructor;
 

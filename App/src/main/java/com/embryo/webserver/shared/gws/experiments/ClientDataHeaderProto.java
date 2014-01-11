@@ -1,4 +1,4 @@
-package com.embryo.webserver.shared.gws.experiments;
+package com.google.webserver.shared.gws.experiments;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.List;
 
 public final class ClientDataHeaderProto {
     public static final class ClientDataHeader
-            extends com.embryo.protobuf.micro.MessageMicro {
+            extends com.google.protobuf.micro.MessageMicro {
         private int cachedSize = -1;
         private long configTimeUsec_ = 0L;
         private List<Integer> experimentId_ = Collections.emptyList();
@@ -49,11 +49,11 @@ public final class ClientDataHeaderProto {
             int i = 0;
             Iterator localIterator = getExperimentIdList().iterator();
             while (localIterator.hasNext()) {
-                i += com.embryo.protobuf.micro.CodedOutputStreamMicro.computeInt32SizeNoTag(((Integer) localIterator.next()).intValue());
+                i += com.google.protobuf.micro.CodedOutputStreamMicro.computeInt32SizeNoTag(((Integer) localIterator.next()).intValue());
             }
             int j = 0 + i + 1 * getExperimentIdList().size();
             if (hasConfigTimeUsec()) {
-                j += com.embryo.protobuf.micro.CodedOutputStreamMicro.computeInt64Size(2, getConfigTimeUsec());
+                j += com.google.protobuf.micro.CodedOutputStreamMicro.computeInt64Size(2, getConfigTimeUsec());
             }
             this.cachedSize = j;
             return j;
@@ -63,7 +63,7 @@ public final class ClientDataHeaderProto {
             return this.hasConfigTimeUsec;
         }
 
-        public ClientDataHeader mergeFrom(com.embryo.protobuf.micro.CodedInputStreamMicro paramCodedInputStreamMicro)
+        public ClientDataHeader mergeFrom(com.google.protobuf.micro.CodedInputStreamMicro paramCodedInputStreamMicro)
                 throws IOException {
             for (; ; ) {
                 int i = paramCodedInputStreamMicro.readTag();
@@ -88,7 +88,7 @@ public final class ClientDataHeaderProto {
             return this;
         }
 
-        public void writeTo(com.embryo.protobuf.micro.CodedOutputStreamMicro paramCodedOutputStreamMicro)
+        public void writeTo(com.google.protobuf.micro.CodedOutputStreamMicro paramCodedOutputStreamMicro)
                 throws IOException {
             Iterator localIterator = getExperimentIdList().iterator();
             while (localIterator.hasNext()) {

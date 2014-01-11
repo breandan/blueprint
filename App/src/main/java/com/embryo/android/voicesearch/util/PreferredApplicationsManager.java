@@ -2,7 +2,7 @@ package com.embryo.android.voicesearch.util;
 
 import android.content.SharedPreferences;
 
-import com.google.common.collect.ImmutableMap;
+import com.embryo.common.collect.ImmutableMap;
 
 import java.util.Map;
 

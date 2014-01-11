@@ -1,6 +1,6 @@
 package com.embryo.android.shared.util;
 
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

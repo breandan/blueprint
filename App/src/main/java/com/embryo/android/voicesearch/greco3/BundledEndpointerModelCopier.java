@@ -4,8 +4,8 @@ import android.content.res.Resources;
 import android.util.Log;
 
 import com.embryo.android.speech.embedded.EndpointerModelCopier;
-import com.google.common.base.Supplier;
-import com.google.common.io.ByteStreams;
+import com.embryo.common.base.Supplier;
+import com.embryo.common.io.ByteStreams;
 
 import java.io.File;
 import java.io.FileOutputStream;

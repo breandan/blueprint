@@ -11,7 +11,7 @@ import com.embryo.android.speech.alternates.Hypothesis;
 import com.embryo.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.embryo.android.voicesearch.ime.formatter.TextFormatter;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.util.LinkedList;
 import java.util.List;

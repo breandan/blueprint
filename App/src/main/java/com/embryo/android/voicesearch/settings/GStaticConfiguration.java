@@ -1,19 +1,16 @@
 package com.embryo.android.voicesearch.settings;
 
 import android.content.res.Resources;
-import android.util.Log;
 
 import com.embryo.android.shared.util.ExtraPreconditions;
 import com.embryo.android.shared.util.ProtoUtils;
-import com.embryo.android.voicesearch.logger.EventLogger;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
 import com.embryo.android.search.core.GsaPreferenceController;
-import com.embryo.android.search.core.GserviceWrapper;
 import com.embryo.android.search.core.preferences.SharedPreferencesExt;
-import com.google.common.base.Preconditions;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.Closeables;
+import com.embryo.common.base.Preconditions;
+import com.embryo.common.io.ByteStreams;
+import com.embryo.common.io.Closeables;
 
 import java.io.IOException;
 import java.io.InputStream;

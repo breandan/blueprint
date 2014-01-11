@@ -4,9 +4,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class NetworkInformation {

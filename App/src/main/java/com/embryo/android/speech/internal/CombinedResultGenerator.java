@@ -2,7 +2,7 @@ package com.embryo.android.speech.internal;
 
 import android.text.TextUtils;
 
-import com.google.common.collect.Lists;
+import com.embryo.common.collect.Lists;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
 

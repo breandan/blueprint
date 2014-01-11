@@ -1,6 +1,6 @@
 package com.embryo.android.speech;
 
-import com.google.common.collect.Lists;
+import com.embryo.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.List;

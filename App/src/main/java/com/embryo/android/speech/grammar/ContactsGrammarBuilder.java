@@ -1,7 +1,7 @@
 package com.embryo.android.speech.grammar;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.embryo.common.collect.Lists;
+import com.embryo.common.collect.Maps;
 
 import java.util.ArrayList;
 import java.util.Collection;

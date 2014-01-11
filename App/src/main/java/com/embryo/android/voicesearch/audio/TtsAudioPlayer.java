@@ -1,6 +1,6 @@
 package com.embryo.android.voicesearch.audio;
 
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.util.concurrent.Executor;
 

@@ -14,8 +14,8 @@ import com.embryo.android.speech.exception.NetworkRecognizeException;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.speech.logger.SpeechLibLogger;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
+import com.embryo.common.base.Preconditions;
+import com.embryo.common.collect.Lists;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;

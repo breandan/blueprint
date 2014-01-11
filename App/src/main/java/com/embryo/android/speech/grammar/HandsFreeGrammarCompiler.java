@@ -8,7 +8,7 @@ import com.embryo.android.speech.embedded.Greco3Grammar;
 import com.embryo.android.speech.embedded.Greco3GrammarCompiler;
 import com.embryo.android.speech.embedded.Greco3Mode;
 import com.embryo.android.voicesearch.logger.EventLogger;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 
 import java.io.File;
 import java.io.IOException;

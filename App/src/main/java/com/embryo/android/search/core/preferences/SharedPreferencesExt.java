@@ -1,7 +1,7 @@
 package com.embryo.android.search.core.preferences;
 
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
+
 import java.util.Map;
 import java.util.Set;
 

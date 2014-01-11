@@ -1,8 +1,8 @@
 package com.embryo.android.speech.alternates;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
+import com.embryo.common.base.Objects;
+import com.embryo.common.base.Throwables;
+import com.embryo.common.collect.ImmutableList;
 import com.embryo.speech.common.Alternates;
 
 import java.io.UnsupportedEncodingException;

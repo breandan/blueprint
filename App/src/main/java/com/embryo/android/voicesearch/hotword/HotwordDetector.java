@@ -6,13 +6,12 @@ import android.view.accessibility.AccessibilityManager;
 
 import com.embryo.android.shared.util.ExtraPreconditions;
 import com.embryo.android.speech.Recognizer;
-import com.embryo.android.speech.embedded.Greco3Mode;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.speech.listeners.RecognitionEventListener;
 import com.embryo.android.voicesearch.VoiceSearchServices;
 import com.embryo.android.voicesearch.logger.BugLogger;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.google.common.base.Preconditions;
+import com.embryo.common.base.Preconditions;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
 
 import java.util.concurrent.Executor;

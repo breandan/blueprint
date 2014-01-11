@@ -1,14 +1,9 @@
 package com.embryo.android.speech.embedded;
 
 import android.content.SharedPreferences;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Maps;
-
-import java.util.HashMap;
-import java.util.Map;
+import com.embryo.common.base.Joiner;
+import com.embryo.common.collect.Maps;
 
 public class Greco3Preferences {
     private static final Joiner.MapJoiner ACTIVE_DOWNLOADS_JOINER = Joiner.on(',').withKeyValueSeparator(":");

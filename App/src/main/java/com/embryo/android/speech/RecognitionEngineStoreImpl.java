@@ -7,7 +7,7 @@ import com.embryo.android.speech.embedded.Greco3RecognitionEngine;
 import com.embryo.android.speech.embedded.GrecoEventLoggerFactory;
 import com.embryo.android.speech.engine.RecognitionEngine;
 import com.embryo.android.speech.params.RecognitionEngineParams;
-import com.google.common.collect.Lists;
+import com.embryo.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.Iterator;
