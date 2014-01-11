@@ -31,6 +31,7 @@ public class MainActivity extends Activity {
         final TextView textView = (TextView) findViewById(R.id.textView);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
+//        System.loadLibrary("libgoogle_recognizer_jni_l.so");
         VoiceSearchServices vss = new VoiceSearchServices(getApplication(), new AsyncServicesImpl(), new GsaPreferenceController(getApplication()), this);
         HotwordDetector hd = vss.getHotwordDetector();
         hd.start(new HotwordDetector.HotwordListener() {

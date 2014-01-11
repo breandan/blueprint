@@ -32,13 +32,15 @@ public class AudioController {
     }
 
     private AudioSource createAudioSource(AudioInputStreamFactory inputStreamFactory, com.embryo.android.speech.params.AudioInputParams params) {
-        return new AudioSource(params.getSamplingRate(), com.embryo.android.speech.audio.MicrophoneInputStreamFactory.getMicrophoneReadSize(params.getSamplingRate()), 0x1f4, 0x3e8, inputStreamFactory, params.shouldReportSoundLevels() ? mSpeechLevelSource : null);
+        return new AudioSource(params.getSamplingRate(), MicrophoneInputStreamFactory.getMicrophoneReadSize(params.getSamplingRate()), 0x1f4, 0x3e8, inputStreamFactory, params.shouldReportSoundLevels() ? mSpeechLevelSource : null);
     }
 
     private AudioInputStreamFactory createDefaultRawInputStreamFactoryLocked(com.embryo.android.speech.params.AudioInputParams params) {
         boolean preemptible = (params.usePreemptibleAudioSource()) && (isPreemptibleAudioSourceSupported());
-        com.embryo.android.speech.audio.MicrophoneInputStreamFactory microphoneInputStreamFactory = new com.embryo.android.speech.audio.MicrophoneInputStreamFactory(params.getSamplingRate(), isNoiseSuppressionEnabled(params), mSoundManager, mAudioRouter, mLogger, preemptible);
-        return new VoiceAudioInputStreamFactory(microphoneInputStreamFactory, mSettings, mContext);
+        //NPE seems to happen here
+        MicrophoneInputStreamFactory microphoneInputStreamFactory = new MicrophoneInputStreamFactory(params.getSamplingRate(), isNoiseSuppressionEnabled(params), mSoundManager, mAudioRouter, mLogger, preemptible);
+        VoiceAudioInputStreamFactory vaisf = new VoiceAudioInputStreamFactory(microphoneInputStreamFactory, mSettings, mContext);
+        return vaisf;
     }
 
     private AudioInputStreamFactory getRawInputStreamFactoryLocked(com.embryo.android.speech.params.AudioInputParams paramAudioInputParams) {
@@ -49,16 +51,17 @@ public class AudioController {
     }
 
     private boolean isNoiseSuppressionEnabled(com.embryo.android.speech.params.AudioInputParams params) {
-        if (!params.isNoiseSuppressionEnabled()) {
-            return false;
-        }
-        if (mNoiseSuppressors == null) {
-            mNoiseSuppressors = AudioUtils.getNoiseSuppressors(mSettings.getConfiguration().getPlatform());
-        }
-        if (mNoiseSuppressors.size() != 0) {
-            return true;
-        }
         return false;
+//        if (!params.isNoiseSuppressionEnabled()) {
+//            return false;
+//        }
+//        if (mNoiseSuppressors == null) {
+//            mNoiseSuppressors = AudioUtils.getNoiseSuppressors(mSettings.getConfiguration().getPlatform());
+//        }
+//        if (mNoiseSuppressors.size() != 0) {
+//            return true;
+//        }
+//        return false;
     }
 
     private boolean isPreemptibleAudioSourceSupported() {
@@ -88,11 +91,11 @@ public class AudioController {
     }
 
     public synchronized void startListening(com.embryo.android.speech.params.AudioInputParams audioInputParams, com.embryo.android.speech.listeners.RecognitionEventListener listener) {
-        if(!mListening) {
+        if (!mListening) {
             mSpeechLevelSource.reset();
             mAudioInputParams = audioInputParams;
             mAudioRouter.onStartListening(audioInputParams.shouldRequestAudioFocus());
-            if(mAudioSource != null) {
+            if (mAudioSource != null) {
                 mAudioSource.start(listener);
             }
             mLogger.logAudioPathEstablished(new com.embryo.android.speech.logger.SpeechLibLogger.LogData(mAudioRouter.getInputDeviceToLog()));
