@@ -3,7 +3,8 @@ package com.embryo.android.search.core;
 import com.embryo.android.shared.util.ConcurrentUtils;
 import com.embryo.android.shared.util.NamedDelayedTaskExecutor;
 import com.embryo.android.shared.util.NamedTask;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
+
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;

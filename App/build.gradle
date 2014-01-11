@@ -12,9 +12,10 @@ repositories {
     mavenCentral()
 }
 
+
 android {
     compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+    buildToolsVersion '19.0.0'
 
     defaultConfig {
         minSdkVersion 16

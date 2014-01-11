@@ -15,7 +15,7 @@ public class AndroidPumpkinLoader
     private final String mAssetsFolder;
 
     public AndroidPumpkinLoader(Context paramContext, String paramString) {
-        super(null, null, (byte[]) null);
+        super(null, null, null);
         this.mAssetsFolder = getAssetsFolderName(paramString);
         this.mAssets = paramContext.getAssets();
     }

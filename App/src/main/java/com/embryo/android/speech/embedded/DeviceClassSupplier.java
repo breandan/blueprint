@@ -3,7 +3,7 @@ package com.embryo.android.speech.embedded;
 import android.app.ActivityManager;
 import android.content.Context;
 
-import com.embryo.common.base.Supplier;
+import com.google.common.base.Supplier;
 
 public class DeviceClassSupplier
         implements Supplier<Integer> {

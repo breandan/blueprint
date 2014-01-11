@@ -3,7 +3,9 @@ package com.embryo.android.velvet;
 import android.content.Context;
 import android.util.Log;
 import android.view.KeyEvent;
+
 import com.embryo.android.shared.util.ScheduledSingleThreadedExecutor;
+
 import java.util.concurrent.ThreadFactory;
 
 public class VelvetStrictMode

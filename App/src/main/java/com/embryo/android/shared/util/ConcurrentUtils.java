@@ -3,8 +3,8 @@ package com.embryo.android.shared.util;
 import android.os.Process;
 import android.util.Log;
 
-import com.embryo.common.base.Preconditions;
-import com.embryo.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;

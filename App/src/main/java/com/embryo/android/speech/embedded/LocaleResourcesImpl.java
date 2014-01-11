@@ -3,9 +3,9 @@ package com.embryo.android.speech.embedded;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.embryo.common.collect.Maps;
-import com.embryo.common.io.Closeables;
 import com.embryo.protobuf.micro.CodedInputStreamMicro;
+import com.google.common.collect.Maps;
+import com.google.common.io.Closeables;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -146,7 +146,7 @@ class LocaleResourcesImpl
             Iterator localIterator = getCompatiblePaths().iterator();
             while (localIterator.hasNext()) {
                 File localFile = (File) localIterator.next();
-                String str = (String) this.mPathToHotwordPromptMap.get(localFile);
+                String str = this.mPathToHotwordPromptMap.get(localFile);
                 if (str != null) {
                     return str;
                 }
@@ -205,7 +205,7 @@ class LocaleResourcesImpl
                     File localFile1 = (File) localIterator4.next();
                     if (this.mResourcePaths.contains(localFile1.getParentFile().getAbsolutePath())) {
                         if (this.mConfigPaths.containsKey(localGreco3Mode)) {
-                            Log.w("VS.LocaleResourcesImpl", "Duplicate config file, found at: " + localFile1 + ", overwriting: " + (String) this.mConfigPaths.get(localGreco3Mode));
+                            Log.w("VS.LocaleResourcesImpl", "Duplicate config file, found at: " + localFile1 + ", overwriting: " + this.mConfigPaths.get(localGreco3Mode));
                         }
                         this.mConfigPaths.put(localGreco3Mode, localFile1.getAbsolutePath());
                     }

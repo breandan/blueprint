@@ -11,8 +11,8 @@ import com.embryo.android.speech.listeners.RecognitionEventListener;
 import com.embryo.android.voicesearch.VoiceSearchServices;
 import com.embryo.android.voicesearch.logger.BugLogger;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.embryo.common.base.Preconditions;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
+import com.google.common.base.Preconditions;
 
 import java.util.concurrent.Executor;
 

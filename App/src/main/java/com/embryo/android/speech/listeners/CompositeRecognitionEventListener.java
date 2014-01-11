@@ -2,7 +2,7 @@ package com.embryo.android.speech.listeners;
 
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Iterator;

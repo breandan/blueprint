@@ -498,7 +498,7 @@ public final class GstaticConfiguration {
         }
 
         public GstaticConfiguration.Language getLanguages(int paramInt) {
-            return (GstaticConfiguration.Language) this.languages_.get(paramInt);
+            return this.languages_.get(paramInt);
         }
 
         public int getLanguagesCount() {
@@ -2313,7 +2313,7 @@ public final class GstaticConfiguration {
         }
 
         public GstaticConfiguration.Dialect getDialect(int paramInt) {
-            return (GstaticConfiguration.Dialect) this.dialect_.get(paramInt);
+            return this.dialect_.get(paramInt);
         }
 
         public int getDialectCount() {
@@ -2475,7 +2475,7 @@ public final class GstaticConfiguration {
         }
 
         public int getLanguagePackFormatVersion(int paramInt) {
-            return ((Integer) this.languagePackFormatVersion_.get(paramInt)).intValue();
+            return this.languagePackFormatVersion_.get(paramInt).intValue();
         }
 
         public int getLanguagePackFormatVersionCount() {

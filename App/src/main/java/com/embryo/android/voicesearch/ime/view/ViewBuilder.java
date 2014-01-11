@@ -82,7 +82,7 @@ public class ViewBuilder {
         }
         for (boolean bool = true; ; bool = false) {
             View localView = localLayoutInflater.inflate(getLayout(bool), null);
-            ((ViewGroup) localView.findViewById(2131296706)).getLayoutParams().height = getHeight(bool);
+            localView.findViewById(2131296706).getLayoutParams().height = getHeight(bool);
             return localView;
         }
     }

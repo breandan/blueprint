@@ -2,7 +2,7 @@ package com.embryo.android.speech.embedded;
 
 import android.util.Log;
 
-import com.embryo.common.io.Files;
+import com.google.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;

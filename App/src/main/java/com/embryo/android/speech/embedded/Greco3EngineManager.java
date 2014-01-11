@@ -5,7 +5,8 @@ import android.util.Log;
 import com.embryo.android.shared.util.StopWatch;
 import com.embryo.speech.logs.RecognizerOuterClass;
 import com.embryo.speech.recognizer.api.NativeRecognizer;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.io.InputStream;
@@ -37,7 +38,7 @@ public class Greco3EngineManager
         this.mGreco3Preferences = paramGreco3Preferences;
         this.mEndpointerModelCopier = paramEndpointerModelCopier;
         this.mRecognitionExecutor = com.embryo.android.shared.util.ConcurrentUtils.newSingleThreadExecutor("Greco3Thread");
-        this.mResourcesByMode = new HashMap();
+        this.mResourcesByMode = Maps.newHashMap();
     }
 
     private static RecognizerOuterClass.LanguagePackLog buildLanguagePackLog(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack paramLanguagePack) {

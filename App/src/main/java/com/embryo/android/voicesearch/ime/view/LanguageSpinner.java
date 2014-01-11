@@ -12,7 +12,7 @@ import android.widget.Spinner;
 
 import com.embryo.android.speech.utils.SpokenLanguageUtils;
 import com.embryo.android.voicesearch.ime.ImeUtils;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 public class LanguageSpinner
         extends Spinner {

@@ -10,7 +10,7 @@ public class SuggestionLogger {
     private final LinkedHashMap<Integer, SuggestionLogInfo> mSuggestionInfos = new LinkedHashMap();
 
     private SuggestionLogInfo getInfo(int paramInt) {
-        return (SuggestionLogInfo) this.mSuggestionInfos.get(Integer.valueOf(paramInt));
+        return this.mSuggestionInfos.get(Integer.valueOf(paramInt));
     }
 
     public void addSuggestion(int paramInt1, String paramString, int paramInt2, int paramInt3, int paramInt4) {

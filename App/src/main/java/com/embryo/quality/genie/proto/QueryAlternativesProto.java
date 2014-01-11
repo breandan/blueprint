@@ -43,7 +43,7 @@ public final class QueryAlternativesProto {
         }
 
         public QuerySegmentAlternatives getQuerySegmentAlternatives(int paramInt) {
-            return (QuerySegmentAlternatives) this.querySegmentAlternatives_.get(paramInt);
+            return this.querySegmentAlternatives_.get(paramInt);
         }
 
         public int getQuerySegmentAlternativesCount() {

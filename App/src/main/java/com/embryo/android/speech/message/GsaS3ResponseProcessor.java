@@ -7,7 +7,6 @@ package com.embryo.android.speech.message;
 
 import android.util.Log;
 
-
 import com.embryo.android.speech.listeners.RecognitionEventListener;
 import com.embryo.speech.s3.S3;
 import com.embryo.speech.speech.s3.Recognizer;

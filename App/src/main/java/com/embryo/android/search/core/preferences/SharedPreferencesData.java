@@ -206,7 +206,7 @@ public final class SharedPreferencesData
         }
 
         public String getStringSetValue(int paramInt) {
-            return (String) this.stringSetValue_.get(paramInt);
+            return this.stringSetValue_.get(paramInt);
         }
 
         public int getStringSetValueCount() {

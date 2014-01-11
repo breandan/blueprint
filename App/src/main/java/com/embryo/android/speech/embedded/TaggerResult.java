@@ -5,10 +5,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.embryo.common.collect.Maps;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.embryo.speech.grammar.pumpkin.PumpkinTaggerResultsProto;
 import com.embryo.speech.logs.VoicesearchClientLogProto;
+import com.google.common.collect.Maps;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -64,23 +64,21 @@ public class TaggerResult
     }
 
     public String getArgument(String paramString) {
-        return (String) this.mArguments.get(paramString);
+        return this.mArguments.get(paramString);
     }
 
     public VoicesearchClientLogProto.EmbeddedParserDetails getEmbeddedParserDetails() {
         return this.mEmbeddedParserDetails;
     }
 
-    public void writeToParcel(Parcel paramParcel, int paramInt) {
-        paramParcel.writeString(this.mActionName);
-        Bundle localBundle = new Bundle();
-        Iterator localIterator = this.mArguments.entrySet().iterator();
-        while (localIterator.hasNext()) {
-            Map.Entry localEntry = (Map.Entry) localIterator.next();
-            localBundle.putString((String) localEntry.getKey(), (String) localEntry.getValue());
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(mActionName);
+        Bundle argumentsBundle = new Bundle();
+        for(Map.Entry<String, String> entry : mArguments.entrySet()) {
+            argumentsBundle.putString(entry.getKey(), entry.getValue());
         }
-        paramParcel.writeBundle(localBundle);
-        paramParcel.writeByteArray(this.mEmbeddedParserDetails.toByteArray());
+        out.writeBundle(argumentsBundle);
+        out.writeByteArray(mEmbeddedParserDetails.toByteArray());
     }
 }
 

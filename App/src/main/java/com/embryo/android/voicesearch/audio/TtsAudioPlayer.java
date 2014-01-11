@@ -1,6 +1,6 @@
 package com.embryo.android.voicesearch.audio;
 
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import java.util.concurrent.Executor;
 
@@ -14,7 +14,7 @@ public class TtsAudioPlayer {
     private boolean mPlayAudioWhenReady;
 
     public TtsAudioPlayer(AudioRouter paramAudioRouter, Executor paramExecutor) {
-        this.mExecutor = ((Executor) Preconditions.checkNotNull(paramExecutor));
+        this.mExecutor = Preconditions.checkNotNull(paramExecutor);
         this.mAudioRouter = paramAudioRouter;
         this.mPlayAudioWhenReady = false;
     }

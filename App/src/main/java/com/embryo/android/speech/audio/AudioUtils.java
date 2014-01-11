@@ -2,7 +2,7 @@ package com.embryo.android.speech.audio;
 
 import android.media.audiofx.AudioEffect;
 
-import com.embryo.common.collect.Lists;
+import com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.UUID;

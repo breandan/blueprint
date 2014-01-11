@@ -5,7 +5,7 @@ import android.os.ConditionVariable;
 import android.util.Base64;
 import android.util.Log;
 
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import java.io.IOException;
 import java.util.concurrent.Executor;

@@ -1,6 +1,6 @@
 package com.embryo.android.shared.util;
 
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 public class SpeechLevelSource {
     private volatile Listener mListener;

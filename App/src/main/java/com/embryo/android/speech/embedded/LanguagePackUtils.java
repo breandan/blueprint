@@ -1,6 +1,6 @@
 package com.embryo.android.speech.embedded;
 
-import com.embryo.common.collect.Maps;
+import com.google.common.collect.Maps;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class LanguagePackUtils {
 
     private static void maybeAddCompatible(HashMap<String, com.embryo.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack> paramHashMap, com.embryo.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack paramLanguagePack, int[] paramArrayOfInt, int paramInt) {
         String str = paramLanguagePack.getBcp47Locale();
-        if ((isCompatible(paramLanguagePack, paramArrayOfInt, paramInt)) && ((!paramHashMap.containsKey(str)) || (((com.embryo.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack) paramHashMap.get(str)).getVersion() < paramLanguagePack.getVersion()))) {
+        if ((isCompatible(paramLanguagePack, paramArrayOfInt, paramInt)) && ((!paramHashMap.containsKey(str)) || (paramHashMap.get(str).getVersion() < paramLanguagePack.getVersion()))) {
             paramHashMap.put(str, paramLanguagePack);
         }
     }

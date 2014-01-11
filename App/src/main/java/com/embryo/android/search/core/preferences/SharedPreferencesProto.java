@@ -6,12 +6,11 @@ import android.util.Log;
 
 import com.embryo.protobuf.micro.ByteStringMicro;
 import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
-import com.embryo.common.base.Preconditions;
-import com.embryo.common.base.Predicates;
-import com.embryo.common.collect.ImmutableMap;
-import com.embryo.common.collect.Maps;
-import com.embryo.common.collect.Sets;
-import com.embryo.common.io.Closeables;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.io.Closeables;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +52,7 @@ public class SharedPreferencesProto
     }
 
     private static Map<String, Object> dataToMap(SharedPreferencesData data) {
-        HashMap<String, Object> result = new HashMap<String, Object>();
+        HashMap<String, Object> result = Maps.newHashMap();
         for (SharedPreferencesData.SharedPreferenceEntry entry : data.getEntryList()) {
             String key = entry.hasKey() ? entry.getKey() : null;
             if (entry.hasBoolValue()) {
@@ -101,7 +100,7 @@ public class SharedPreferencesProto
         SharedPreferencesData result = new SharedPreferencesData();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             SharedPreferencesData.SharedPreferenceEntry dataEntry = new SharedPreferencesData.SharedPreferenceEntry();
-            String key = (String) entry.getKey();
+            String key = entry.getKey();
             if (key != null) {
                 dataEntry.setKey(key);
             }
@@ -415,26 +414,23 @@ public class SharedPreferencesProto
         }
     }
 
-    public Map<String, ?> getAllByKeyPrefix(String paramString) {
-        if (TextUtils.isEmpty(paramString)) {
+    public Map<String, ?> getAllByKeyPrefix(String keyPrefix) {
+        if(TextUtils.isEmpty(keyPrefix)) {
             throw new IllegalArgumentException("keyPrefix must be non-empty");
         }
-        HashMap localHashMap;
-        synchronized (this.mLock) {
-            if (!this.mLoaded) {
+        synchronized(mLock) {
+            if(!mLoaded) {
                 waitForLoadLocked();
             }
-            localHashMap = Maps.newHashMap();
-            Iterator localIterator = this.mMap.entrySet().iterator();
-            while (localIterator.hasNext()) {
-                Map.Entry localEntry = (Map.Entry) localIterator.next();
-                String str = (String) localEntry.getKey();
-                if ((!TextUtils.isEmpty(str)) && (str.startsWith(paramString))) {
-                    localHashMap.put(str, localEntry.getValue());
+            Map<String, Object> map = Maps.newHashMap();
+            for(Map.Entry<String, Object> entry : mMap.entrySet()) {
+                String key = entry.getKey();
+                if((!TextUtils.isEmpty(key)) && (key.startsWith(keyPrefix))) {
+                    map.put(key, entry.getValue());
                 }
             }
+            return map;
         }
-        return localHashMap;
     }
 
     public boolean getBoolean(String paramString, boolean paramBoolean) {

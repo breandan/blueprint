@@ -7,7 +7,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.embryo.android.speech.audio.SpeakNowSoundPlayer;
-import com.embryo.common.io.ByteStreams;
+import com.google.common.io.ByteStreams;
 
 import java.io.Closeable;
 import java.io.IOException;

@@ -11,7 +11,7 @@ import com.embryo.android.speech.utils.RecognizedText;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.embryo.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class ListenerAdapter
         extends com.embryo.android.speech.listeners.RecognitionEventListenerAdapter {

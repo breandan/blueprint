@@ -746,7 +746,7 @@ public final class RecognizerProtos {
         }
 
         public RecognizerProtos.PartialPart getPart(int paramInt) {
-            return (RecognizerProtos.PartialPart) this.part_.get(paramInt);
+            return this.part_.get(paramInt);
         }
 
         public int getPartCount() {
@@ -1332,7 +1332,7 @@ public final class RecognizerProtos {
         }
 
         public RecognizerProtos.Hypothesis getHypothesis(int paramInt) {
-            return (RecognizerProtos.Hypothesis) this.hypothesis_.get(paramInt);
+            return this.hypothesis_.get(paramInt);
         }
 
         public int getHypothesisCount() {
@@ -1470,7 +1470,7 @@ public final class RecognizerProtos {
         }
 
         public InterpretationProto.Interpretation getInterpretation(int paramInt) {
-            return (InterpretationProto.Interpretation) this.interpretation_.get(paramInt);
+            return this.interpretation_.get(paramInt);
         }
 
         public int getInterpretationCount() {

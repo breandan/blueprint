@@ -389,7 +389,7 @@ public final class PumpkinTaggerResultsProto {
         }
 
         public PumpkinTaggerResultsProto.HypothesisResult getHypothesis(int paramInt) {
-            return (PumpkinTaggerResultsProto.HypothesisResult) this.hypothesis_.get(paramInt);
+            return this.hypothesis_.get(paramInt);
         }
 
         public int getHypothesisCount() {

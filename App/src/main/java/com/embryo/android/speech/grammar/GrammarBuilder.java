@@ -3,7 +3,7 @@ package com.embryo.android.speech.grammar;
 import android.util.Base64;
 
 import com.embryo.android.shared.util.SplitIterator;
-import com.embryo.common.collect.Iterators;
+import com.google.common.collect.Iterators;
 
 import java.util.Collection;
 import java.util.Iterator;

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
 
+import com.embryo.android.search.core.AsyncServices;
 import com.embryo.android.search.core.GsaPreferenceController;
 import com.embryo.android.shared.util.ConcurrentUtils;
 import com.embryo.android.shared.util.ExtraPreconditions;
@@ -20,7 +21,6 @@ import com.embryo.android.voicesearch.audio.AudioRouter;
 import com.embryo.android.voicesearch.audio.AudioRouterImpl;
 import com.embryo.android.voicesearch.audio.AudioTrackSoundManager;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.embryo.android.search.core.AsyncServices;
 
 import java.util.concurrent.ScheduledExecutorService;
 

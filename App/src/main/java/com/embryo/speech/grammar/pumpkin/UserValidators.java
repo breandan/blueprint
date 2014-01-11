@@ -1,11 +1,12 @@
 package com.embryo.speech.grammar.pumpkin;
 
-import java.util.HashMap;
+import com.google.common.collect.Maps;
+
 import java.util.Iterator;
 import java.util.Map;
 
 public class UserValidators {
-    private Map<String, com.embryo.speech.grammar.pumpkin.Validator> javaValidators = new HashMap();
+    private Map<String, com.embryo.speech.grammar.pumpkin.Validator> javaValidators = Maps.newHashMap();
     private long nativeUserValidators;
 
     public UserValidators(com.embryo.speech.grammar.pumpkin.PumpkinConfigProto.PumpkinConfig paramPumpkinConfig) {
@@ -39,18 +40,16 @@ public class UserValidators {
         nativeAddUserValidator(this.nativeUserValidators, paramString, paramArrayOfString);
     }
 
-    public synchronized void addUserValidatorFromMap(String paramString, Map<String, String> paramMap) {
-        String[] arrayOfString1 = new String[paramMap.size()];
-        String[] arrayOfString2 = new String[paramMap.size()];
-        int i = 0;
-        Iterator localIterator = paramMap.entrySet().iterator();
-        while (localIterator.hasNext()) {
-            Map.Entry localEntry = (Map.Entry) localIterator.next();
-            arrayOfString1[i] = ((String) localEntry.getKey());
-            arrayOfString2[i] = ((String) localEntry.getValue());
-            i++;
+    public synchronized void addUserValidatorFromMap(String variable, Map<String, String> arguments) {
+        String[] keys = new String[arguments.size()];
+        String[] values = new String[arguments.size()];
+        int i = 0x0;
+        for(Map.Entry<String, String> arg : arguments.entrySet()) {
+            keys[i] = arg.getKey();
+            values[i] = arg.getValue();
+            i = i + 0x1;
         }
-        nativeAddMapBasedValidator(this.nativeUserValidators, paramString, arrayOfString1, arrayOfString2);
+        nativeAddMapBasedValidator(nativeUserValidators, variable, keys, values);
     }
 
     public synchronized void addValidator(String paramString, com.embryo.speech.grammar.pumpkin.Validator paramValidator) {
@@ -60,7 +59,7 @@ public class UserValidators {
     }
 
     public String canonicalize(String paramString1, String paramString2) {
-        com.embryo.speech.grammar.pumpkin.Validator localValidator = (com.embryo.speech.grammar.pumpkin.Validator) this.javaValidators.get(paramString1);
+        com.embryo.speech.grammar.pumpkin.Validator localValidator = this.javaValidators.get(paramString1);
         if (localValidator == null) {
             throw new NullPointerException("Java validator should exist at this point.");
         }
@@ -76,7 +75,7 @@ public class UserValidators {
     }
 
     public float getPosterior(String paramString1, String paramString2) {
-        com.embryo.speech.grammar.pumpkin.Validator localValidator = (com.embryo.speech.grammar.pumpkin.Validator) this.javaValidators.get(paramString1);
+        com.embryo.speech.grammar.pumpkin.Validator localValidator = this.javaValidators.get(paramString1);
         if (localValidator == null) {
             throw new NullPointerException("Java validator should exist at this point.");
         }

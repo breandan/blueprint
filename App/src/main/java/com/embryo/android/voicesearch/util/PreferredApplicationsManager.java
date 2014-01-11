@@ -2,7 +2,7 @@ package com.embryo.android.voicesearch.util;
 
 import android.content.SharedPreferences;
 
-import com.embryo.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class PreferredApplicationsManager {
     }
 
     public String getPreferredApplication(String paramString) {
-        String str = (String) MIME_TYPE_PREFERENCE_MAP.get(paramString);
+        String str = MIME_TYPE_PREFERENCE_MAP.get(paramString);
         if (str != null) {
             return this.mSharedPreferences.getString(str, null);
         }
@@ -23,7 +23,7 @@ public class PreferredApplicationsManager {
     }
 
     public void setPreferredApplication(String paramString1, String paramString2) {
-        String str = (String) MIME_TYPE_PREFERENCE_MAP.get(paramString1);
+        String str = MIME_TYPE_PREFERENCE_MAP.get(paramString1);
         if (str != null) {
             this.mSharedPreferences.edit().putString(str, paramString2).apply();
         }

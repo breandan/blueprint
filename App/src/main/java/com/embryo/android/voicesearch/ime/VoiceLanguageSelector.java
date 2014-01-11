@@ -6,8 +6,8 @@ import android.view.inputmethod.InputMethodSubtype;
 
 import com.embryo.android.voicesearch.logger.BugLogger;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.embryo.common.base.Preconditions;
-import com.embryo.common.base.Supplier;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
 
 import java.util.ArrayList;
 import java.util.List;

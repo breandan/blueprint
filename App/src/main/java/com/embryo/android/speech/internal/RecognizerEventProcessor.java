@@ -8,7 +8,7 @@ import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.speech.message.S3ResponseBuilder;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
 import com.embryo.speech.s3.S3;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import java.util.List;
 

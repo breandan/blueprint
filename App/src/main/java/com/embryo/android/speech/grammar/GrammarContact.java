@@ -1,7 +1,7 @@
 package com.embryo.android.speech.grammar;
 
-import com.embryo.common.base.Joiner;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 
 import java.util.Map;
 

@@ -1,6 +1,7 @@
 package com.embryo.android.speech.embedded;
 
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
+
 import java.io.File;
 
 public enum Greco3Grammar
@@ -37,7 +38,7 @@ public enum Greco3Grammar
 
     public String getApkFullName(String paramString)
     {
-        return ((String)Preconditions.checkNotNull(paramString)).replace("-", "_").toLowerCase() + "_" + this.mDirectoryName;
+        return Preconditions.checkNotNull(paramString).replace("-", "_").toLowerCase() + "_" + this.mDirectoryName;
     }
 
     public String getDirectoryName()

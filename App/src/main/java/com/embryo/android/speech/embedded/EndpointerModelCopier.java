@@ -1,6 +1,6 @@
 package com.embryo.android.speech.embedded;
 
-import com.embryo.common.base.Supplier;
+import com.google.common.base.Supplier;
 
 import java.io.File;
 

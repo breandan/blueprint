@@ -2,8 +2,8 @@ package com.embryo.android.speech.audio;
 
 import android.util.Log;
 
-import com.embryo.common.base.Preconditions;
-import com.embryo.common.io.ByteStreams;
+import com.google.common.base.Preconditions;
+import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -7,8 +7,8 @@ import com.embryo.android.speech.alternates.Hypothesis;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.voicesearch.audio.AudioTrackSoundManager;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.embryo.common.base.Preconditions;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
+import com.google.common.base.Preconditions;
 
 public class VoiceInputMethodManager {
     private final Runnable mBackToPreviousImeRunnable = new Runnable() {

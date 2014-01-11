@@ -4,8 +4,8 @@ import android.content.res.Resources;
 import android.util.Log;
 
 import com.embryo.android.speech.embedded.EndpointerModelCopier;
-import com.embryo.common.base.Supplier;
-import com.embryo.common.io.ByteStreams;
+import com.google.common.base.Supplier;
+import com.google.common.io.ByteStreams;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,7 +33,7 @@ public class BundledEndpointerModelCopier
     }
 
     boolean doCopyModels(Supplier<File> paramSupplier) {
-        File localFile = new File((File) paramSupplier.get(), "en-US");
+        File localFile = new File(paramSupplier.get(), "en-US");
         if ((!localFile.exists()) && (!localFile.mkdir())) {
             Log.e("VS.EPModelCopier", "Unable to create model dir: " + localFile.getAbsolutePath());
             return false;

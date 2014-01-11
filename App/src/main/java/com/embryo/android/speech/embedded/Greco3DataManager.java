@@ -4,12 +4,12 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.embryo.common.base.Preconditions;
-import com.embryo.common.base.Supplier;
-import com.embryo.common.base.Suppliers;
-import com.embryo.common.collect.ImmutableList;
-import com.embryo.common.collect.Lists;
-import com.embryo.common.collect.Maps;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -372,7 +372,7 @@ public class Greco3DataManager {
 
     public boolean hasHotwordPrompt(String paramString) {
         Preconditions.checkState(isInitialized());
-        com.embryo.android.speech.embedded.LocaleResourcesImpl localLocaleResourcesImpl = (com.embryo.android.speech.embedded.LocaleResourcesImpl) this.mAvailableLanguages.get(paramString);
+        com.embryo.android.speech.embedded.LocaleResourcesImpl localLocaleResourcesImpl = this.mAvailableLanguages.get(paramString);
         return (localLocaleResourcesImpl != null) && (!TextUtils.isEmpty(localLocaleResourcesImpl.getHotwordPrompt()));
     }
 

@@ -1,8 +1,8 @@
 package com.embryo.android.speech.embedded;
 
 import com.embryo.android.speech.network.request.RecognizerSessionParamsBuilderTask;
-import com.embryo.common.base.Preconditions;
-import com.embryo.common.io.Closeables;
+import com.google.common.base.Preconditions;
+import com.google.common.io.Closeables;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 
 import com.embryo.android.search.core.preferences.SharedPreferencesExt;
 import com.embryo.android.search.core.preferences.SharedPreferencesProto;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;

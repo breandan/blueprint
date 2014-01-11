@@ -5,7 +5,7 @@ import android.util.Log;
 
 import com.embryo.android.shared.util.LocaleUtils;
 import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Iterator;

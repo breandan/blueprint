@@ -2,7 +2,7 @@ package com.embryo.android.speech.embedded;
 
 import android.content.Context;
 
-import com.embryo.common.base.Supplier;
+import com.google.common.base.Supplier;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;

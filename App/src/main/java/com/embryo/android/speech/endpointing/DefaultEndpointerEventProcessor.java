@@ -4,8 +4,8 @@ import android.util.Log;
 
 import com.embryo.android.shared.util.StateMachine;
 import com.embryo.android.speech.listeners.RecognitionEventListener;
-import com.embryo.common.base.Preconditions;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
+import com.google.common.base.Preconditions;
 
 public class DefaultEndpointerEventProcessor
         implements EndpointerEventProcessor {

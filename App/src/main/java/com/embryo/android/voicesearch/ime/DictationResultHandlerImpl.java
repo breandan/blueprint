@@ -11,7 +11,7 @@ import com.embryo.android.speech.alternates.Hypothesis;
 import com.embryo.android.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.embryo.android.voicesearch.ime.formatter.TextFormatter;
 import com.embryo.android.voicesearch.settings.Settings;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -98,7 +98,7 @@ public class DictationResultHandlerImpl {
         if (mDictationSegments.size() == 0) {
             return null;
         }
-        com.embryo.android.voicesearch.ime.DictationSegment dictationSegment = (com.embryo.android.voicesearch.ime.DictationSegment) mDictationSegments.get(mDictationSegmentWithNewText);
+        com.embryo.android.voicesearch.ime.DictationSegment dictationSegment = mDictationSegments.get(mDictationSegmentWithNewText);
         if (!dictationSegment.hasMoreText()) {
             if ((dictationSegment.isFinal()) && (mDictationSegmentWithNewText < (mDictationSegments.size() - 0x1))) {
                 mDictationSegmentWithNewText = (mDictationSegmentWithNewText + 0x1);

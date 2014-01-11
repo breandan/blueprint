@@ -227,7 +227,7 @@ public final class Alternates {
         }
 
         public Alternates.Alternate getAlternates(int paramInt) {
-            return (Alternates.Alternate) this.alternates_.get(paramInt);
+            return this.alternates_.get(paramInt);
         }
 
         public int getAlternatesCount() {

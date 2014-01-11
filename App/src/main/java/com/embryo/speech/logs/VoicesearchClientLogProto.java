@@ -2363,7 +2363,7 @@ public final class VoicesearchClientLogProto {
         }
 
         public VoicesearchClientLogProto.LatencyBreakdownEvent getBreakdown(int paramInt) {
-            return (VoicesearchClientLogProto.LatencyBreakdownEvent) this.breakdown_.get(paramInt);
+            return this.breakdown_.get(paramInt);
         }
 
         public int getBreakdownCount() {
@@ -2855,7 +2855,7 @@ public final class VoicesearchClientLogProto {
         }
 
         public VoicesearchClientLogProto.ClientEvent getBundledClientEvents(int paramInt) {
-            return (VoicesearchClientLogProto.ClientEvent) this.bundledClientEvents_.get(paramInt);
+            return this.bundledClientEvents_.get(paramInt);
         }
 
         public int getBundledClientEventsCount() {

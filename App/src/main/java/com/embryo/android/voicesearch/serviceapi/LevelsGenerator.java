@@ -2,7 +2,7 @@ package com.embryo.android.voicesearch.serviceapi;
 
 import com.embryo.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.embryo.android.shared.util.SpeechLevelSource;
-import com.embryo.common.base.Preconditions;
+import com.google.common.base.Preconditions;
 
 public class LevelsGenerator {
     private final ScheduledSingleThreadedExecutor mExecutor;
@@ -38,7 +38,7 @@ public class LevelsGenerator {
 
     public void start(ListenerAdapter paramListenerAdapter) {
         this.mThreadCheck.check();
-        this.mListener = ((ListenerAdapter) Preconditions.checkNotNull(paramListenerAdapter));
+        this.mListener = Preconditions.checkNotNull(paramListenerAdapter);
         scheduleNotifyRms();
     }
 

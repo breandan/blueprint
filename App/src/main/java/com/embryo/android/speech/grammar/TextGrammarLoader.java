@@ -2,8 +2,8 @@ package com.embryo.android.speech.grammar;
 
 import android.content.res.Resources;
 
-import com.embryo.common.io.CharStreams;
-import com.embryo.common.io.Closeables;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
