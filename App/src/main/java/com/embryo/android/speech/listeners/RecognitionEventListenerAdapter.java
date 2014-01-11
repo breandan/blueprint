@@ -1,9 +1,7 @@
 package com.embryo.android.speech.listeners;
 
 import com.embryo.android.speech.exception.RecognizeException;
-import com.google.audio.ears.proto.EarsService;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
-import com.google.speech.s3.PinholeStream;
 
 public class RecognitionEventListenerAdapter
         implements RecognitionEventListener {
@@ -28,9 +26,6 @@ public class RecognitionEventListenerAdapter
     public void onNoSpeechDetected() {
     }
 
-    public void onPinholeResult(PinholeStream.PinholeOutput paramPinholeOutput) {
-    }
-
     public void onReadyForSpeech() {
     }
 
@@ -40,8 +35,6 @@ public class RecognitionEventListenerAdapter
     public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {
     }
 
-    public void onSoundSearchResult(EarsService.EarsResultsResponse paramEarsResultsResponse) {
-    }
 }
 
 

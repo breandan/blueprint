@@ -13,10 +13,9 @@ import com.embryo.android.speech.exception.EmbeddedRecognizeException;
 import com.embryo.android.speech.exception.NetworkRecognizeException;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.speech.logger.SpeechLibLogger;
+import com.embryo.speech.recognizer.api.RecognizerProtos;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.embryo.speech.recognizer.api.RecognizerProtos;
-import com.google.speech.s3.S3;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -104,16 +103,14 @@ public class ResultsMergerImpl
 
     private void mergeRecognitionResponse(RecognitionResponse paramRecognitionResponse) {
         int i = paramRecognitionResponse.getEngine();
-        S3.S3Response localS3Response = paramRecognitionResponse.get(1);
         if (this.mStateMachine.isIn(asState(i))) {
             maybeLogUsingResultsFrom(i);
             this.mRecognitionEngineCallback.onResult(paramRecognitionResponse);
         }
-        while (i != this.mSecondaryEngine) {
-            return;
-        }
-        if (this.mStateMachine.isIn(State.WAITING)) {
-            this.mSecondaryEngineResponseQueue.add(paramRecognitionResponse);
+        if (i == this.mSecondaryEngine) {
+            if (this.mStateMachine.isIn(State.WAITING)) {
+                this.mSecondaryEngineResponseQueue.add(paramRecognitionResponse);
+            }
         }
     }
 

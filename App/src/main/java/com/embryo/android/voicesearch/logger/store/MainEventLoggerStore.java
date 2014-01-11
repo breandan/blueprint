@@ -2,7 +2,7 @@ package com.embryo.android.voicesearch.logger.store;
 
 import android.os.SystemClock;
 
-import com.google.android.search.core.EventLoggerStore;
+import com.embryo.android.search.core.EventLoggerStore;
 
 import java.util.ArrayList;
 

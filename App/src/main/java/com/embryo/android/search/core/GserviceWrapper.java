@@ -6,7 +6,7 @@
 package com.embryo.android.search.core;
 
 import android.content.ContentResolver;
-import com.google.android.gsf.Gservices;
+//import com.google.android.gsf.Gservices;
 
 public class GserviceWrapper {
     private final ContentResolver mContentResolver;
@@ -15,7 +15,7 @@ public class GserviceWrapper {
         mContentResolver = contentResolver;
     }
 
-    public String getString(String key) {
-        return Gservices.getString(mContentResolver, key);
-    }
+//    public String getString(String key) {
+//        return Gservices.getString(mContentResolver, key);
+//    }
 }

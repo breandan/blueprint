@@ -35,7 +35,7 @@ class GStaticConfiguration {
     private SharedPrefsData mCurrentPrefsData;
     private volatile Future<?> mLoadFuture;
 
-    public GStaticConfiguration(GsaPreferenceController paramGsaPreferenceController, Resources paramResources, ExecutorService paramExecutorService, GserviceWrapper paramGserviceWrapper) {
+    public GStaticConfiguration(GsaPreferenceController paramGsaPreferenceController, Resources paramResources, ExecutorService paramExecutorService) {
         this.mPrefController = paramGsaPreferenceController;
         this.mResources = paramResources;
         this.mExecutorService = paramExecutorService;

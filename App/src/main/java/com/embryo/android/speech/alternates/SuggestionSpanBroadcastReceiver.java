@@ -10,7 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.os.Bundle;
-import com.google.android.voicesearch.logger.EventLogger;
+import com.embryo.android.voicesearch.logger.EventLogger;
 
 public class SuggestionSpanBroadcastReceiver extends BroadcastReceiver {
     private static boolean DEBUG = false;

@@ -1,6 +1,6 @@
 package com.embryo.android.voicesearch.logger.store;
 
-import com.google.android.search.core.EventLoggerStore;
+import com.embryo.android.search.core.EventLoggerStore;
 
 public final class EventLoggerStores {
     private static final MainEventLoggerStore sMainEventLoggerStore = new MainEventLoggerStore();

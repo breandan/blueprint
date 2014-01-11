@@ -2,7 +2,7 @@ package com.embryo.android.voicesearch.logger;
 
 import android.util.SparseArray;
 
-import com.google.android.search.core.EventLoggerStore;
+import com.embryo.android.search.core.EventLoggerStore;
 import com.embryo.android.voicesearch.logger.store.EventLoggerStores;
 import com.google.common.base.Preconditions;
 

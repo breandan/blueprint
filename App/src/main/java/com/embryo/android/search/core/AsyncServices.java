@@ -1,8 +1,8 @@
 package com.embryo.android.search.core;
 
-import com.google.android.shared.util.NamedTaskExecutor;
-import com.google.android.shared.util.NamingDelayedTaskExecutor;
-import com.google.android.shared.util.ScheduledSingleThreadedExecutor;
+import com.embryo.android.shared.util.NamedTaskExecutor;
+import com.embryo.android.shared.util.NamingDelayedTaskExecutor;
+import com.embryo.android.shared.util.ScheduledSingleThreadedExecutor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 

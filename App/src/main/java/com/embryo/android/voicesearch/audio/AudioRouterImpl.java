@@ -4,7 +4,6 @@ import android.media.AudioManager;
 import android.util.Log;
 
 import com.embryo.android.shared.util.StopWatch;
-import com.google.android.voicesearch.bluetooth.BluetoothShim;
 
 import java.util.concurrent.Executor;
 
@@ -109,10 +108,6 @@ public class AudioRouterImpl
                 }
             }
         });
-    }
-
-    private boolean shouldUseBluetoothDevice(BluetoothShim.BluetoothDevice paramBluetoothDevice) {
-        return false;
     }
 
     public boolean awaitRouting() {

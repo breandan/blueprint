@@ -4,10 +4,6 @@ import com.embryo.protobuf.micro.CodedInputStreamMicro;
 import com.embryo.protobuf.micro.CodedOutputStreamMicro;
 import com.embryo.protobuf.micro.MessageMicro;
 import com.embryo.speech.speech.s3.Recognizer;
-import com.google.bionics.goggles.api2.GogglesProtos;
-import com.google.speech.speech.s3.Majel;
-import com.google.speech.speech.s3.SoundSearch;
-import com.google.speech.speech.s3.Synthesizer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,7 +104,6 @@ public final class S3 {
         private List<String> debugLine_ = Collections.emptyList();
         private int errorCode_ = 0;
         private String errorDescription_ = "";
-        private GogglesProtos.GogglesStreamResponse gogglesStreamResponseExtension_ = null;
         private boolean hasErrorCode;
         private boolean hasErrorDescription;
         private boolean hasGogglesStreamResponseExtension;
@@ -118,12 +113,8 @@ public final class S3 {
         private boolean hasStatus;
         private boolean hasTtsCapabilitiesResponseExtension;
         private boolean hasTtsServiceEventExtension;
-        private Majel.MajelServiceEvent majelServiceEventExtension_ = null;
         private Recognizer.RecognizerEvent recognizerEventExtension_ = null;
-        private SoundSearch.SoundSearchServiceEvent soundSearchServiceEventExtension_ = null;
         private int status_ = 0;
-        private Synthesizer.TtsCapabilitiesResponse ttsCapabilitiesResponseExtension_ = null;
-        private Synthesizer.TtsServiceEvent ttsServiceEventExtension_ = null;
 
         public S3Response addDebugLine(String paramString) {
             if (paramString == null) {
@@ -164,32 +155,6 @@ public final class S3 {
         public S3Response setErrorDescription(String paramString) {
             this.hasErrorDescription = true;
             this.errorDescription_ = paramString;
-            return this;
-        }
-
-        public GogglesProtos.GogglesStreamResponse getGogglesStreamResponseExtension() {
-            return this.gogglesStreamResponseExtension_;
-        }
-
-        public S3Response setGogglesStreamResponseExtension(GogglesProtos.GogglesStreamResponse paramGogglesStreamResponse) {
-            if (paramGogglesStreamResponse == null) {
-                throw new NullPointerException();
-            }
-            this.hasGogglesStreamResponseExtension = true;
-            this.gogglesStreamResponseExtension_ = paramGogglesStreamResponse;
-            return this;
-        }
-
-        public Majel.MajelServiceEvent getMajelServiceEventExtension() {
-            return this.majelServiceEventExtension_;
-        }
-
-        public S3Response setMajelServiceEventExtension(Majel.MajelServiceEvent paramMajelServiceEvent) {
-            if (paramMajelServiceEvent == null) {
-                throw new NullPointerException();
-            }
-            this.hasMajelServiceEventExtension = true;
-            this.majelServiceEventExtension_ = paramMajelServiceEvent;
             return this;
         }
 
@@ -238,32 +203,6 @@ public final class S3 {
         public S3Response setStatus(int paramInt) {
             this.hasStatus = true;
             this.status_ = paramInt;
-            return this;
-        }
-
-        public Synthesizer.TtsCapabilitiesResponse getTtsCapabilitiesResponseExtension() {
-            return this.ttsCapabilitiesResponseExtension_;
-        }
-
-        public S3Response setTtsCapabilitiesResponseExtension(Synthesizer.TtsCapabilitiesResponse paramTtsCapabilitiesResponse) {
-            if (paramTtsCapabilitiesResponse == null) {
-                throw new NullPointerException();
-            }
-            this.hasTtsCapabilitiesResponseExtension = true;
-            this.ttsCapabilitiesResponseExtension_ = paramTtsCapabilitiesResponse;
-            return this;
-        }
-
-        public Synthesizer.TtsServiceEvent getTtsServiceEventExtension() {
-            return this.ttsServiceEventExtension_;
-        }
-
-        public S3Response setTtsServiceEventExtension(Synthesizer.TtsServiceEvent paramTtsServiceEvent) {
-            if (paramTtsServiceEvent == null) {
-                throw new NullPointerException();
-            }
-            this.hasTtsServiceEventExtension = true;
-            this.ttsServiceEventExtension_ = paramTtsServiceEvent;
             return this;
         }
 

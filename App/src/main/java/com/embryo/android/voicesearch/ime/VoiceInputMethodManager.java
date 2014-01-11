@@ -6,7 +6,6 @@ import com.embryo.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.embryo.android.speech.alternates.Hypothesis;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.voicesearch.audio.AudioTrackSoundManager;
-import com.embryo.android.voicesearch.ime.view.VoiceInputViewHandler;
 import com.embryo.android.voicesearch.settings.Settings;
 import com.google.common.base.Preconditions;
 import com.embryo.speech.recognizer.api.RecognizerProtos;
@@ -32,13 +31,13 @@ public class VoiceInputMethodManager {
     private final ScheduledSingleThreadedExecutor mUiThreadExecutor;
     private final com.embryo.android.voicesearch.ime.VoiceImeInputMethodService mVoiceImeInputMethodService;
     private final VoiceImeSubtypeUpdater mVoiceImeSubtypeUpdater;
-    private final VoiceInputViewHandler mVoiceInputViewHandler;
+//    private final VoiceInputViewHandler mVoiceInputViewHandler;
     private final com.embryo.android.voicesearch.ime.VoiceLanguageSelector mVoiceLanguageSelector;
     private final VoiceRecognitionHandler mVoiceRecognitionHandler;
     private boolean mBackToPrevImeOnDone = false;
     private boolean mInputViewActive;
 
-    public VoiceInputMethodManager(com.embryo.android.voicesearch.ime.VoiceLanguageSelector paramVoiceLanguageSelector, ScreenStateMonitor paramScreenStateMonitor, ScheduledSingleThreadedExecutor paramScheduledSingleThreadedExecutor, com.embryo.android.voicesearch.ime.ImeLoggerHelper paramImeLoggerHelper, Settings paramSettings, AudioTrackSoundManager paramAudioTrackSoundManager, VoiceImeSubtypeUpdater paramVoiceImeSubtypeUpdater, VoiceInputViewHandler paramVoiceInputViewHandler, com.embryo.android.voicesearch.ime.VoiceImeInputMethodService paramVoiceImeInputMethodService, VoiceRecognitionHandler paramVoiceRecognitionHandler, DictationResultHandlerImpl paramDictationResultHandlerImpl) {
+    public VoiceInputMethodManager(com.embryo.android.voicesearch.ime.VoiceLanguageSelector paramVoiceLanguageSelector, ScreenStateMonitor paramScreenStateMonitor, ScheduledSingleThreadedExecutor paramScheduledSingleThreadedExecutor, com.embryo.android.voicesearch.ime.ImeLoggerHelper paramImeLoggerHelper, Settings paramSettings, AudioTrackSoundManager paramAudioTrackSoundManager, VoiceImeSubtypeUpdater paramVoiceImeSubtypeUpdater, com.embryo.android.voicesearch.ime.VoiceImeInputMethodService paramVoiceImeInputMethodService, VoiceRecognitionHandler paramVoiceRecognitionHandler, DictationResultHandlerImpl paramDictationResultHandlerImpl) {
         Log.i("VoiceInputMethodManager", "#()");
         this.mVoiceLanguageSelector = Preconditions.checkNotNull(paramVoiceLanguageSelector);
         this.mUiThreadExecutor = Preconditions.checkNotNull(paramScheduledSingleThreadedExecutor);
@@ -47,7 +46,7 @@ public class VoiceInputMethodManager {
         this.mSettings = Preconditions.checkNotNull(paramSettings);
         this.mSoundManager = Preconditions.checkNotNull(paramAudioTrackSoundManager);
         this.mVoiceImeSubtypeUpdater = Preconditions.checkNotNull(paramVoiceImeSubtypeUpdater);
-        this.mVoiceInputViewHandler = Preconditions.checkNotNull(paramVoiceInputViewHandler);
+//        this.mVoiceInputViewHandler = Preconditions.checkNotNull(paramVoiceInputViewHandler);
         this.mVoiceImeInputMethodService = Preconditions.checkNotNull(paramVoiceImeInputMethodService);
         this.mVoiceRecognitionHandler = paramVoiceRecognitionHandler;
         this.mDictationResultHandler = paramDictationResultHandlerImpl;
@@ -60,7 +59,7 @@ public class VoiceInputMethodManager {
 
     private void handleDone() {
         this.mImeLoggerHelper.onDone();
-        this.mVoiceInputViewHandler.hideWaitingForResults();
+//        this.mVoiceInputViewHandler.hideWaitingForResults();
         if (this.mBackToPrevImeOnDone) {
             backToPreviousIme();
         }
@@ -68,7 +67,7 @@ public class VoiceInputMethodManager {
 
     private void handleError(RecognizeException paramRecognizeException) {
         this.mDictationResultHandler.handleError();
-        this.mVoiceInputViewHandler.displayError(com.embryo.android.voicesearch.util.ErrorUtils.getErrorMessage(paramRecognizeException));
+//        this.mVoiceInputViewHandler.displayError(com.embryo.android.voicesearch.util.ErrorUtils.getErrorMessage(paramRecognizeException));
         this.mImeLoggerHelper.onError();
     }
 
@@ -81,7 +80,7 @@ public class VoiceInputMethodManager {
 
     private void handlePause() {
         this.mDictationResultHandler.handleStop();
-        this.mVoiceInputViewHandler.displayPause(this.mVoiceRecognitionHandler.isWaitingForResults());
+//        this.mVoiceInputViewHandler.displayPause(this.mVoiceRecognitionHandler.isWaitingForResults());
     }
 
     private void handleRecognitionResult(Hypothesis paramHypothesis, String paramString) {
@@ -171,7 +170,7 @@ public class VoiceInputMethodManager {
             if (this.mInvalid) {
                 return;
             }
-            VoiceInputMethodManager.this.mVoiceInputViewHandler.displayRecording();
+//            VoiceInputMethodManager.this.mVoiceInputViewHandler.displayRecording();
         }
 
         public void onDone() {
@@ -212,7 +211,7 @@ public class VoiceInputMethodManager {
         }
 
         public void onReadyForSpeech() {
-            VoiceInputMethodManager.this.mVoiceInputViewHandler.displayListening();
+//            VoiceInputMethodManager.this.mVoiceInputViewHandler.displayListening();
         }
 
         public void onRecognitionCancelled() {
@@ -221,7 +220,7 @@ public class VoiceInputMethodManager {
             }
             invalidate();
             VoiceInputMethodManager.this.mSoundManager.playNoInputSound();
-            VoiceInputMethodManager.this.mVoiceInputViewHandler.displayPause(VoiceInputMethodManager.this.mVoiceRecognitionHandler.isWaitingForResults());
+//            VoiceInputMethodManager.this.mVoiceInputViewHandler.displayPause(VoiceInputMethodManager.this.mVoiceRecognitionHandler.isWaitingForResults());
         }
 
         public void onRecognitionResult(RecognizerProtos.RecognitionEvent paramRecognitionEvent) {

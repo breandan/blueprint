@@ -15,7 +15,7 @@ public class Settings
     private final GStaticConfiguration mGStaticConfiguration;
 
     public Settings(Context paramContext, GsaPreferenceController paramGsaPreferenceController, ExecutorService paramExecutorService) {
-        this(new GStaticConfiguration(paramGsaPreferenceController, paramContext.getResources(), paramExecutorService, new GserviceWrapper(paramContext.getContentResolver())));
+        this(new GStaticConfiguration(paramGsaPreferenceController, paramContext.getResources(), paramExecutorService));
     }
 
     Settings(GStaticConfiguration paramGStaticConfiguration) {

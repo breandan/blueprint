@@ -2,13 +2,10 @@ package com.embryo.android.search.core;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
-import com.google.android.search.core.GsaPreferenceUpgrader;
 import com.embryo.android.search.core.preferences.SharedPreferencesExt;
 import com.embryo.android.search.core.preferences.SharedPreferencesProto;
-import com.google.android.search.core.util.GelStartupPrefsWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +13,6 @@ import java.util.Iterator;
 public class GsaPreferenceController
 {
     private final Context mContext;
-    private final GelStartupPrefsWriter mGelStartupPrefs;
     private final Object mLock = new Object();
     private SharedPreferencesExt mMainPrefs;
     private ArrayList<SharedPreferences.OnSharedPreferenceChangeListener> mPendingListeners;
@@ -28,7 +24,6 @@ public class GsaPreferenceController
     {
         this.mContext = paramContext;
         this.mStartupPrefs = openProtoPreferences("StartupSettings");
-        this.mGelStartupPrefs = new GelStartupPrefsWriter(paramContext);
     }
 
     private void checkVersionLocked()
@@ -107,11 +102,6 @@ public class GsaPreferenceController
             this.mWriteDelayCounter = (1 + this.mWriteDelayCounter);
             return;
         }
-    }
-
-    public GelStartupPrefsWriter getGelStartupPrefs()
-    {
-        return this.mGelStartupPrefs;
     }
 
     public SharedPreferencesExt getMainPreferences()
