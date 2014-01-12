@@ -5,7 +5,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.embryo.protobuf.micro.ByteStringMicro;
-import com.embryo.protobuf.micro.InvalidProtocolBufferMicroException;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -17,11 +16,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -195,40 +192,40 @@ public class SharedPreferencesProto
     }
 
     private Map doLoadPreferenceMap() {
-        if (mBackupFile.exists()) {
-            mFile.delete();
-            if (!mBackupFile.renameTo(mFile)) {
-                Log.e("Search.SharedPreferencesProto", "Failed to rename backup file to " + mFile);
-                return null;
-            }
-        }
-        FileInputStream in = null;
-        try {
-            in = createFileInputStream(mFile);
-            int available = in.available();
-            int length = 0x0;
-            byte[] rawData = new byte[Math.max((available + 0x1), 0x800)];
-            int bytesRead = in.read(rawData);
-            while (bytesRead >= 0) {
-                length += bytesRead;
-                if (length == rawData.length) {
-                    rawData = Arrays.copyOf(rawData, (rawData.length * 0x2));
-                }
-                bytesRead = in.read(rawData, length, (rawData.length - length));
-            }
-            SharedPreferencesData preferenceData = new SharedPreferencesData();
-            preferenceData.mergeFrom(rawData, 0x0, length);
-            return dataToMap(preferenceData);
-        } catch (FileNotFoundException e) {
-            Log.i("Search.SharedPreferencesProto", "load shared preferences: file not found");
-            HashMap localHashMap2 = new HashMap();
-        } catch (InvalidProtocolBufferMicroException e) {
-            Log.w("Search.SharedPreferencesProto", "load shared preferences", e);
-        } catch (IOException e) {
-            Log.w("Search.SharedPreferencesProto", "load shared preferences", e);
-        } finally {
-            Closeables.closeQuietly(in);
-        }
+//        if (mBackupFile.exists()) {
+//            mFile.delete();
+//            if (!mBackupFile.renameTo(mFile)) {
+//                Log.e("Search.SharedPreferencesProto", "Failed to rename backup file to " + mFile);
+//                return null;
+//            }
+//        }
+//        FileInputStream in = null;
+//        try {
+//            in = createFileInputStream(mFile);
+//            int available = in.available();
+//            int length = 0x0;
+//            byte[] rawData = new byte[Math.max((available + 0x1), 0x800)];
+//            int bytesRead = in.read(rawData);
+//            while (bytesRead >= 0) {
+//                length += bytesRead;
+//                if (length == rawData.length) {
+//                    rawData = Arrays.copyOf(rawData, (rawData.length * 0x2));
+//                }
+//                bytesRead = in.read(rawData, length, (rawData.length - length));
+//            }
+//            SharedPreferencesData preferenceData = new SharedPreferencesData();
+//            preferenceData.mergeFrom(rawData, 0x0, length);
+//            return dataToMap(preferenceData);
+//        } catch (FileNotFoundException e) {
+//            Log.i("Search.SharedPreferencesProto", "load shared preferences: file not found");
+//            HashMap localHashMap2 = new HashMap();
+//        } catch (InvalidProtocolBufferMicroException e) {
+//            Log.w("Search.SharedPreferencesProto", "load shared preferences", e);
+//        } catch (IOException e) {
+//            Log.w("Search.SharedPreferencesProto", "load shared preferences", e);
+//        } finally {
+//            Closeables.close(in, true);
+//        }
         return null;
     }
 
@@ -396,7 +393,6 @@ public class SharedPreferencesProto
     public void delayWrites() {
         synchronized (this.mLock) {
             this.mWriteDelayCounter = (1 + this.mWriteDelayCounter);
-            return;
         }
     }
 
@@ -415,17 +411,17 @@ public class SharedPreferencesProto
     }
 
     public Map<String, ?> getAllByKeyPrefix(String keyPrefix) {
-        if(TextUtils.isEmpty(keyPrefix)) {
+        if (TextUtils.isEmpty(keyPrefix)) {
             throw new IllegalArgumentException("keyPrefix must be non-empty");
         }
-        synchronized(mLock) {
-            if(!mLoaded) {
+        synchronized (mLock) {
+            if (!mLoaded) {
                 waitForLoadLocked();
             }
             Map<String, Object> map = Maps.newHashMap();
-            for(Map.Entry<String, Object> entry : mMap.entrySet()) {
+            for (Map.Entry<String, Object> entry : mMap.entrySet()) {
                 String key = entry.getKey();
-                if((!TextUtils.isEmpty(key)) && (key.startsWith(keyPrefix))) {
+                if ((!TextUtils.isEmpty(key)) && (key.startsWith(keyPrefix))) {
                     map.put(key, entry.getValue());
                 }
             }
