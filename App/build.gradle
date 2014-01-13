@@ -14,12 +14,12 @@ repositories {
 
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 18
     buildToolsVersion '19.0.0'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 19
+        targetSdkVersion 18
     }
     sourceSets {
         main {
@@ -60,7 +60,7 @@ tasks.withType(Compile) {
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile group: 'com.google.guava', name: 'guava', version: '15.0'
+//    compile group: 'com.google.guava', name: 'guava', version: '15.0'
 //    compile "net.sf.trove4j:trove4j:3.0.3"
     compile fileTree(dir: "$buildDir/native-libs", include: 'native-libs.jar')
 }

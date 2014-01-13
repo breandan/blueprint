@@ -10,9 +10,10 @@ public class Util {
     public static boolean isLowRamDevice(Context paramContext) {
         int i = SDK_INT;
         boolean bool = false;
-        if (i >= 19) {
-            bool = ((ActivityManager) paramContext.getSystemService("activity")).isLowRamDevice();
-        }
+        //TODO
+//        if (i >= 19) {
+//            bool = ((ActivityManager) paramContext.getSystemService("activity")).isLowRamDevice();
+//        }
         return bool;
     }
 
