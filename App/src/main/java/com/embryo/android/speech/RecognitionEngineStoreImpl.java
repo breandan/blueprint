@@ -3,7 +3,7 @@ package com.embryo.android.speech;
 import android.util.Pair;
 
 import com.embryo.android.shared.util.ThreadChanger;
-import com.embryo.android.speech.embedded.Greco3RecognitionEngine;
+import com.google.speech.embedded.Greco3RecognitionEngine;
 import com.embryo.android.speech.embedded.GrecoEventLoggerFactory;
 import com.embryo.android.speech.engine.RecognitionEngine;
 import com.embryo.android.speech.params.RecognitionEngineParams;

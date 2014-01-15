@@ -59,7 +59,7 @@ class LocaleResourcesImpl
             return null;
         }
 
-        ArrayList<File> compatible = new ArrayList<>(4);
+        ArrayList<File> compatible = new ArrayList(4);
         for (File path : mPathToMetadataMap.keySet()) {
             if (mMostRecentLanguagePack.getLanguagePackId().equals(mPathToMetadataMap.get(path).getLanguagePackId())) {
                 compatible.add(path);

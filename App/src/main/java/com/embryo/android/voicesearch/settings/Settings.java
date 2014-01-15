@@ -75,7 +75,7 @@ public class Settings
 //    }
 
     public List<String> getExperimentIds() {
-        return new ArrayList<>();
+        return new ArrayList();
     }
 
 //    public synchronized String getSpokenLocaleBcp47() {

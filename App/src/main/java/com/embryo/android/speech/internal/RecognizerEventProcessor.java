@@ -3,7 +3,7 @@ package com.embryo.android.speech.internal;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.embryo.android.speech.embedded.Greco3RecognitionEngine;
+import com.google.speech.embedded.Greco3RecognitionEngine;
 import com.embryo.android.speech.exception.RecognizeException;
 import com.embryo.android.speech.message.S3ResponseBuilder;
 import com.embryo.speech.recognizer.api.RecognizerProtos;

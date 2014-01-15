@@ -4,6 +4,7 @@ import android.os.SystemClock;
 import android.util.Log;
 
 import com.google.common.io.Files;
+import com.google.speech.grammar.AbstractGrammarCompiler;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class Greco3GrammarCompiler {
     }
 
     private static class GrammarCompilerImpl
-            extends com.embryo.speech.grammar.AbstractGrammarCompiler {
+            extends AbstractGrammarCompiler {
     }
 }
 

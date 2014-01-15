@@ -1,6 +1,6 @@
 package com.embryo.android.voicesearch.util;
 
-import com.embryo.android.speech.embedded.Greco3RecognitionEngine;
+import com.google.speech.embedded.Greco3RecognitionEngine;
 import com.embryo.android.speech.exception.AudioRecognizeException;
 import com.embryo.android.speech.exception.NetworkRecognizeException;
 import com.embryo.android.speech.exception.NoMatchRecognizeException;

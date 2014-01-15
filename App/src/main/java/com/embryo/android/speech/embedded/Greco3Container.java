@@ -3,6 +3,7 @@ package com.embryo.android.speech.embedded;
 import android.content.Context;
 
 import com.google.common.base.Supplier;
+import com.google.speech.embedded.Greco3EngineManager;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;

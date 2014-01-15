@@ -8,7 +8,7 @@ import android.view.inputmethod.InputConnection;
 
 import com.embryo.android.shared.util.ScheduledSingleThreadedExecutor;
 import com.embryo.android.speech.alternates.Hypothesis;
-import com.embryo.android.speech.alternates.HypothesisToSuggestionSpansConverter;
+import com.google.speech.alternates.HypothesisToSuggestionSpansConverter;
 import com.embryo.android.voicesearch.ime.formatter.TextFormatter;
 import com.embryo.android.voicesearch.settings.Settings;
 import com.google.common.base.Preconditions;

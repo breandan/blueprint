@@ -4,7 +4,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.view.inputmethod.InputConnection;
 
-import com.embryo.android.speech.alternates.HypothesisToSuggestionSpansConverter;
+import com.google.speech.alternates.HypothesisToSuggestionSpansConverter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

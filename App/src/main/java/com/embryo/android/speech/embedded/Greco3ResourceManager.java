@@ -3,12 +3,13 @@ package com.embryo.android.speech.embedded;
 import android.util.Log;
 
 import com.google.common.io.Files;
+import com.google.speech.recognizer.ResourceManager;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Greco3ResourceManager
-        extends com.embryo.speech.recognizer.ResourceManager {
+        extends ResourceManager {
     public static Greco3ResourceManager create(String configFileName, String[] resourcePaths) {
         Greco3ResourceManager rm = new Greco3ResourceManager();
         File configFile = new File(configFileName);

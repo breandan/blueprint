@@ -2,6 +2,7 @@ package com.embryo.android.speech.params;
 
 import com.embryo.android.speech.embedded.Greco3CallbackFactory;
 import com.embryo.android.speech.embedded.Greco3ModeSelector;
+import com.google.speech.embedded.Greco3EngineManager;
 
 public class RecognitionEngineParams {
     private final EmbeddedParams mEmbeddedParams;
@@ -17,13 +18,13 @@ public class RecognitionEngineParams {
     public static class EmbeddedParams {
         private final int mBytesPerSample;
         private final Greco3CallbackFactory mCallbackFactory;
-        private final com.embryo.android.speech.embedded.Greco3EngineManager mGreco3EngineManager;
+        private final Greco3EngineManager mGreco3EngineManager;
         private final Greco3ModeSelector mModeSelector;
         private final int mSamplingRate;
         private final com.embryo.android.shared.util.SpeechLevelSource mSpeechLevelSource;
         private final com.embryo.android.speech.SpeechSettings mSpeechSettings;
 
-        public EmbeddedParams(Greco3CallbackFactory paramGreco3CallbackFactory, com.embryo.android.speech.embedded.Greco3EngineManager paramGreco3EngineManager, Greco3ModeSelector paramGreco3ModeSelector, com.embryo.android.shared.util.SpeechLevelSource paramSpeechLevelSource, com.embryo.android.speech.SpeechSettings paramSpeechSettings, int paramInt1, int paramInt2) {
+        public EmbeddedParams(Greco3CallbackFactory paramGreco3CallbackFactory, Greco3EngineManager paramGreco3EngineManager, Greco3ModeSelector paramGreco3ModeSelector, com.embryo.android.shared.util.SpeechLevelSource paramSpeechLevelSource, com.embryo.android.speech.SpeechSettings paramSpeechSettings, int paramInt1, int paramInt2) {
             this.mCallbackFactory = paramGreco3CallbackFactory;
             this.mGreco3EngineManager = paramGreco3EngineManager;
             this.mModeSelector = paramGreco3ModeSelector;
@@ -41,7 +42,7 @@ public class RecognitionEngineParams {
             return this.mCallbackFactory;
         }
 
-        public com.embryo.android.speech.embedded.Greco3EngineManager getGreco3EngineManager() {
+        public Greco3EngineManager getGreco3EngineManager() {
             return this.mGreco3EngineManager;
         }
 
