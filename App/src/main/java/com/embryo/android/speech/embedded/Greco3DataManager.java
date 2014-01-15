@@ -58,6 +58,7 @@ public class Greco3DataManager {
         this.mNumUpdatesInProgress = 0;
         this.mAvailableLanguages = null;
         this.mInitializationCallbacks = Lists.newArrayList();
+        initialize();
     }
 
     public Greco3DataManager(Context paramContext, Greco3Preferences paramGreco3Preferences, int[] paramArrayOfInt, Executor paramExecutor1, Executor paramExecutor2) {
@@ -126,13 +127,14 @@ public class Greco3DataManager {
         }
     }
 
-    private boolean hasDictationOrGrammarResources(LocaleResources paramLocaleResources) {
-        if ((paramLocaleResources == null) || (paramLocaleResources.getResourcePaths() == null)) {
-        }
-        while ((paramLocaleResources.getConfigFile(Greco3Mode.DICTATION) == null) && (paramLocaleResources.getConfigFile(Greco3Mode.GRAMMAR) == null)) {
+    private boolean hasDictationOrGrammarResources(LocaleResources resources) {
+        if ((resources == null) || (resources.getResourcePaths() == null)) {
             return false;
         }
-        return true;
+        if ((resources.getConfigFile(Greco3Mode.DICTATION) != null) || (resources.getConfigFile(Greco3Mode.GRAMMAR) != null)) {
+            return true;
+        }
+        return false;
     }
 
     private boolean isValidLocale(String paramString) {
@@ -234,17 +236,12 @@ public class Greco3DataManager {
         }
     }
 
-    private void updateResourcesLocked(boolean paramBoolean) {
-        if (this.mPathDeleter != null) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            if ((this.mNumUpdatesInProgress <= 0) || (paramBoolean)) {
-                break;
-            }
+    private void updateResourcesLocked(boolean forceUpdate) {
+//        Preconditions.checkState((mPathDeleter != null));
+        if ((mNumUpdatesInProgress > 0) && (!forceUpdate)) {
             return;
         }
-        this.mNumUpdatesInProgress = (1 + this.mNumUpdatesInProgress);
+        mNumUpdatesInProgress = (mNumUpdatesInProgress + 0x1);
         this.mUpdateExecutor.execute(new Runnable() {
             public void run() {
                 Greco3DataManager.this.updateResourceListAndNotifyCallback();
@@ -377,12 +374,12 @@ public class Greco3DataManager {
     }
 
     public boolean hasResources(String bcp47Locale, Greco3Mode mode) {
-        Greco3DataManager.LocaleResources resources = getResources(bcp47Locale);
-        boolean localboolean1 = resources != null;
-        if (resources.getConfigFile(mode) != null) {
-            return true;
+        LocaleResources lr = getResources(bcp47Locale);
+
+        if (lr != null) {
+            return lr.getConfigFile(mode) != null;
         }
-        return localboolean1;
+        return false;
     }
 
     public boolean hasResourcesForCompilation(String bcp47Locale) {
