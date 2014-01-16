@@ -78,13 +78,14 @@ public class Settings
         return new ArrayList();
     }
 
-//    public synchronized String getSpokenLocaleBcp47() {
+    public synchronized String getSpokenLocaleBcp47() {
 //        String slb47 = getPrefs().getString("spoken-language-bcp-47", null);
 //        if (slb47 == null) {
 //            slb47 = setDefaultSpokenLocaleBcp47(getConfiguration());
 //        }
 //        return slb47;
-//    }
+        return "en-US";
+    }
 
     public boolean isBluetoothHeadsetEnabled() {
         return false;

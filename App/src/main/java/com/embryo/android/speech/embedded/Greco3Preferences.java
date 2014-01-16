@@ -2,10 +2,7 @@ package com.embryo.android.speech.embedded;
 
 import android.content.SharedPreferences;
 
-import com.google.common.base.Joiner;
-
 public class Greco3Preferences {
-    private static final Joiner.MapJoiner ACTIVE_DOWNLOADS_JOINER = Joiner.on(',').withKeyValueSeparator(":");
     private final SharedPreferences mSharedPreferences;
 
     public Greco3Preferences(SharedPreferences paramSharedPreferences) {
@@ -17,6 +14,10 @@ public class Greco3Preferences {
         return this.mSharedPreferences.getString(str, null);
     }
 
+    public void setCompiledGrammarRevisionId(Greco3Grammar grammar, String revisionId) {
+        String key = "g3_apk_grammar_revision_id_v1:" + grammar.getDirectoryName();
+        mSharedPreferences.edit().putString(key, revisionId).apply();
+    }
 }
 
 

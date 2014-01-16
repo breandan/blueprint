@@ -5,7 +5,7 @@ public abstract interface SpeechSettings {
 
 //    public abstract List<String> getExperimentIds();
 
-//    public abstract String getSpokenLocaleBcp47();
+    public abstract String getSpokenLocaleBcp47();
 
     public abstract boolean isDebugAudioLoggingEnabled();
 

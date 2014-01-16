@@ -14,6 +14,7 @@ import com.embryo.android.speech.RecognizerImpl;
 import com.embryo.android.speech.SpeechLibFactory;
 import com.embryo.android.speech.audio.AudioController;
 import com.embryo.android.speech.embedded.Greco3Container;
+import com.embryo.android.speech.grammar.GrammarCompilationService;
 import com.embryo.android.speech.internal.DefaultCallbackFactory;
 import com.embryo.android.speech.internal.DefaultModeSelector;
 import com.embryo.android.speech.params.RecognitionEngineParams;
@@ -21,6 +22,7 @@ import com.embryo.android.voicesearch.audio.AudioRouter;
 import com.embryo.android.voicesearch.audio.AudioRouterImpl;
 import com.embryo.android.voicesearch.audio.AudioTrackSoundManager;
 import com.embryo.android.voicesearch.settings.Settings;
+import com.google.speech.embedded.OfflineActionsManager;
 
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -40,6 +42,8 @@ public class VoiceSearchServices {
     private SpeechLevelSource mSpeechLevelSource;
     private SpeechLibFactory mSpeechLibFactory;
     private com.embryo.android.voicesearch.ime.VoiceImeSubtypeUpdater mVoiceImeSubtypeUpdater;
+    private OfflineActionsManager mOfflineActionsManager;
+    private GrammarCompilationService mGrammarCompilationService;
 
     public VoiceSearchServices(Context paramContext, AsyncServices paramAsyncServices, GsaPreferenceController paramGsaPreferenceController, Object paramObject) {
         this(paramContext, paramAsyncServices, paramObject, new Settings(paramContext, paramGsaPreferenceController, paramAsyncServices.getPooledBackgroundExecutorService()));
@@ -61,6 +65,7 @@ public class VoiceSearchServices {
 
     public void init() {
         mSettings.asyncLoad();
+        getGrammarCompilationService();
     }
 
     private void createAudioRouterLocked() {
@@ -114,6 +119,14 @@ public class VoiceSearchServices {
         }
     }
 
+    public GrammarCompilationService getGrammarCompilationService() {
+        if (this.mGrammarCompilationService == null) {
+            this.mGrammarCompilationService = new GrammarCompilationService();
+        }
+
+        return mGrammarCompilationService;
+    }
+
     public Greco3Container getGreco3Container() {
         synchronized (this.mCreationLock) {
             if (this.mGreco3Container == null) {
@@ -130,6 +143,15 @@ public class VoiceSearchServices {
         }
         return this.mHotwordDetector;
     }
+
+    public OfflineActionsManager getOfflineActionsManager()
+    {
+        if (this.mOfflineActionsManager == null) {
+            this.mOfflineActionsManager = new OfflineActionsManager(this.mContext, getGreco3Container().getGreco3DataManager(), this.mSettings, this.mAsyncServices.getUiThreadExecutor());
+        }
+        return this.mOfflineActionsManager;
+    }
+
 
     public Recognizer getRecognizer() {
 

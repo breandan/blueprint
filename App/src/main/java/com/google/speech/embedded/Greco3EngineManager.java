@@ -7,10 +7,13 @@ import com.embryo.android.speech.embedded.Greco3Callback;
 import com.embryo.android.speech.embedded.Greco3DataManager;
 import com.embryo.android.speech.embedded.Greco3Mode;
 import com.embryo.android.speech.embedded.Greco3Preferences;
+import com.embryo.android.speech.embedded.GrecoEventLogger;
 import com.embryo.speech.logs.RecognizerOuterClass;
-import com.google.speech.recognizer.api.NativeRecognizer;
+import com.embryo.speech.recognizer.api.RecognizerSessionParamsProto;
+import com.embryo.wireless.voicesearch.proto.GstaticConfiguration;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.google.speech.recognizer.api.NativeRecognizer;
 
 import java.io.File;
 import java.io.InputStream;
@@ -128,39 +131,40 @@ public class Greco3EngineManager
             Log.e("VS.G3EngineManager", "Incomplete / partial data for locale: " + bcp47Locale);
             return null;
         }
+
+        String grammarPath = null;
         if (mode == Greco3Mode.GRAMMAR) {
-            String grammarPath = getCompiledGrammarPath(grammarType, resources);
+            grammarPath = getCompiledGrammarPath(grammarType, resources);
             if ((grammarPath == null) && (mode == Greco3Mode.GRAMMAR)) {
                 return null;
             }
-            StopWatch initStopWatch = new StopWatch();
-            initStopWatch.start();
-
-            int arraySize = dataPaths.size();
-
-            if (grammarPath != null) {
-                arraySize += 1;
-            }
-
-            String[] pathsArray = new String[arraySize];
-            dataPaths.toArray(pathsArray);
-
-            if (grammarPath != null) {
-                pathsArray[(pathsArray.length - 0x1)] = grammarPath;
-            }
-
-            dataPaths.toArray(pathsArray);
-            Log.i("VS.G3EngineManager", "create_rm: m=" + mode + ",l=" + bcp47Locale);
-            com.embryo.android.speech.embedded.Greco3ResourceManager rm = com.embryo.android.speech.embedded.Greco3ResourceManager.create(configFile, pathsArray);
-            if (rm == null) {
-                Log.i("VS.G3EngineManager", "Error loading resources.");
-                return null;
-            }
-            Log.i("VS.G3EngineManager", "Brought up new g3 instance :" + configFile + " for: " + bcp47Locale + "in: " + initStopWatch.getElapsedTime() + " ms");
-            return new Greco3EngineManager.Resources(rm, resources.getConfigFile(mode), bcp47Locale, grammarType, mode, pathsArray, resources.getLanguageMetadata());
         }
 
-        return null;
+        StopWatch initStopWatch = new StopWatch();
+        initStopWatch.start();
+
+        int arraySize = dataPaths.size();
+
+        if (grammarPath != null) {
+            arraySize += 1;
+        }
+
+        String[] pathsArray = new String[arraySize];
+        dataPaths.toArray(pathsArray);
+
+        if (grammarPath != null) {
+            pathsArray[(pathsArray.length - 0x1)] = grammarPath;
+        }
+
+        dataPaths.toArray(pathsArray);
+        Log.i("VS.G3EngineManager", "create_rm: m=" + mode + ",l=" + bcp47Locale);
+        com.embryo.android.speech.embedded.Greco3ResourceManager rm = com.embryo.android.speech.embedded.Greco3ResourceManager.create(configFile, pathsArray);
+        if (rm == null) {
+            Log.i("VS.G3EngineManager", "Error loading resources.");
+            return null;
+        }
+        Log.i("VS.G3EngineManager", "Brought up new g3 instance :" + configFile + " for: " + bcp47Locale + "in: " + initStopWatch.getElapsedTime() + " ms");
+        return new Greco3EngineManager.Resources(rm, resources.getConfigFile(mode), bcp47Locale, grammarType, mode, pathsArray, resources.getLanguageMetadata());
     }
 
     private void releaseAllResourcesLocked() {
@@ -175,22 +179,19 @@ public class Greco3EngineManager
         this.mResourcesByMode.clear();
     }
 
-    public void delete(final File paramFile, final boolean paramBoolean, final Runnable paramRunnable) {
-        try {
-            if ((this.mInitialized) && (!paramBoolean)) {
+    public void delete(File path, boolean force, final Runnable completionCb) {
+        synchronized (this) {
+            if ((mInitialized) && (!force)) {
                 return;
             }
-            this.mRecognitionExecutor.execute(new Runnable() {
-                public void run() {
-                    Greco3EngineManager.this.doResourceDelete(paramFile, paramBoolean);
-                    if (paramRunnable != null) {
-                        paramRunnable.run();
-                    }
-                }
-            });
-            return;
-        } finally {
         }
+        mRecognitionExecutor.execute(new Runnable() {
+            public void run() {
+                if (completionCb != null) {
+                    completionCb.run();
+                }
+            }
+        });
     }
 
     public Resources getResources(String paramString, Greco3Mode paramGreco3Mode, @Nullable com.embryo.android.speech.embedded.Greco3Grammar paramGreco3Grammar) {
@@ -232,36 +233,31 @@ public class Greco3EngineManager
         mCurrentRecognizer = null;
     }
 
-    public void startRecognition(final Greco3Recognizer paramGreco3Recognizer, InputStream paramInputStream, Greco3Callback paramGreco3Callback, final com.embryo.speech.recognizer.api.RecognizerSessionParamsProto.RecognizerSessionParams paramRecognizerSessionParams, @Nullable final com.embryo.android.speech.embedded.GrecoEventLogger paramGrecoEventLogger, final com.embryo.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack paramLanguagePack) {
-        if (this.mCurrentRecognition == null) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkState(bool);
-            paramGreco3Recognizer.setAudioReader(paramInputStream);
-            paramGreco3Recognizer.setSamplingRate((int) paramRecognizerSessionParams.getSampleRate());
-            paramGreco3Recognizer.setCallback(paramGreco3Callback);
-            this.mCurrentRecognition = this.mRecognitionExecutor.submit(new Callable() {
-                public Greco3Recognizer call() {
-                    if (paramGrecoEventLogger != null) {
-                        paramGrecoEventLogger.recognitionStarted();
-                    }
-                    NativeRecognizer.NativeRecognitionResult localNativeRecognitionResult = paramGreco3Recognizer.run(paramRecognizerSessionParams);
-                    int i = localNativeRecognitionResult.getStatus();
-                    if ((i != 0) && (i != 4)) {
-                        Log.e("VS.G3EngineManager", "Error running recognition: " + i);
-                    }
-                    if (paramGrecoEventLogger != null) {
-                        RecognizerOuterClass.RecognizerLog localRecognizerLog = localNativeRecognitionResult.getRecognizerInfo();
-                        localRecognizerLog.setLangPack(Greco3EngineManager.buildLanguagePackLog(paramLanguagePack));
-                        localRecognizerLog.setRecognizerLanguage(paramLanguagePack.getBcp47Locale());
-                        paramGrecoEventLogger.recognitionCompleted(localRecognizerLog);
-                    }
-                    return paramGreco3Recognizer;
+    public void startRecognition(final Greco3Recognizer recognizer, InputStream input, Greco3Callback callback, final RecognizerSessionParamsProto.RecognizerSessionParams recParams, final GrecoEventLogger eventLogger, final GstaticConfiguration.LanguagePack languagePack) {
+        Preconditions.checkState((mCurrentRecognition == null));
+        recognizer.setAudioReader(input);
+        recognizer.setSamplingRate((int) recParams.getSampleRate());
+        recognizer.setCallback(callback);
+        mCurrentRecognition = mRecognitionExecutor.submit(new Callable() {
+            public Greco3Recognizer call() {
+                if (eventLogger != null) {
+                    eventLogger.recognitionStarted();
                 }
-            });
-            this.mCurrentRecognizer = paramGreco3Recognizer;
-            return;
-        }
+                NativeRecognizer.NativeRecognitionResult result = recognizer.run(recParams);
+                int sc = result.getStatus();
+                if ((sc != 0) && (sc != 0x4)) {
+                    Log.e("VS.G3EngineManager", "Error running recognition: " + sc);
+                }
+                if (eventLogger != null) {
+                    RecognizerOuterClass.RecognizerLog recognizerLog = result.getRecognizerInfo();
+                    recognizerLog.setLangPack(buildLanguagePackLog(languagePack));
+                    recognizerLog.setRecognizerLanguage(languagePack.getBcp47Locale());
+                    eventLogger.recognitionCompleted(recognizerLog);
+                }
+                return recognizer;
+            }
+        });
+        mCurrentRecognizer = recognizer;
     }
 
     public static class Resources {

@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +100,7 @@ class LocaleResourcesImpl
     void addHotwordPrompt(File file) {
         BufferedReader br = null;
         try {
+            br = new BufferedReader(new FileReader(file));
             String prompt = br.readLine();
             if (!TextUtils.isEmpty(prompt)) {
                 mPathToHotwordPromptMap.put(file.getParentFile(), prompt);

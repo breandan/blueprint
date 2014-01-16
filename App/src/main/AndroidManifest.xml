@@ -170,5 +170,6 @@
         <activity
             android:name="com.app.me.ScrollTextActivity"
             android:label="BluePrint"></activity>
+        <service android:name="com.embryo.android.speech.grammar.GrammarCompilationService" android:process=":search"/>
     </application>
 </manifest>

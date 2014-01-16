@@ -62,19 +62,17 @@ public class Greco3DataManager {
     }
 
     public Greco3DataManager(Context paramContext, Greco3Preferences paramGreco3Preferences, int[] paramArrayOfInt, Executor paramExecutor1, Executor paramExecutor2) {
-        this(paramContext, paramGreco3Preferences, paramArrayOfInt, getSearchPathList(new File[2]), new File(paramContext.getCacheDir(), "g3_grammars"), paramExecutor1, paramExecutor2);
+        this(paramContext, paramGreco3Preferences, paramArrayOfInt, getSearchPathList(new File[]{paramContext.getDir("g3_models", 0), SYSTEM_DATA_DIR}), new File(paramContext.getCacheDir(), "g3_grammars"), paramExecutor1, paramExecutor2);
     }
 
-    private static ImmutableList<File> getSearchPathList(File... paramVarArgs) {
-        ArrayList localArrayList = new ArrayList();
-        int i = paramVarArgs.length;
-        for (int j = 0; j < i; j++) {
-            File localFile = paramVarArgs[j];
-            if (localFile != null) {
-                localArrayList.add(localFile);
+    private static ImmutableList<File> getSearchPathList(File... files) {
+        ArrayList<File> nonNullFiles = new ArrayList<File>();
+        for(File file : files) {
+            if(file != null) {
+                nonNullFiles.add(file);
             }
         }
-        return ImmutableList.copyOf(localArrayList);
+        return ImmutableList.copyOf(nonNullFiles);
     }
 
     private void doLanguageDelete(com.embryo.wireless.voicesearch.proto.GstaticConfiguration.LanguagePack paramLanguagePack, final Runnable paramRunnable) {
@@ -112,8 +110,7 @@ public class Greco3DataManager {
             return;
         }
 
-        for (int i = 0; i < fileList.length; i++) {
-            File file = fileList[i];
+        for (File file : fileList) {
             Greco3Mode type = Greco3Mode.valueOf(file);
             if (type == null) {
                 if ("metadata".equals(file.getName())) {
@@ -173,8 +170,7 @@ public class Greco3DataManager {
             return;
         }
 
-        for (int j = 0; j < locales.length; j++) {
-            File locale = locales[j];
+        for (File locale : locales) {
             String localName = locale.getName();
 
             if (!isValidLocale(localName)) {
@@ -187,15 +183,13 @@ public class Greco3DataManager {
 
             File[] grammars = locale.listFiles(DIRECTORY_FILTER);
             if ((grammars != null) && (grammars.length != 0)) {
-                for (int m = 0; m < grammars.length; m++) {
-                    File grammar = grammars[m];
+                for (File grammar : grammars) {
                     com.embryo.android.speech.embedded.Greco3Grammar grammarType = com.embryo.android.speech.embedded.Greco3Grammar.valueOf(grammar);
                     if (grammarType != null) {
                         File[] revisions = grammar.listFiles(DIRECTORY_FILTER);
                         if ((revisions != null) && (revisions.length != 0)) {
                             String currentRevision = this.mGreco3Prefs.getCompiledGrammarRevisionId(grammarType);
-                            for (int i1 = 0; i1 < revisions.length; i1++) {
-                                File revision = revisions[i1];
+                            for (File revision : revisions) {
                                 if (revision.getName().equals(currentRevision)) {
                                     mPathDeleter.delete(revision, false, null);
                                 }
@@ -209,7 +203,7 @@ public class Greco3DataManager {
     }
 
     private void updateResourceListAndNotifyCallback() {
-        Map<String, com.embryo.android.speech.embedded.LocaleResourcesImpl> availableLanguages = doUpdateResourceList();
+        Map<String, LocaleResourcesImpl> availableLanguages = doUpdateResourceList();
         List<Runnable> callbacks = Lists.newArrayList(mInitializationCallbacks);
         synchronized (this) {
             mAvailableLanguages = availableLanguages;
@@ -229,8 +223,8 @@ public class Greco3DataManager {
             File[] arrayOfFile = ((File) localIterator.next()).listFiles(DIRECTORY_FILTER);
             if (arrayOfFile != null) {
                 int i = arrayOfFile.length;
-                for (int j = 0; j < i; j++) {
-                    handleLocale(arrayOfFile[j], paramMap);
+                for (File file : arrayOfFile) {
+                    handleLocale(file, paramMap);
                 }
             }
         }

@@ -8,9 +8,14 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.embryo.android.search.core.AsyncServicesImpl;
+import com.embryo.android.speech.callback.SimpleCallback;
+import com.embryo.android.speech.embedded.Greco3Grammar;
+import com.embryo.android.speech.grammar.GrammarCompilationService;
 import com.embryo.android.voicesearch.VoiceSearchServices;
 import com.embryo.android.voicesearch.hotword.HotwordDetector;
 import com.embryo.android.search.core.GsaPreferenceController;
+import com.google.speech.embedded.Greco3Recognizer;
+import com.google.speech.embedded.OfflineActionsManager;
 
 import java.io.InputStream;
 
@@ -22,6 +27,21 @@ public class MainActivity extends Activity {
         return res.openRawResource(res.getIdentifier(name, "raw", packName));
     }
 
+    private void startNewVoiceSearch(VoiceSearchServices vss)
+    {
+        Greco3Recognizer.maybeLoadSharedLibrary();
+        OfflineActionsManager localOfflineActionsManager = vss.getOfflineActionsManager();
+        vss.getGrammarCompilationService().onCreate(vss.getGreco3Container(), localOfflineActionsManager);
+//        Greco3Grammar[] arrayOfGreco3Grammar = new Greco3Grammar[2];
+//        arrayOfGreco3Grammar[0] = Greco3Grammar.CONTACT_DIALING;
+//        arrayOfGreco3Grammar[1] = Greco3Grammar.HANDS_FREE_COMMANDS;
+        vss.getGrammarCompilationService().doCompile("en-US", Greco3Grammar.HANDS_FREE_COMMANDS, getResources(), getPackageName());
+//        localOfflineActionsManager.startOfflineDataCheck(vss.getGrammarCompilationService(), new SimpleCallback<Integer>() {
+//            @Override
+//            public void onResult(Integer paramT) {}
+//       }, "en-US", arrayOfGreco3Grammar);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,8 +51,9 @@ public class MainActivity extends Activity {
         final TextView textView = (TextView) findViewById(R.id.textView);
         textView.setMovementMethod(LinkMovementMethod.getInstance());
 
-//        System.loadLibrary("libgoogle_recognizer_jni_l.so");
         VoiceSearchServices vss = new VoiceSearchServices(getApplication(), new AsyncServicesImpl(), new GsaPreferenceController(getApplication()), this);
+        startNewVoiceSearch(vss);
+
         HotwordDetector hd = vss.getHotwordDetector();
         hd.start(new HotwordDetector.HotwordListener() {
             @Override
