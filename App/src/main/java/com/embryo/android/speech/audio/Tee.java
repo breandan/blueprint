@@ -253,17 +253,18 @@ public class Tee {
             throw new IOException("No splits possible, buffers rewound.");
         }
 
-        for (int i = 1; i != mReadPositions.length && mReadPositions[i] != 0x7fffffff; i++) {
-            if (i == mReadPositions.length) {
-                throw new IOException("No splits possible, too many siblings.");
-            } else {
-                mReadPositions[i] = mStartMark;
-                Tee.TeeSecondaryInputStream tis = new Tee.TeeSecondaryInputStream(this, i);
-                return tis;
-            }
+        int i = 1;
+
+        while (i != mReadPositions.length && mReadPositions[i] != 0x7fffffff) {
+            i++;
+        }
+        if (i == mReadPositions.length) {
+            throw new IOException("No splits possible, too many siblings.");
+        } else {
+            mReadPositions[i] = mStartMark;
+            return new Tee.TeeSecondaryInputStream(this, i);
         }
 
-        return null;
     }
 
     private static class TeeLeaderInputStream

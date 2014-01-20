@@ -68,10 +68,12 @@ public final class NativeRecognizer {
                     case 8:
                         setStatus(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 18:
+                        com.embryo.speech.logs.RecognizerOuterClass.RecognizerLog localRecognizerLog = new com.embryo.speech.logs.RecognizerOuterClass.RecognizerLog();
+                        paramCodedInputStreamMicro.readMessage(localRecognizerLog);
+                        setRecognizerInfo(localRecognizerLog);
+                        break;
                 }
-                com.embryo.speech.logs.RecognizerOuterClass.RecognizerLog localRecognizerLog = new com.embryo.speech.logs.RecognizerOuterClass.RecognizerLog();
-                paramCodedInputStreamMicro.readMessage(localRecognizerLog);
-                setRecognizerInfo(localRecognizerLog);
             }
         }
 

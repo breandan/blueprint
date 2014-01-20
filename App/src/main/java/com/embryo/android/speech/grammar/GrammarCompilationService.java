@@ -6,14 +6,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Process;
 import android.util.Log;
 
 import com.embryo.android.speech.embedded.Greco3Container;
 import com.embryo.android.speech.embedded.Greco3DataManager;
 import com.embryo.android.speech.embedded.Greco3Grammar;
 import com.embryo.android.speech.embedded.Greco3Preferences;
-
-import android.os.Process;
 import com.google.common.io.Files;
 import com.google.speech.embedded.Greco3Recognizer;
 import com.google.speech.embedded.OfflineActionsManager;
@@ -46,8 +45,7 @@ public class GrammarCompilationService extends IntentService {
         mMd5Digest = digest;
     }
 
-    public void onCreate(Greco3Container container, OfflineActionsManager oam)
-    {
+    public void onCreate(Greco3Container container, OfflineActionsManager oam) {
         super.onCreate();
         this.mGreco3Container = container;
         this.mOfflineActionsManager = oam;
@@ -146,16 +144,17 @@ public class GrammarCompilationService extends IntentService {
         if (revisionId == null) {
             return true;
         }
-        long parsedTime = 0xffffffff;
         try {
-            parsedTime = Long.parseLong(revisionId.substring(0x1));
-        } catch (NumberFormatException nfe) {
-            throw new IllegalArgumentException("Invalid revisionId:" + revisionId, nfe);
+            long l = Long.parseLong(revisionId.substring(1));
+            if (l < System.currentTimeMillis() - 691200000L) {
+                if (l < 0L) {
+                    throw new IllegalArgumentException("Invalid revisionId:" + revisionId + ", negative.");
+                }
+                return true;
+            }
+        } catch (NumberFormatException localNumberFormatException) {
+            throw new IllegalArgumentException("Invalid revisionId:" + revisionId, localNumberFormatException);
         }
-        if (parsedTime < 0x0) {
-            throw new IllegalArgumentException("Invalid revisionId:" + revisionId + ", negative.");
-        }
-        boolean localboolean1 = parsedTime < (System.currentTimeMillis() - 0x2932e000);
         return false;
     }
 

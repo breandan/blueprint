@@ -276,8 +276,10 @@ public final class RecognizerSessionParamsProto {
                     case 112:
                         setEnableSpeakerTraining(paramCodedInputStreamMicro.readBool());
                         break;
+                    case 122:
+                        setSpeakerId(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setSpeakerId(paramCodedInputStreamMicro.readString());
             }
         }
 

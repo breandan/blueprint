@@ -58,7 +58,8 @@ public class RecognitionDispatcher {
         com.embryo.android.speech.callback.RecognitionEngineCallback localRecognitionEngineCallback = threadChange(this.mExecutor, this.mResultsMerger);
         Iterator localIterator = this.mRecognitionEngines.iterator();
         while (localIterator.hasNext()) {
-            ((RecognitionEngine) ((Pair) localIterator.next()).second).startRecognition(paramAudioInputStreamFactory, localRecognitionEngineCallback, paramSessionParams);
+            RecognitionEngine re = ((RecognitionEngine) ((Pair) localIterator.next()).second);
+            re.startRecognition(paramAudioInputStreamFactory, localRecognitionEngineCallback, paramSessionParams);
         }
     }
 

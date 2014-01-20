@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
 //        Greco3Grammar[] arrayOfGreco3Grammar = new Greco3Grammar[2];
 //        arrayOfGreco3Grammar[0] = Greco3Grammar.CONTACT_DIALING;
 //        arrayOfGreco3Grammar[1] = Greco3Grammar.HANDS_FREE_COMMANDS;
-        vss.getGrammarCompilationService().doCompile("en-US", Greco3Grammar.HANDS_FREE_COMMANDS, getResources(), getPackageName());
+//        vss.getGrammarCompilationService().doCompile("en-US", Greco3Grammar.HANDS_FREE_COMMANDS, getResources(), getPackageName());
 //        localOfflineActionsManager.startOfflineDataCheck(vss.getGrammarCompilationService(), new SimpleCallback<Integer>() {
 //            @Override
 //            public void onResult(Integer paramT) {}

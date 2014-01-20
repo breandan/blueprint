@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class Greco3Recognizer
         extends AbstractRecognizer {
-    private static boolean sSharedLibraryLoaded = false;
+    private static boolean sSharedLibraryLoaded = true;
     private final int mBytesPerSample;
     private final RecognizerCallbackWrapper mCallback = new RecognizerCallbackWrapper();
     private long mProgressMs;

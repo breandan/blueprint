@@ -72,8 +72,10 @@ public final class RecognizerProtos {
                     case 13:
                         setLevel(paramCodedInputStreamMicro.readFloat());
                         break;
+                    case 16:
+                        setTimeUsec(paramCodedInputStreamMicro.readInt64());
+                        break;
                 }
-                setTimeUsec(paramCodedInputStreamMicro.readInt64());
             }
         }
 
@@ -158,8 +160,10 @@ public final class RecognizerProtos {
                     case 8:
                         setEventType(paramCodedInputStreamMicro.readInt32());
                         break;
+                    case 13:
+                        setTimeUsec(paramCodedInputStreamMicro.readInt64());
+                        break;
                 }
-                setTimeUsec(paramCodedInputStreamMicro.readInt64());
             }
         }
 
@@ -407,8 +411,10 @@ public final class RecognizerProtos {
                     case 98:
                         setPrenormText(paramCodedInputStreamMicro.readString());
                         break;
+                    case 106:
+                        setScrubbedText(paramCodedInputStreamMicro.readString());
+                        break;
                 }
-                setScrubbedText(paramCodedInputStreamMicro.readString());
             }
         }
 
@@ -600,10 +606,12 @@ public final class RecognizerProtos {
                     case 17:
                         setStability(paramCodedInputStreamMicro.readDouble());
                         break;
+                    case 26:
+                        RecognizerProtos.SemanticResult localSemanticResult = new RecognizerProtos.SemanticResult();
+                        paramCodedInputStreamMicro.readMessage(localSemanticResult);
+                        setSemanticResult(localSemanticResult);
+                        break;
                 }
-                RecognizerProtos.SemanticResult localSemanticResult = new RecognizerProtos.SemanticResult();
-                paramCodedInputStreamMicro.readMessage(localSemanticResult);
-                setSemanticResult(localSemanticResult);
             }
         }
 
@@ -950,10 +958,12 @@ public final class RecognizerProtos {
                         paramCodedInputStreamMicro.readMessage(localHypothesis);
                         addHypothesis(localHypothesis);
                         break;
+                    case 122:
+                        RecognizerProtos.VerificationResult localVerificationResult = new RecognizerProtos.VerificationResult();
+                        paramCodedInputStreamMicro.readMessage(localVerificationResult);
+                        setVerificationResult(localVerificationResult);
+                        break;
                 }
-                RecognizerProtos.VerificationResult localVerificationResult = new RecognizerProtos.VerificationResult();
-                paramCodedInputStreamMicro.readMessage(localVerificationResult);
-                setVerificationResult(localVerificationResult);
             }
         }
 
@@ -1225,8 +1235,10 @@ public final class RecognizerProtos {
                         paramCodedInputStreamMicro.readMessage(localRecognitionResult1);
                         setCombinedResult(localRecognitionResult1);
                         break;
+                    case 48:
+                        setGenerationTimeMs(paramCodedInputStreamMicro.readInt64());
+                        break;
                 }
-                setGenerationTimeMs(paramCodedInputStreamMicro.readInt64());
             }
         }
 
@@ -1405,8 +1417,10 @@ public final class RecognizerProtos {
                         paramCodedInputStreamMicro.readMessage(localHypothesis);
                         addHypothesis(localHypothesis);
                         break;
+                    case 34:
+                        setLatticeFst(paramCodedInputStreamMicro.readBytes());
+                        break;
                 }
-                setLatticeFst(paramCodedInputStreamMicro.readBytes());
             }
         }
 
@@ -1592,8 +1606,10 @@ public final class RecognizerProtos {
                     case 18:
                         setSpeakerId(paramCodedInputStreamMicro.readString());
                         break;
+                    case 29:
+                        setVerificationScore(paramCodedInputStreamMicro.readFloat());
+                        break;
                 }
-                setVerificationScore(paramCodedInputStreamMicro.readFloat());
             }
         }
 

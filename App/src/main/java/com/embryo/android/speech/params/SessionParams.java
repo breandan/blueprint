@@ -153,7 +153,7 @@ public class SessionParams {
         private String mService;
         private boolean mSoundSearchTtsEnabled = false;
         private String mSpokenBcp47Locale = "en-US";
-        private boolean mStopOnEndOfSpeech = false; //Interesting
+        private boolean mStopOnEndOfSpeech = true; //Interesting
         private boolean mSuggestionsEnabled = true;
         private String mTriggerApplication;
         private boolean mUseMusicHotworder = false;
