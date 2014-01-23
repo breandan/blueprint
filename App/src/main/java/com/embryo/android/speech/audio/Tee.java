@@ -100,14 +100,15 @@ public class Tee {
                     if (mReadPositions[i] != 0x7fffffff) {
                         mReadPositions[i] = (mReadPositions[i] - bufLength);
                     }
-                }
                 readPosition -= bufLength;
                 mBufferEnd = (mBufferEnd - bufLength);
+                }
             }
             mBufferBegin = readPosition;
+        } else {
+            mException = new IOException("Buffer overflow, no available space.");
+            throw mException;
         }
-        mException = new IOException("Buffer overflow, no available space.");
-        throw mException;
     }
 
     void close() {
@@ -132,104 +133,104 @@ public class Tee {
         int lastCount = 0x0;
         int NO_DELEGATE_READ = -0x1;
         int lastDelegateRead = -0x1;
-        synchronized (this) {
-            if (mException != null) {
-                throw mException;
-            }
-            int readPos = mReadPositions[0x0];
-            if (readPos == 0x7fffffff) {
+        while (true) {
+            synchronized (this) {
+                if (mException != null) {
+                    throw mException;
+                }
+                int readPos = mReadPositions[0x0];
+                if (readPos == 0x7fffffff) {
+                    if (lastDelegateRead != -0x1) {
+                        return (totalCount - lastCount);
+                    }
+                    return totalCount;
+                }
+                int bufferEnd = mBufferEnd;
                 if (lastDelegateRead != -0x1) {
-                    return (totalCount - lastCount);
+                    bufferEnd += lastDelegateRead;
+                    mBufferEnd = bufferEnd;
+                    notifyAll();
+                    if (lastDelegateRead < mReadSize) {
+                        mEof = true;
+                        return totalCount;
+                    }
+                    lastDelegateRead = -0x1;
                 }
-                return totalCount;
-            }
-            int bufferEnd = mBufferEnd;
-            if (lastDelegateRead != -0x1) {
-                bufferEnd += lastDelegateRead;
-                mBufferEnd = bufferEnd;
-                notifyAll();
-                if (lastDelegateRead < mReadSize) {
-                    mEof = true;
-                    return totalCount;
+                if (lastCount != 0) {
+                    readPos += lastCount;
+                    mReadPositions[0x0] = readPos;
+                    lastCount = 0x0;
                 }
-                lastDelegateRead = -0x1;
-            }
-            if (lastCount != 0) {
-                readPos += lastCount;
-                mReadPositions[0x0] = readPos;
-                lastCount = 0x0;
-            }
-            if (totalCount == count) {
-                return count;
-            }
-            if (bufferEnd == readPos) {
-                if (mEof) {
-                    return totalCount;
+                if (totalCount == count) {
+                    return count;
                 }
-                if (((mReadSize + bufferEnd) - mBufferBegin) > bufLength) {
-                    rewindBuffersLocked();
-                    readPos = mReadPositions[0x0];
-                    bufferEnd = readPos;
+                if (bufferEnd == readPos) {
+                    if (mEof) {
+                        return totalCount;
+                    }
+                    if (((mReadSize + bufferEnd) - mBufferBegin) > bufLength) {
+                        rewindBuffersLocked();
+                        readPos = mReadPositions[0x0];
+                        bufferEnd = readPos;
+                    }
                 }
+                if (bufferEnd == readPos) {
+                    lastDelegateRead = readFromDelegate(bufferEnd);
+                    bufferEnd += lastDelegateRead;
+                }
+                int avail = bufferEnd - readPos;
+                int need = count - totalCount;
+                lastCount = avail < need ? avail : need;
+                doRead(readPos, bytes, (offset + totalCount), lastCount);
+                totalCount += lastCount;
             }
-            if (bufferEnd == readPos) {
-                lastDelegateRead = readFromDelegate(bufferEnd);
-                bufferEnd += lastDelegateRead;
-            }
-            int avail = bufferEnd - readPos;
-            int need = count - totalCount;
-            lastCount = avail < need ? avail : need;
-            doRead(readPos, bytes, (offset + totalCount), lastCount);
-            totalCount += lastCount;
         }
-
-        return totalCount;
     }
 
     int readSecondary(int streamId, byte[] bytes, int offset, int count) throws IOException {
         int totalCount = 0x0;
         int lastCount = 0x0;
-        synchronized (this) {
-            if (mException != null) {
-                throw mException;
-            }
-            int readPos = mReadPositions[streamId];
-            if (readPos == 0x7fffffff) {
-                return count;
-            }
-            if (lastCount != 0) {
-                readPos += lastCount;
-                mReadPositions[streamId] = readPos;
-                lastCount = 0x0;
-            }
-            if (totalCount == count) {
-                return count;
-            }
-            int bufferEnd = mBufferEnd;
-            if (bufferEnd != readPos) {
-                int avail = bufferEnd - readPos;
-                int need = count - totalCount;
-                if (avail < need) {
-                    lastCount = avail;
-                    doRead(readPos, bytes, (offset + totalCount), lastCount);
-                    totalCount += lastCount;
-                } else {
-                    lastCount = need;
+        while (true) {
+            synchronized (this) {
+                if (mException != null) {
+                    throw mException;
                 }
-            } else if (mEof) {
-                count = totalCount;
-                return count;
-            }
+                int readPos = mReadPositions[streamId];
+                if (readPos == 0x7fffffff) {
+                    return count;
+                }
+                if (lastCount != 0) {
+                    readPos += lastCount;
+                    mReadPositions[streamId] = readPos;
+                    lastCount = 0x0;
+                }
+                if (totalCount == count) {
+                    return count;
+                }
+                int bufferEnd = mBufferEnd;
+                if (bufferEnd != readPos) {
+                    int avail = bufferEnd - readPos;
+                    int need = count - totalCount;
+                    if (avail < need) {
+                        lastCount = avail;
+                        doRead(readPos, bytes, (offset + totalCount), lastCount);
+                        totalCount += lastCount;
+                    } else {
+                        lastCount = need;
+                    }
+                } else if (mEof) {
+                    count = totalCount;
+                    return count;
+                }
 
-            try {
-                wait();
-            } catch (InterruptedException ie) {
-                Thread.currentThread().interrupt();
-                throw new IOException("Interrupted waiting for buffers: " + streamId);
+                try {
+                    wait();
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new IOException("Interrupted waiting for buffers: " + streamId);
+                }
             }
         }
-
-        return count;
     }
 
     public synchronized void remove(int paramInt) {
