@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<navigationModel
+  ns = "http://schemas.android.com?import=com.android.navigation.*">
+  <locations  
+    class = "java.util.ArrayList">
+    <entry>
+      <key      
+        class = "com.android.navigation.ActivityState"      
+        className = "com.mycompany.myapp.Main2Activity">
+        <location        
+          id = "point0"        
+          x = "0"        
+          y = "0"/>
+      </key>
+      <value      
+        x = "500"      
+        y = "968"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+    <entry>
+      <key      
+        class = "com.android.navigation.ActivityState"      
+        className = "com.app.me.MainActivity">
+        <location        
+          idref = "point0"/>
+      </key>
+      <value      
+        x = "640"      
+        y = "0"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+    <entry>
+      <key      
+        class = "com.android.navigation.MenuState"      
+        xmlResourceName = "main2">
+        <location        
+          idref = "point0"/>
+      </key>
+      <value      
+        x = "2720"      
+        y = "1600"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+    <entry>
+      <key      
+        class = "com.android.navigation.ActivityState"      
+        className = "com.app.me.ScrollTextActivity">
+        <location        
+          idref = "point0"/>
+      </key>
+      <value      
+        x = "500"      
+        y = "968"      
+        class = "com.android.navigation.Point"/>
+    </entry>
+  </locations>
+</navigationModel>

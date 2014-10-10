@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<pre-dex-items>
+
+    <item
+        dex="D:\Blueprint\App\build\intermediates\pre-dexed\defaultFlavor\debug\classes-dex2jar-87808ff82de76e88a93c107bf9707301c246e969.jar"
+        jar="D:\Blueprint\App\libs\classes-dex2jar.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="2ee95203d6ce3ba860652cdfcca64fb510a2d33a"/>
+    <item
+        dex="D:\Blueprint\App\build\intermediates\pre-dexed\defaultFlavor\debug\internal_impl-21.0.0-rc1-bf4c2bc7653d077aa54f95ea0865cfa23cd4a7bb.jar"
+        jar="D:\Blueprint\App\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.0-rc1\libs\internal_impl-21.0.0-rc1.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="d1a625e8a94bf7c73e0f9d30ad1b483ff6ea64e9"/>
+    <item
+        dex="D:\Blueprint\App\build\intermediates\pre-dexed\defaultFlavor\debug\classes-9c5f0972840c5f91a963fa4dd946f4675f818c4c.jar"
+        jar="D:\Blueprint\App\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.0-rc1\classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="7ae84435ebc95f67a3f5e511025e96caa8688da2"/>
+    <item
+        dex="D:\Blueprint\App\build\intermediates\pre-dexed\defaultFlavor\debug\support-annotations-21.0.0-rc1-d9e502636787e69505063f83474f2b47e39dbe3f.jar"
+        jar="C:\Program Files (x86)\Android Studio\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.0-rc1\support-annotations-21.0.0-rc1.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="57c343f05b73b923bf2502b05851dbfe12193dcb"/>
+    <item
+        dex="D:\Blueprint\App\build\intermediates\pre-dexed\defaultFlavor\debug\classes-5b016274e2ddb8355cf70beb38b1559054e7d2e3.jar"
+        jar="D:\Blueprint\App\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.0-rc1\classes.jar"
+        jumboMode="false"
+        revision="20.0.0"
+        sha1="f43ddb172b0a91aa546a2aec7e6aad71c935d036"/>
+
+</pre-dex-items>

@@ -100,8 +100,8 @@ public class Tee {
                     if (mReadPositions[i] != 0x7fffffff) {
                         mReadPositions[i] = (mReadPositions[i] - bufLength);
                     }
-                readPosition -= bufLength;
-                mBufferEnd = (mBufferEnd - bufLength);
+                    readPosition -= bufLength;
+                    mBufferEnd = (mBufferEnd - bufLength);
                 }
             }
             mBufferBegin = readPosition;
@@ -316,20 +316,15 @@ public class Tee {
             throw new UnsupportedOperationException("Find some other app to be inefficient in.");
         }
 
-        public int read(byte[] paramArrayOfByte, int paramInt1, int paramInt2)
-                throws IOException {
-            try {
-                if (this.mSharedStream == null) {
-                    throw new IOException("Secondary Tee stream closed.");
-                }
-            } finally {
+        public synchronized int read(byte[] bytes, int offset, int count) throws IOException {
+            if (mSharedStream == null) {
+                throw new IOException("Secondary Tee stream closed.");
             }
-            int i = this.mSharedStream.readSecondary(this.mStreamId, paramArrayOfByte, paramInt1, paramInt2);
-            int j = i;
-            if (j == 0) {
-                j = -1;
+            int bytesCopied = mSharedStream.readSecondary(mStreamId, bytes, offset, count);
+            if (bytesCopied == 0) {
+                return bytesCopied;
             }
-            return j;
+            return bytesCopied;
         }
     }
 }

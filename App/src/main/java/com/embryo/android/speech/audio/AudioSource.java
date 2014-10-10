@@ -116,32 +116,32 @@ public class AudioSource implements AudioInputStreamFactory {
         }
 
         public void run() {
-            Preconditions.checkNotNull(mLeader);
-            byte[] buffer = new byte[mReadSize];
-            int read; //v2
-            int first = 1; //v1
-
-            while (true) {
-                try {
-                    read = mLeader.read(buffer);
-                    if (read != -1 && !Thread.currentThread().isInterrupted()) {
-                        if (first != 0) {
-                            mEventListener.onReadyForSpeech();
-                            first = 0;
-                        } else {
-                            if (mSpeechLevelGenerator == null)
-                                continue;
-                            mSpeechLevelGenerator.update(buffer, 0, read);
-                        }
-                    } else {
-                        Closeables.closeQuietly(mLeader);
-                        return;
-                    }
-                } catch (IOException e) {
-                    Closeables.closeQuietly(mLeader);
-                    return;
-                }
-            }
+//            Preconditions.checkNotNull(mLeader);
+//            byte[] buffer = new byte[mReadSize];
+//            int read; //v2
+//            int first = 1; //v1
+//
+//            while (true) {
+//                try {
+//                    read = mLeader.read(buffer);
+//                    if (read != -1 && !Thread.currentThread().isInterrupted()) {
+//                        if (first != 0) {
+//                            mEventListener.onReadyForSpeech();
+//                            first = 0;
+//                        } else {
+//                            if (mSpeechLevelGenerator == null)
+//                                continue;
+//                            mSpeechLevelGenerator.update(buffer, 0, read);
+//                        }
+//                    } else {
+//                        Closeables.closeQuietly(mLeader);
+//                        return;
+//                    }
+//                } catch (IOException e) {
+//                    Closeables.closeQuietly(mLeader);
+//                    return;
+//                }
+//            }
         }
 
         public void setInputStream(InputStream paramInputStream) {

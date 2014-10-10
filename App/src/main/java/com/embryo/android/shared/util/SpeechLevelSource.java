@@ -14,9 +14,9 @@ public class SpeechLevelSource {
     }
 
     public synchronized void clearListener(Listener paramListener) {
-            if (this.mListener == paramListener) {
-                this.mListener = null;
-            }
+        if (this.mListener == paramListener) {
+            this.mListener = null;
+        }
     }
 
     public int getSpeechLevel() {
@@ -28,18 +28,13 @@ public class SpeechLevelSource {
     }
 
     public synchronized void setListener(Listener paramListener) {
-            this.mListener = paramListener;
+        this.mListener = paramListener;
     }
 
     public void setSpeechLevel(int paramInt) {
-        if (((paramInt >= 0) && (paramInt <= 100)) || (paramInt == -1)) {
-        }
-        for (boolean bool = true; ; bool = false) {
-            Preconditions.checkArgument(bool);
-            this.mSpeechLevel = paramInt;
-            maybeNotify();
-            return;
-        }
+        Preconditions.checkArgument(((paramInt >= 0) && (paramInt <= 100)) || (paramInt == -1));
+        this.mSpeechLevel = paramInt;
+        maybeNotify();
     }
 
     public static abstract interface Listener {

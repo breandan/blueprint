@@ -27,8 +27,7 @@ import java.util.concurrent.ExecutorService;
 import javax.annotation.Nullable;
 
 
-public class RecognizerImpl
-        implements Recognizer {
+public class RecognizerImpl implements Recognizer {
     private final AudioController mAudioController;
     private final AudioRecorder mAudioRecorder;
     private final RecognitionEngineStore mEngineStore;

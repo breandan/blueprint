@@ -1,25 +1,27 @@
+import com.android.build.gradle.tasks.PackageApplication
+
 buildscript {
     repositories {
         maven { url 'http://repo1.maven.org/maven2' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.3'
+        classpath 'com.android.tools.build:gradle:0.13.0'
     }
 }
-apply plugin: 'android'
+
+apply plugin: 'com.android.application'
 
 repositories {
     mavenCentral()
 }
 
-
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    compileSdkVersion 'android-L'
+    buildToolsVersion '20.0.0'
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 19
+        minSdkVersion 13
+        targetSdkVersion 20
         versionCode 1
         versionName "1.0"
     }
@@ -44,8 +46,11 @@ android {
 //    into 'lib/'
 //}
 
-tasks.withType(com.android.build.gradle.tasks.PackageApplication) { it.jniFolders = [file("libs")] as Set }
+tasks.withType(PackageApplication) {
+    it.jniFolders = [file("libs")] as Set
+}
 
 dependencies {
     compile files('libs/classes-dex2jar.jar')
+    compile 'com.android.support:appcompat-v7:21.0.0-rc1'
 }

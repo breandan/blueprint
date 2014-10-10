@@ -1,5 +1,7 @@
 package com.google.speech.recognizer;
 
+import android.util.Log;
+
 import com.embryo.speech.recognizer.RecognizerCallback;
 import com.embryo.speech.recognizer.api.RecognizerSessionParamsProto;
 import com.google.speech.recognizer.api.NativeRecognizer;
@@ -7,10 +9,7 @@ import com.google.speech.recognizer.api.NativeRecognizer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -69,33 +68,14 @@ public abstract class AbstractRecognizer {
     public NativeRecognizer.NativeRecognitionResult run(final RecognizerSessionParamsProto.RecognizerSessionParams sessionParams) {
         validate();
 
-        Callable callable =
-                new Callable<List<byte[]>>() {
-                    @Override
-                    public List<byte[]> call() throws Exception {
-                        byte[] resultBytes = nativeRun(nativeObj, sessionParams.toByteArray());
-                        return Arrays.asList(resultBytes);
-                    }
-                };
-        FutureTask<byte[]> ft = new FutureTask<byte[]>(callable);
-        Thread t = new Thread(ft);
-        t.start();
-        long start = System.currentTimeMillis();
         try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-        }
-
-        int i = nativeCancel(nativeObj);
-
-        try {
-            byte[] resultBytes = ft.get();
+            byte[] resultBytes = nativeRun(nativeObj, sessionParams.toByteArray());
             return NativeRecognizer.NativeRecognitionResult.parseFrom(resultBytes);
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "bad protocol buffer from recognizer jni");
+            Log.e("jni_error", "exception", ex);
             return new NativeRecognizer.NativeRecognitionResult().setStatus(0x2);
         }
-
     }
 
     protected int read(byte[] buffer) throws IOException {

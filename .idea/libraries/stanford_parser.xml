@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="stanford-parser">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/App/libs/stanford-parser.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

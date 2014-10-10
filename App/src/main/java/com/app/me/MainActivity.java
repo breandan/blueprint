@@ -8,12 +8,9 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.embryo.android.search.core.AsyncServicesImpl;
-import com.embryo.android.speech.callback.SimpleCallback;
-import com.embryo.android.speech.embedded.Greco3Grammar;
-import com.embryo.android.speech.grammar.GrammarCompilationService;
+import com.embryo.android.search.core.GsaPreferenceController;
 import com.embryo.android.voicesearch.VoiceSearchServices;
 import com.embryo.android.voicesearch.hotword.HotwordDetector;
-import com.embryo.android.search.core.GsaPreferenceController;
 import com.google.speech.embedded.Greco3Recognizer;
 import com.google.speech.embedded.OfflineActionsManager;
 
@@ -27,8 +24,7 @@ public class MainActivity extends Activity {
         return res.openRawResource(res.getIdentifier(name, "raw", packName));
     }
 
-    private void startNewVoiceSearch(VoiceSearchServices vss)
-    {
+    private void startNewVoiceSearch(VoiceSearchServices vss) {
         Greco3Recognizer.maybeLoadSharedLibrary();
         OfflineActionsManager localOfflineActionsManager = vss.getOfflineActionsManager();
         vss.getGrammarCompilationService().onCreate(vss.getGreco3Container(), localOfflineActionsManager);
